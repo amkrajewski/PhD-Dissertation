@@ -1,0 +1,216 @@
+\documentclass[letterpaper, 12pt]{report}
+\usepackage[margin=0.75in]{geometry}
+%\usepackage[english]{babel} 
+\usepackage[T1]{fontenc}
+\usepackage{graphicx, lipsum, textcomp, float} %figure formatting
+\usepackage{hyperref} %referancing package
+%\usepackage[version=4]{mhchem} %chemical equations and formulas
+\usepackage{advdate, datenumber} %date packages
+\usepackage{amsmath} %math stuff
+%\usepackage{amsfonts}
+\usepackage{listings} %allows inserting code
+\usepackage{multirow}
+\usepackage{comment}
+\usepackage{xcolor}
+
+%Font
+\usepackage[]{lineno}
+\renewcommand{\thelinenumber}{\raisebox{1pt}{\textcolor[RGB]{200,200,200}{\arabic{linenumber}}}}
+\usepackage[scaled]{beramono}
+\renewcommand{\familydefault}{\sfdefault} 
+\definecolor{darkgreen}{rgb}{0.05, 0.3, 0.1}
+\let\oldtexttt\texttt
+\renewcommand{\texttt}[1]{\oldtexttt{\textcolor{darkgreen}{#1}}}
+
+% Line spacing (double for title page, single for TOC, and 1.5 for body)
+\usepackage{setspace}
+
+% Bibliography
+\usepackage[
+    style=ieee, 
+    isbn=false, 
+    url=true, 
+    natbib=true, 
+    backend=bibtex,
+    maxcitenames=1,
+    mincitenames=1
+    ]{biblatex}
+\renewcommand*{\bibfont}{\footnotesize}
+\addbibresource{referencesAdam.bib}
+
+% Smaller figure captions 
+\usepackage{caption}
+\captionsetup[figure]{font=footnotesize, labelfont=footnotesize}
+
+% Section titles
+\usepackage{titlesec}
+
+% Section
+\titleformat{\chapter}[display]
+{\Large\bfseries\centering}
+{Chapter \thechapter}{0.5em}{}
+
+% Section
+\titleformat{\section}[hang]
+{\large\bfseries}
+{\thesection}{0.5em}{}
+
+% Subection
+\titleformat{\subsection}[hang]
+{\large\bfseries}
+{\thesubsection}{0.5em}{}
+
+
+
+% less section skip in the table of contents
+\usepackage{tocbasic}
+
+% Section
+\DeclareTOCStyleEntry[
+  beforeskip=.2em plus 1pt,% default is 1em plus 1pt
+  pagenumberformat=\textbf
+]{tocline}{section}
+
+% Chapter
+\DeclareTOCStyleEntry[
+  entrynumberformat=\entrywithprefix{\chaptername},
+  dynnumwidth
+]{tocline}{chapter}
+\newcommand*\entrywithprefix[2]{#1~#2}
+  
+%Abstract customization
+\usepackage{abstract}
+\usepackage{titling}
+\renewcommand{\abstractnamefont}{\normalfont\bfseries}
+
+%\renewcommand{\citeleft}{\textcolor{red}{[}} %temporary makes brackets red
+%\renewcommand{\citeright}{\textcolor{red}{]}}. 
+
+\setlength\parindent{6pt} %paragraph indentation
+\setlength{\parskip}{6pt} %paragraph spacing
+
+%set hyperlinks colors
+\definecolor{mypurple}{RGB}{140,54,140}
+\definecolor{homered}{RGB}{127, 0, 10}
+\definecolor{officeorange}{RGB}{204, 75, 0}
+\definecolor{mauroblue}{RGB}{53, 48, 217}
+\definecolor{citegreen}{RGB}{15, 133, 13}
+\definecolor{hyperlinkpurple}{RGB}{42, 0, 163}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=hyperlinkpurple,
+    filecolor=mypurple,      
+    urlcolor=teal,
+    citecolor=citegreen
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   DOCUMENT   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+% Front matter manually formatted according to the rules 
+\pagenumbering{roman}
+\thispagestyle{empty}
+\setstretch{1}
+
+% Title page body
+{
+\centering
+The Pennsylvania State University\\
+The Graduate School\\
+\vfill
+\setstretch{2}
+{
+\Large
+\textbf{EFFICIENT MATERIALS INFORMATICS THROUGH DOMAIN KNOWLEDGE}\\
+}
+\vfill
+A Dissertation in\\
+Materials Science and Engineering\\
+by\\
+Adam M. Krajewski\\
+\vfill
+© 2024 Adam M. Krajewski\\
+\setstretch{1}
+\vfill
+Submitted in Partial Fulfillment\\
+of the Requirements\\
+for the Degree of\\
+
+\vfill
+Doctor of Philosophy\\
+\vfill
+August 2024\\
+\vfill
+}
+
+% Committee page
+\newpage
+\setstretch{1.5}
+\setlength\parindent{0pt} %no paragraph indentation
+
+The dissertation of Adam M. Krajewski was reviewed and approved* by the following:\\
+
+\textbf{Zi-Kui Liu}\\
+Dorothy Pate Enright Professor at the Department of Materials Science and Engineering\\
+Director of the Phases Research Laboratory\\
+Dissertation Advisor and Chair of the Committee\\
+
+\textbf{Allison M. Beese}\\
+Professor of Materials Science and Engineering\\
+Professor of Mechanical Engineering\\
+Director of Additive Manufacturing \& Design Graduate Program\\
+Co-director of Center for Innovative Materials Processing through Direct Digital Deposition\\
+
+\textbf{Ismaila Dabo}\\
+Associate Professor of Materials Science and Engineering\\
+Associate Professor of Physics\\
+
+\textbf{Wenrui Hao}\\
+Associate Professor of Mathematics\\
+
+\vfill
+
+*Signatures are on file in the Graduate School.
+
+\newpage
+\chapter*{Abstract}
+ev4rmvk
+
+\setstretch{1}
+\newpage
+\tableofcontents
+
+\newpage
+\addcontentsline{toc}{chapter}{\listfigurename}
+\renewcommand{\listfigurename}{List of Figures}
+\listoffigures
+
+\newpage
+\addcontentsline{toc}{chapter}{\listtablename}
+\renewcommand{\listtablename}{List of Tables}
+\listoftables
+
+\newpage
+\chapter*{Acknowledgments}
+
+This work was made possible by the financial support and training provided by US Department of Energy (DOE) via Awards DE-FE0031553 and DE-EE0008456, DOE Advanced Research Projects Agency-Energy (ARPA-E) via DE-AR0001435, the DOE BES (Theoretical Condensed Matter Physics) via DE-SC0023185, US Office of Naval Research (ONR) via N00014-17-1-2567 and N00014-23-2721, The Pennsylvania State University via ICDS Seed Grant, US National Science Foundation (NSF) via CMMI-1825538, and Pathways to Enable Open-Source Ecosystems (POSE) via FAIN-2229690. Any opinions, findings, and conclusions or recommendations expressed in this publication are those of the author and do not necessarily reflect the views of the funding agencies.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\setlength\parindent{6pt} %paragraph indentation
+\setstretch{1.5}
+\pagenumbering{arabic}
+
+\include{introduction}
+
+\include{pysipfenn}
+
+
+\printbibliography
+
+\end{document}
