@@ -68,7 +68,7 @@ Within an FGM manufacturing apparatus, it is common for each of the available co
 The attainable spaces used in the final design tend to be lower-dimensional relative to the corresponding elemental spaces, especially when the available compositions are CCMs/HEAs or the number of flow sources is limited. However, this trend is not fundamentally required, and going against it may be beneficial in many contexts. For instance, one may conceptualize a ternary ($d=3$) elemental compositional space where 4 compositions are available, arranged as vertices of some tetragon; thus, forming a quaternary ($d=4$) attainable compositions space tetrahedron. In such a case, some regions have to overlap in the elemental space, while new regions are guaranteed to be unlocked relative to 3 available compositions if the formed tetragon is strictly convex. This seemingly oversamples; however, it is critical to consider that there is no oversampling in the design space because the available materials can possess properties that are not a function of the composition alone, such as the $CO_2$ footprint or price. 
 
 A clear and industry-significant example of the above happens during FGM design in elemental spaces containing Hf and Zr. The two are very difficult to separate, causing both price and greenhouse emissions to rise sharply as a function of the separation purity requirements. Furthermore, physical form factors available from suppliers tend to be limited or at lower demand for pure-Zr and pure-Hf, furthering the cost. In 
-the case of AM using wires as feedstock (WAAM) \cite{Shen2016FabricationProcess}, as explored in detail in \nameref{app1}, using pure Zr in place of the more industry-common alloy with $4.5\%$Hf can be somewhere from a few times to over 100 times more expensive. In a typical, manual FGM design, a researcher selects one of the two grades based on their expertise. However, by considering the two grades as independent components of the higher-dimensional design space, one can avoid forcing a decision before exploring the space, thus limiting human bias and allowing exploration of both options simultaneously, allowing their combination where regions of space insensitive to the Hf content utilize the cheaper grade while the pure Zr is used when necessary or favorable based on some path heuristic.
+the case of AM using wires as feedstock (WAAM) \cite{Shen2016FabricationProcess}, as explored in detail in \nameref{nimplex:app1}, using pure Zr in place of the more industry-common alloy with $4.5\%$Hf can be somewhere from a few times to over 100 times more expensive. In a typical, manual FGM design, a researcher selects one of the two grades based on their expertise. However, by considering the two grades as independent components of the higher-dimensional design space, one can avoid forcing a decision before exploring the space, thus limiting human bias and allowing exploration of both options simultaneously, allowing their combination where regions of space insensitive to the Hf content utilize the cheaper grade while the pure Zr is used when necessary or favorable based on some path heuristic.
 
 \begin{figure}[H]
     \centering
@@ -125,7 +125,7 @@ Software (e.g., \texttt{alchemyst/ternplot} in Matlab \cite{Sandrock2017Alchemys
 
 However, this method becomes inefficient for large $d$ because the fraction of rejected points increases with the dimensionality. While this problem is widely noted in the literature \cite{Allen2022AAlloys}, best to the authors' knowledge, it has yet to be discussed quantitatively despite being critical to estimating the sampling's computational complexity. Thus, it is derived herein.
 
-One can consider that a grid of $N_S$ simplex-feasible points is a subset of a grid of $N_C$ points distributed uniformly in the Cartesian space so that random selection from this grid should have a $\frac{N_S}{N_C}$ probability of falling within the simplex. Thus, as shown below, one can find the acceptance rate by considering an infinitely fine grid ($n_d\rightarrow\inf$). \nameref{app2} gives an alternative, intuitive method for finding $f(4)$ using geometry, which agrees with this result.
+One can consider that a grid of $N_S$ simplex-feasible points is a subset of a grid of $N_C$ points distributed uniformly in the Cartesian space so that random selection from this grid should have a $\frac{N_S}{N_C}$ probability of falling within the simplex. Thus, as shown below, one can find the acceptance rate by considering an infinitely fine grid ($n_d\rightarrow\inf$). \nameref{nimplex:app2} gives an alternative, intuitive method for finding $f(4)$ using geometry, which agrees with this result.
 \begin{equation}
     \begin{aligned}
         f(d) &= \lim_{n_d\rightarrow\inf} \frac{N_S}{N_C} = \lim_{n_d\rightarrow\inf} \frac{\binom{d-1+n_d}{d-1}}{(n_d+1)^{d-1}}\\
@@ -137,11 +137,11 @@ As one can see in Equation~\ref{nimplex:eq:fd}, the rejection rate exhibits fact
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.135\textwidth]{nimplex/1A.png}
+    \includegraphics[width=0.270\textwidth]{nimplex/1A.png}
     \hfill
-    \includegraphics[width=0.16\textwidth]{nimplex/1C.png}
+    \includegraphics[width=0.320\textwidth]{nimplex/1C.png}
     \hfill
-    \includegraphics[width=0.16\textwidth]{nimplex/1B.png}
+    \includegraphics[width=0.320\textwidth]{nimplex/1B.png}
     \caption{(left) Uniform random sampling in 2-cube (square) filtered to fall onto a 2-simplex (ternary composition), showing 50\% rejection rate, (middle) random sampling in 3-cube projected onto 2-simplex by normalizing coordinates, showing oversampling in the center of each dimension, and (right) ideal uniform random sampling of a simplex.} 
     \label{nimplex:fig:samplinginternary}
 \end{figure}
@@ -150,9 +150,8 @@ To circumvent the rejection problem, one may randomly sample from N-cube and nor
 
 Thus, to achieve a uniform random sampling, \texttt{nimplex} and other carefully designed methods (e.g., \cite{Allen2022AAlloys} and \cite{Otis2017AnSystems}) tend to take Dirichlet distribution, where one samples points $\textbf{y}$ from Gamma distributions with density $\frac{y_i^{\alpha-1} e^{-y_i}}{\Gamma(\alpha)}$ and consider its special "flat" case, where $\alpha=1$ simplifies the density equation to just $\frac{1 e^{-y_i}}{1} = e^{-y_i}$. This is equivalent to sampling $\textbf{z}$ from linear distributions and calculating $y_i=-\log(z_i)$, which then can be normalized to obtain $\textbf{x}$ as $x_i = y_i / \sum \textbf{y}$. The following snippet shows \texttt{nimplex}'s implementation of this, which samples \textbf{z} with the high-performance \texttt{xoroshiro128+} random number generator \cite{Blackman2018ScrambledGenerators} underlying \texttt{randomTensor} function from the \texttt{Arraymancer} tensor library \cite{RatsimbazafyMratsim/Arraymancer:Backends}.
 
-\begin{minted}[linenos=true, mathescape]{nim}
-proc simplex_sampling_mc(
-    dim: int, samples: int): Tensor[float] =
+\begin{minted}[xleftmargin=3\parindent, linenos=true, mathescape]{nim}
+proc simplex_sampling_mc(dim: int, samples: int): Tensor[float] =
   let neglograndom = 
     randomTensor[float]([samples, dim], 1.0
     ).map(x => -ln(x))
@@ -179,11 +178,9 @@ Next, one can consider the creation of a grid of uniformly distributed points, w
 
 \begin{figure}[h]
     \centering
-    \hfill
-    \includegraphics[width=0.135\textwidth]{nimplex/2A.png}
-    \hfill
-    \includegraphics[width=0.16\textwidth]{nimplex/2B.png}
-    \hfill
+    \includegraphics[width=0.270\textwidth]{nimplex/2A.png}
+    \hspace{48pt}
+    \includegraphics[width=0.320\textwidth]{nimplex/2B.png}
     \caption{(left) Uniform grid ($n_d=24$) in 2-cube (square) filtered to fall onto a 2-simplex (ternary composition), showing $\frac{12}{25}=48\%$ rejection rate, (right) uniform grid in the corresponding simplex.} 
     \label{nimplex:fig:simplexgrid}
 \end{figure}
@@ -192,9 +189,8 @@ Fortunately, in their 1978 textbook, \citet{Nijenhuis1978CombinatorialCalculator
 
 In the following years, several authors made various modifications to the algorithm, and the most recent one by \citet{Chasalow1995AlgorithmPoints} improves performance without sacrificing simplicity. Over the years, it has been implemented in relatively modern languages such as FORTRAN90, C, MATLAB, and Python. Now, it has been implemented in Nim language as well, with the Nim code snippet shown below.
 
-\begin{minted}[linenos=true, mathescape]{nim}
-proc simplex_grid(
-    dim: int, ndiv: int): Tensor[int] =
+\begin{minted}[xleftmargin=3\parindent, linenos=true, mathescape]{nim}
+proc simplex_grid(dim: int, ndiv: int): Tensor[int] =
   let N: int = binom(ndiv+dim-1, dim-1)
   result = newTensor[int]([N, dim])
   var x = zeros[int](dim)
@@ -237,9 +233,8 @@ We can now look at $N_I(d, n_d)$ to $N_S(d, n_d)$ ratio for the aforementioned c
 
 To implement the following \texttt{nimplex} snippet.
 
-\begin{minted}[linenos=true, mathescape]{nim}
-proc simplex_internal_grid(
-    dim: int, ndiv: int): Tensor[int] =
+\begin{minted}[xleftmargin=3\parindent, linenos=true, mathescape]{nim}
+proc simplex_internal_grid(dim: int, ndiv: int): Tensor[int] =
   let N: int = binom(ndiv-1, dim-1)
   result = newTensor[int]([N, dim])
   var x = ones[int](dim)
@@ -279,13 +274,13 @@ In the simplest possible case, which will be expanded upon later, one can look a
 Such a function, shown below, can be implemented by setting up a \texttt{neighbors} list of lists ($N_S$ of $\leq2$ length) of integer positions and then, at the end of every $i$-th iteration, populating it with forward ($i+1$) and backward ($i-1$) transitions unless start ($[0,1]$) or end ($[1,0]$) points $\textbf{x}$ respectively, corresponding to lack of some component, have been reached.
 
 
-\begin{minted}[linenos=true, mathescape=true]{nim}
-proc neighborsLink2C(i:int, x:Tensor, 
-    neighbors: var seq[seq[int]]): void =
+\begin{minted}[xleftmargin=3\parindent, linenos=true, mathescape=true]{nim}
+proc neighborsLink2C(
+    i:int, x:Tensor, neighbors: var seq[seq[int]]): void =
   if x[0] != 0:
-      neighbors[i].add(i+1)
+    neighbors[i].add(i+1)
   if x[1] != 0:
-      neighbors[i].add(i-1)
+    neighbors[i].add(i-1)
 \end{minted}
 
 While the above is trivial, it clearly demonstrates that the graph can be constructed within the original $\mathcal{O}(N)$ computational complexity of the simplex grid algorithm, unlike a similarly trivial distance matrix calculation, which would be $\mathcal{O}(N^2)$; thus, unlocking efficient generation of even massive graphs of this kind.
@@ -303,27 +298,27 @@ The newly allowed neighbor transitions across these binaries can be quickly noti
 \]
 Then, one can quickly visualize that (1) unless $x_2=0$, a transition by jump $J_1$ should be possible, (2) unless $x_1=0$, a transition by jump $J_1$ combined with backward jump $J_0$ in the target binary should be possible, and (3) unless $x_0=0$ (the first traversed binary is considered), transitions by both backward jump $J_1$ and backward jump $J_1+J_0$ (extra step within the earlier binary) should be possible. Thus, one arrives at the following algorithm, which requires additional $n_d$ ("ndiv") input on top of the one from Section~\ref{nimplex:ssec:binarygraph} but retains its structure.
 
-\begin{minted}[linenos=true, mathescape=true]{nim}
-proc neighborsLink3C(...,
-    ndiv: int): void =
+\begin{minted}[xleftmargin=3\parindent, linenos=true, mathescape=true]{nim}
+proc neighborsLink3C(
+    i:int, x:Tensor, neighbors: var seq[seq[int]], ndiv: int): void =
   let jump0 = 1
   let jump1 = 1+ndiv-x[0]
   if x[0] != 0:
-      neighbors[i].add(i-jump1)
-      neighbors[i].add(i-jump1-jump0)
+    neighbors[i].add(i-jump1)
+    neighbors[i].add(i-jump1-jump0)
   if x[1] != 0:
-      neighbors[i].add(i-jump0)
-      neighbors[i].add(i+jump1-jump0)
+    neighbors[i].add(i-jump0)
+    neighbors[i].add(i+jump1-jump0)
   if x[2] != 0:
-      neighbors[i].add(i+jump0)
-      neighbors[i].add(i+jump1)
+    neighbors[i].add(i+jump0)
+    neighbors[i].add(i+jump1)
 \end{minted}
 
 Utilizing the above, the result presented in Figure~\ref{nimplex:fig:ternarysimplexgraph} can be quickly obtained for any number of divisions. The numbering of points can help to visualize how the transitions were obtained.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.45\textwidth]{nimplex/SimplexGraphTernaryBlue.png}
+    \includegraphics[width=0.55\textwidth]{nimplex/SimplexGraphTernaryBlue.png}
     \caption{2-simplex graph corresponding to a ternary system ($n_d=12$) with 91 nodes/compositions and 468 edges/transitions.} 
     \label{nimplex:fig:ternarysimplexgraph}
 \end{figure}
@@ -337,7 +332,7 @@ Moving beyond ternary systems, one has to increase the number of tracked transit
 \end{equation}
 As expected, for the special cases of $d=3$, the above agrees with $J_0$ and $J_1$ found for the ternary case in Section~\ref{nimplex:ssec:ternarygraph}. One can also note that $J_0$ always equals to $1$ as $\binom{a}{0} = 1$ for any $a$.
 
-With $\textbf{J}$ defined, one can take a quaternary system (d=4 / 3-simplex) and perform a similar visualization thought exercise in the head as in Section~\ref{nimplex:ssec:ternarygraph}, but in 3D, considering the new transitions to 3 neighbors above and 3 neighbors below, in order to set up \texttt{\textbf{neighborsLink4C}} procedure which is presented in \nameref{app3}. 
+With $\textbf{J}$ defined, one can take a quaternary system (d=4 / 3-simplex) and perform a similar visualization thought exercise in the head as in Section~\ref{nimplex:ssec:ternarygraph}, but in 3D, considering the new transitions to 3 neighbors above and 3 neighbors below, in order to set up \texttt{\textbf{neighborsLink4C}} procedure which is presented in \nameref{nimplex:app3}. 
 
 Such an approach of visualizing and counting the possible jumps in the head becomes (a) challenging for quinary systems (d=5 / 4-simplex) case where one has to visualize 4 forward and 4 backward jumps to and from points inscribed in every tetrahedron formed by the 3-simplex tetrahedral grids, and (b) near impossible for higher orders, both because of the visualization dimensionality and the growing number of neighbors to track, given by $\sum_\delta^d 2(\delta-1)= d(d+1)$ or for $d=$ 6, 7, 8, and 9 corresponding to 30, 42, 56, and 72 neighbors respectively; thus prompting for an alternative.
 
@@ -347,13 +342,14 @@ Finally, a simple notion that every backward transition $b \rightarrow a$ of gri
 
 This is implemented very concisely in the \texttt{nimplex} snippet below, where for every considered dimension $\delta$ from $d$ (highest at $0$th index of $\textbf{x}$) down to $2$ ($(d-2)$th index), the $\delta$ of backward and $\delta$ of forward transitions of lengths $t_k$ are found by iteratively summing jump lengths $J_{\delta}$, $\sum_{j=\delta-1}^{\delta}J_j$, ..., $\sum_{j=0}^{\delta}J_j$, and then used to assign neighborhood.
 
-\begin{minted}[linenos=true, mathescape=true]{nim}
-proc neighborsLink(...): void =
+\begin{minted}[xleftmargin=3\parindent, linenos=true, mathescape=true]{nim}
+proc neighborsLink(
+    i:int, x:Tensor, neighbors: var seq[seq[int]], ndiv: int): void =
   var jumps = newSeq[int](dim-1)
   jumps[0] = 1     #binom(a,0)=1
   for j in 1..<(dim-1):
     jumps[j] = binom(
-      j+ndiv-sum(x[0..(dim-2-j)]), j)
+    j+ndiv-sum(x[0..(dim-2-j)]), j)
   var trans: int
   for order in 0..(dim-2): 
     trans = 0
@@ -368,7 +364,7 @@ The result of running the above algorithm with $d=4$ and relatively low $n_d$ is
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.475\textwidth]{nimplex/SimplexGraphQuaternaryAnnotated.png}
+    \includegraphics[width=0.6\textwidth]{nimplex/SimplexGraphQuaternaryAnnotated.png}
     \caption{A quaternary (d=4 / 3-simplex) simplex graph ($n_d=6$) with 84 nodes (compositions) and 672 edges (possible moves). A set of nodes has been manually selected (highlighted in pink) to depict a toy example of infeasible points (similarly to Figure~\ref{nimplex:fig:pathplanning1}), which forces a non-trivial path (highlighted in red) to traverse from the bottom-left corner at 1 to the bottom-right corner at 84.} 
     \label{nimplex:fig:quaternarysimplexgraph}
 \end{figure}
@@ -388,8 +384,13 @@ These rules can be used to set up a problem graph like in the top of Figure~\ref
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.35\textwidth]{nimplex/GraphComplexMap1.png}
-    \includegraphics[width=0.45\textwidth]{nimplex/GraphComplex1Trim.png}
+    \begin{adjustbox}{valign=c}
+        \includegraphics[width=0.45\textwidth]{nimplex/GraphComplexMap1.png}
+    \end{adjustbox}
+    \hspace{6pt}
+    \begin{adjustbox}{valign=c}
+        \includegraphics[width=0.5\textwidth]{nimplex/GraphComplex1Trim.png}
+    \end{adjustbox}
     \caption{Graph Complex Example \#1 depicting a problem space where 2 ternary systems can be connected through 6 different binary paths.} 
     \label{nimplex:fig:graphcomplex1}
 \end{figure}
@@ -402,8 +403,13 @@ One can quickly demonstrate the benefits of such ability by looking at the SS316
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.3\textwidth]{nimplex/GraphComplexMap2.png}
-    \includegraphics[width=0.47\textwidth]{nimplex/GraphComplex2.png}
+    \begin{adjustbox}{valign=c}
+        \includegraphics[width=0.37\textwidth]{nimplex/GraphComplexMap2.png}
+    \end{adjustbox}
+    \hspace{6pt}
+    \begin{adjustbox}{valign=c}
+        \includegraphics[width=0.57\textwidth]{nimplex/GraphComplex2.png}
+    \end{adjustbox}
     \caption{Graph Complex Example \#2 depicting a problem where 3 choices (D/E/F) can be made to traverse from ABC to G through dual ternary systems containing B. Vertices were spread in 3D to depict three possible ABC to G paths, which would exactly overlap in a plane.} 
     \label{nimplex:fig:graphcomplex2}
 \end{figure}
@@ -412,8 +418,13 @@ In the above examples in Figures~\ref{nimplex:fig:graphcomplex1}~and~\ref{nimple
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.3\textwidth]{nimplex/GraphComplexMap3.png}
-    \includegraphics[width=0.47\textwidth]{nimplex/GraphComplex3.png}
+    \begin{adjustbox}{valign=c}
+        \includegraphics[width=0.35\textwidth]{nimplex/GraphComplexMap3.png}
+    \end{adjustbox}
+    \hspace{6pt}
+    \begin{adjustbox}{valign=c}
+        \includegraphics[width=0.6\textwidth]{nimplex/GraphComplex3.png}
+    \end{adjustbox}
     \caption{Graph Complex Example \#3 depicting the possibility of competing paths, including cycles.} 
     \label{nimplex:fig:graphcomplex3}
 \end{figure}
@@ -480,13 +491,6 @@ All distributions of the source contain (1) the core library, (2) additional uti
 \textbf{Wesley F. Reinhart:} Funding acquisition, Writing - Review \& Editing
 \textbf{Zi-Kui Liu:} Funding acquisition, Supervision, Writing - Review \& Editing, Resources
 
-\section*{Acknowledgments}
-
-This work has been funded through grants: NSF-POSE \textbf{FAIN-2229690}, ONR \textbf{N00014-23-2721}, and DOE-ARPA-E \textbf{DE-AR0001435}. 
-
-Adam M. Krajewski would like to thank \textbf{Gonville \& Caius College} at the University of Cambridge and \textbf{Dr. Gareth Conduit} for generously hosting him as a visiting postgraduate student during the writing of this publication, and \textbf{Peter and Carol Thrower} for sponsoring the fellowship.
-
-We would also like to thank \textbf{Luke Myers} and \textbf{Ricardo Amaral} for testing code exercises and proofreading the documentation.
 
 \section{Appendix A} \label{nimplex:app1}
 
@@ -521,7 +525,7 @@ agreeing with the aforementioned result in Section~\ref{nimplex:sec:randomunifor
 
 The equation for "forward" and "backward" jumps in 3-simplex graph corresponding to a quaternary chemical system. 
 
-\begin{minted}{nim}
+\begin{minted}[xleftmargin=3\parindent]{nim}
 proc neighborsLink4C(...): void =
   let jump0 = 1  #binom(x, 0)=1
   let jump1 = binom(1+ndiv-x[0]-x[1], 1)
