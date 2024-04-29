@@ -5,9 +5,9 @@ Many disciplines of science and engineering deal with problems related to compos
 
 This work implements several essential methods specific to the compositional (simplex) spaces through a high-performance open-source library \texttt{nimplex}. Most significantly, we derive and implement an algorithm for constructing a novel n-dimensional simplex graph data structure, which contains all discretized compositions and all possible neighbor-to-neighbor transitions as pointer arrays. Critically, no distance or neighborhood calculations are performed, instead leveraging pure combinatorics and the ordering in procedurally generated simplex grids, keeping the algorithm $\mathcal{O}(N)$, so that graphs with billions of transitions take seconds to construct on a laptop. Furthermore, we demonstrate how such graph representations can be combined to express path-planning problem spaces and to incorporate prior knowledge while keeping the problem space homogeneous. This allows for efficient deployment of existing high-performance gradient descent, graph traversal search, and other path optimization algorithms.
 
-\section{Introduction} \label{sec:introduction}
+\section{Introduction} \label{nimplex:sec:introduction}
 
-\subsection{Compositional Spaces} \label{ssec:compositionalspaces}
+\subsection{Compositional Spaces} \label{nimplex:ssec:compositionalspaces}
 
 The term \emph{composition} refers to \emph{a} way an entity can be split into a set of distinct components, and it plays a critical role in many disciplines of science, engineering, and mathematics. For instance, in combinatorics, the composition will refer to \emph{a} way a positive integer is split into a sequence of other positive integers. In materials science, chemical composition refers to how a material (or, more generally, matter) is split into distinct components, such as chemical elements, based on considerations such as fraction of atoms, occupied volume, or contributed mass. In economics, portfolio composition may refer to how finite capital is split across assets, such as cash, equity instruments, real estate, and commodities, based on their monetary value.
 
@@ -15,12 +15,12 @@ The definition of a composition will typically allow for the definition of a fin
 
 Working within compositional (simplex) spaces requires several additional considerations relative to the more common Euclidean spaces for which most tools were designed. Otherwise, numerous problems can be introduced, ranging from sampling points outside the space, through incorrect density estimates, to incorrect gradient calculations caused by modifying every $x_{j\neq i}$ when changing $x_i$ assumed to be independent.
 
-This work introduces a new high-performance library called \texttt{nimplex} or \textit{NIM library for simPLEX spaces}, created exclusively for working with such spaces. It was written in low-level Nim language, allowing for careful optimizations, and then compiled with a native Python interface for general use. It provides an efficient implementation of (a) existing methods from literature (see Sec.~\ref{ssec:mc}~and~\ref{ssec:fullgrid}), (b) modifications of existing methods (see Sec.~\ref{ssec:internalgrid}), and (c) entirely new capabilities developed in this paper (see Sec.~\ref{sec:simplexgraph}).
+This work introduces a new high-performance library called \texttt{nimplex} or \textit{NIM library for simPLEX spaces}, created exclusively for working with such spaces. It was written in low-level Nim language, allowing for careful optimizations, and then compiled with a native Python interface for general use. It provides an efficient implementation of (a) existing methods from literature (see Sec.~\ref{nimplex:ssec:mc}~and~\ref{nimplex:ssec:fullgrid}), (b) modifications of existing methods (see Sec.~\ref{nimplex:ssec:internalgrid}), and (c) entirely new capabilities developed in this paper (see Sec.~\ref{nimplex:sec:simplexgraph}).
 
 Neither compositional space nor \texttt{nimplex} is exclusive to any discipline; however, to better showcase its capabilities, two complex, highly-dimensional materials-related problems of high impact are highlighted. At the same time, translating them and their solutions to other areas, such as economics, can be done directly and is discussed.
 
 
-\subsection{Compositionally Complex Materials} \label{ssec:compositionallycomplex}
+\subsection{Compositionally Complex Materials} \label{nimplex:ssec:compositionallycomplex}
 
 An exemplar of how tackling highly-dimensional problems allows researchers to unlock novel solutions is the class of Compositionally Complex Materials (CCMs), which includes several sub-classes, such as Multi Principle Element Alloys (MPEAs), High Entropy Alloys (HEAs), High Entropy Ceramics (HECs), and High Entropy Metallic Glasses (HEMGs). CCMs are materials with at least several elements in significant fractions and was initiated by two pioneering 2004 works on HEAs by Yeh et al. \cite{Yeh2004NanostructuredOutcomes} and by Cantor et al. \cite{Cantor2004MicrostructuralAlloys}, who independently proposed that equimolar (equal fractions) alloys with more than 5 (Yeh) or between 6 and 9 (Cantor) elements, could form single solid solutions (SSS) thanks to the configurational entropy stabilizing them. Other notable definitions include all materials with idealized configurational entropy $\Delta S_{conf}  \geq R \ln{5} = 1.61R$ \cite{Li2019MechanicalAlloys} ($\approx2.32$ bits of information in the composition \textbf{x}) or $\Delta S_{conf}  \geq 1R$  \cite{Senkov2019HighAlloys} ($\approx1.44$ bits).
 
@@ -29,22 +29,22 @@ Regardless of the exact definition, while individual CCMs contain a few componen
 In recent years, high-throughput thermodynamics-driven combinatorial studies on CCMs have been successfully performed to generate high-performance materials \cite{Elder2023ComputationalValidation, Elder2023ComputationalDown-selection}, utilizing  CALPHAD thermodynamic databases for CCMs/HEAs (e.g., \cite{Ostrowska2020ThermodynamicW, Ostrowska2022ThermodynamicExperiments, GambaroCombinedAlloys}). However, they are often limited to coarse sampling (e.g., spaced at $5/10$at.\%) due to the combinatorial complexity in number of alloys and low-dimensional points (e.g., $d=4$) due to the combinatorial complexity in component interactions tracked in CALPHAD calculations increasing single evaluation cost \cite{Elder2023ComputationalValidation, Elder2023ComputationalDown-selection}, sometimes limited further to particular points such as equimolar alloys \cite{Yan2021AcceleratedLearning}.
 
 
-To somewhat alleviate these computational cost challenges, ML models started to be used as surrogates for thermodynamic calculations and experiments \cite{Debnath2023ComparingAlloys, Tandoc2023MiningAlloys} or in the role of candidate selection from ML latent space \cite{Rao2022MachineDiscovery}. They are extremely fast relative to traditional methods, usually taking microseconds per prediction, and they may seem to work near-instantly when used as a drop-in replacement. However, when one tries to deploy ML models on more complex systems, the combinatorial complexities involved (discussed in Section~\ref{ssec:combinatorialcomplexities}) may quickly make ML deployment very expensive, prompting optimization of the approach. 
+To somewhat alleviate these computational cost challenges, ML models started to be used as surrogates for thermodynamic calculations and experiments \cite{Debnath2023ComparingAlloys, Tandoc2023MiningAlloys} or in the role of candidate selection from ML latent space \cite{Rao2022MachineDiscovery}. They are extremely fast relative to traditional methods, usually taking microseconds per prediction, and they may seem to work near-instantly when used as a drop-in replacement. However, when one tries to deploy ML models on more complex systems, the combinatorial complexities involved (discussed in Section~\ref{nimplex:ssec:combinatorialcomplexities}) may quickly make ML deployment very expensive, prompting optimization of the approach. 
 
 While the ML inference is typically optimized to the computational limits in state-of-the-art tools like \texttt{PyTorch} \cite{Paszke2019PyTorch:Library}, the rest of the customized composition space infrastructure, traditionally designed for thousands of evaluations taking seconds, may become a severe bottleneck when moving to billions of evaluations taking microseconds, as explored throughout this paper. In particular, being able to do the following tasks in nanosecond to microsecond region typically becomes critical and needs to be considered:
 
 \begin{enumerate}
 
-    \item Efficient random sampling from the uniform grids and continuous distributions (Monte Carlo in Section~\ref{ssec:mc}) to facilitate approaches including active learning \cite{Rao2022MachineDiscovery} and generative design \cite{Debnath2021GenerativeAlloys}.
+    \item Efficient random sampling from the uniform grids and continuous distributions (Monte Carlo in Section~\ref{nimplex:ssec:mc}) to facilitate approaches including active learning \cite{Rao2022MachineDiscovery} and generative design \cite{Debnath2021GenerativeAlloys}.
     
-    \item Efficient generation of the uniform grids in simplex spaces to facilitate complete screenings, quantitatively explored in Sections~\ref{ssec:fullgrid} and \ref{ssec:internalgrid}.
+    \item Efficient generation of the uniform grids in simplex spaces to facilitate complete screenings, quantitatively explored in Sections~\ref{nimplex:ssec:fullgrid} and \ref{nimplex:ssec:internalgrid}.
     
-    \item Efficient generation of high-dimensional graph representations with complete connectivity to all adjacent CCM compositions, explored in detail throughout Section~\ref{sec:simplexgraph}, to deterministically allocate problem space structure and facilitate neighborhood-based exploration. This is particularly beneficial for the gradient calculations between neighboring grid points, where one typically has to either (a) na\"ively compute all possible compositional changes despite redundancy (e.g., if at point 1 gradient $+1\%B \atop -1\%A$ from point 1 to 2 and gradient $+1\%C \atop -1\%A$ from point 1 to 3, then at point 2 the gradient $+1\%C \atop -1\%B$ to point 3 can be known) at least doubling the number of required evaluations, or (b) keep track of all visited states through an associative array (dictionary). The latter can, in principle, scale well with the number of visited points ($\mathcal{O}(1)$ avg. time for hash map) but is many times more computationally intensive compared to directly accessing known memory location through a pointer as one can do with a graph data structure.
+    \item Efficient generation of high-dimensional graph representations with complete connectivity to all adjacent CCM compositions, explored in detail throughout Section~\ref{nimplex:sec:simplexgraph}, to deterministically allocate problem space structure and facilitate neighborhood-based exploration. This is particularly beneficial for the gradient calculations between neighboring grid points, where one typically has to either (a) na\"ively compute all possible compositional changes despite redundancy (e.g., if at point 1 gradient $+1\%B \atop -1\%A$ from point 1 to 2 and gradient $+1\%C \atop -1\%A$ from point 1 to 3, then at point 2 the gradient $+1\%C \atop -1\%B$ to point 3 can be known) at least doubling the number of required evaluations, or (b) keep track of all visited states through an associative array (dictionary). The latter can, in principle, scale well with the number of visited points ($\mathcal{O}(1)$ avg. time for hash map) but is many times more computationally intensive compared to directly accessing known memory location through a pointer as one can do with a graph data structure.
     
 \end{enumerate}
 
 
-\subsection{Path Planning in Functionally Graded Materials} \label{ssec:functionallygraded}
+\subsection{Path Planning in Functionally Graded Materials} \label{nimplex:ssec:functionallygraded}
 
 Another class of materials where complex compositional spaces have to be considered, even if intermediate compositions may not be complex themselves, is the class of Functionally Graded Materials (FGMs), sometimes narrowed to Compositionally Graded Materials (CGMs). In them, a set of compositions is traversed to form a compositional path inside a single physical part in order to spatially leverage combinations of properties that may not be possible or feasible with a homogeneous material \cite{Saleh202030Challenges}. In the simplest binary example, this could mean increasing the porosity fraction as a function of depth from the part surface to achieve a higher performance-to-weight ratio. 
 
@@ -53,17 +53,17 @@ This paper focuses on the computational design of advanced FGMs, which enable so
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.38\textwidth]{Spaces.png}
+    \includegraphics[width=0.38\textwidth]{nimplex/Spaces.png}
     \caption{Three available compositions existing in a quaternary (d=4) compositional space forming a ternary (d=3) compositional space which can be attained with them; sampled with a uniform grid with 24 divisions. The hexagonal tiling emerges based on the distance metric in 2-simplex and would become rhombic dodecahedral in 3-simplex.} 
-    \label{fig:fgmspaces}
+    \label{nimplex:fig:fgmspaces}
 \end{figure}
 
 While in recent years, the fabrication of FGMs has become dominated by Directed Energy Deposition AM for various geometries (e.g., radial deposition \cite{Hofmann2014DevelopingManufacturing}), several other notable manufacturing techniques allow the deployment of such pathways. These include deposition-based methods for high-precision applications, casting-based methods for high-volume fabrication \cite{Saleh202030Challenges}, and recently, brazing consecutive metallic foils \cite{Wu2023ATechnology} to create relatively thin compositionally graded interfaces on mass.
 
-In a typical FGM manufacturing scenario, a discrete set of compositions (individual available materials) exists in a compositional (simplex) space formed by a union of all components (usually chemical elements or compounds - not affecting later steps), as depicted in the top of Figure~\ref{fig:fgmspaces}, which one could call the \emph{elemental space}. The position in this elemental space is fundamental and is usually the one considered in both mechanistic (e.g., thermodynamic CALPHAD-type models \cite{Olson2023GenomicDynamics}) and predictive (ML/empirical-rule) modeling. However, during the FGM design, it is more convenient to consider another compositional space formed by treating the original available compositions as components, as depicted on the bottom of Figure~\ref{fig:fgmspaces}, which one could call \emph{attainable compositions space} or more generally the \emph{design space}.
+In a typical FGM manufacturing scenario, a discrete set of compositions (individual available materials) exists in a compositional (simplex) space formed by a union of all components (usually chemical elements or compounds - not affecting later steps), as depicted in the top of Figure~\ref{nimplex:fig:fgmspaces}, which one could call the \emph{elemental space}. The position in this elemental space is fundamental and is usually the one considered in both mechanistic (e.g., thermodynamic CALPHAD-type models \cite{Olson2023GenomicDynamics}) and predictive (ML/empirical-rule) modeling. However, during the FGM design, it is more convenient to consider another compositional space formed by treating the original available compositions as components, as depicted on the bottom of Figure~\ref{nimplex:fig:fgmspaces}, which one could call \emph{attainable compositions space} or more generally the \emph{design space}.
 
 
-Within an FGM manufacturing apparatus, it is common for each of the available compositions to be treated equally, e.g., powder hoppers \cite{Reichardt2021AdvancesMaterials}, sputtering targets \cite{Wu2023ATechnology}, or other flow sources are symmetrically arranged and offer the same degree of control. Thus, as depicted in Figure~\ref{fig:fgmspaces}, the attainable compositional space can be treated as a standard simplex for design purposes and partitioned equally across dimensions, reflecting the nature of the problem even though equidistant points in it may not be equidistant in the original (elemental) space.
+Within an FGM manufacturing apparatus, it is common for each of the available compositions to be treated equally, e.g., powder hoppers \cite{Reichardt2021AdvancesMaterials}, sputtering targets \cite{Wu2023ATechnology}, or other flow sources are symmetrically arranged and offer the same degree of control. Thus, as depicted in Figure~\ref{nimplex:fig:fgmspaces}, the attainable compositional space can be treated as a standard simplex for design purposes and partitioned equally across dimensions, reflecting the nature of the problem even though equidistant points in it may not be equidistant in the original (elemental) space.
 
 The attainable spaces used in the final design tend to be lower-dimensional relative to the corresponding elemental spaces, especially when the available compositions are CCMs/HEAs or the number of flow sources is limited. However, this trend is not fundamentally required, and going against it may be beneficial in many contexts. For instance, one may conceptualize a ternary ($d=3$) elemental compositional space where 4 compositions are available, arranged as vertices of some tetragon; thus, forming a quaternary ($d=4$) attainable compositions space tetrahedron. In such a case, some regions have to overlap in the elemental space, while new regions are guaranteed to be unlocked relative to 3 available compositions if the formed tetragon is strictly convex. This seemingly oversamples; however, it is critical to consider that there is no oversampling in the design space because the available materials can possess properties that are not a function of the composition alone, such as the $CO_2$ footprint or price. 
 
@@ -72,56 +72,56 @@ the case of AM using wires as feedstock (WAAM) \cite{Shen2016FabricationProcess}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.475\textwidth]{PathPlanning_1.png}
+    \includegraphics[width=0.475\textwidth]{nimplex/PathPlanning_1.png}
     \vspace{-6pt}
     \caption{A path example which avoids infeasible (red) and undesirable (yellow) regions, or their combination (orange).} 
-    \label{fig:pathplanning1}
+    \label{nimplex:fig:pathplanning1}
 \end{figure}
 
-With the design space carefully set up, one can start to evaluate different paths across it. Typically, the core considerations deal with meeting specific feasibility (hard) constraints. In the case of metal alloy FGMs, these can be (1) formation of detrimental phases based on thermodynamic equilibrium \cite{Reichardt2021AdvancesMaterials}, (2) formation of detrimental phases based on non-equilibrium predictions of solidification results based on Scheil–Gulliver method, which better describes the as-made material \cite{Bocklund2020ExperimentalMaterials}, or (3) a combination of the two \cite{Bobbio2022DesignCompositions}. In the future, these will likely be extended through (4) precipitation modeling improving the metastable material design, thanks to the recent release of open-source high-performance software Kawin \cite{Ury2023Kawin:Model}, and (5) automated modeling of manufacturing constraints, such as printability in AM \cite{SheikhAnAlloys}. Furthermore, one can also try to meet desirability (soft) constraints, such as the physical appearance of a composite material, which can be broken if needed. These two types of constraints are depicted in Figure~\ref{fig:pathplanning1}, alongside an example path navigating through them.
+With the design space carefully set up, one can start to evaluate different paths across it. Typically, the core considerations deal with meeting specific feasibility (hard) constraints. In the case of metal alloy FGMs, these can be (1) formation of detrimental phases based on thermodynamic equilibrium \cite{Reichardt2021AdvancesMaterials}, (2) formation of detrimental phases based on non-equilibrium predictions of solidification results based on Scheil–Gulliver method, which better describes the as-made material \cite{Bocklund2020ExperimentalMaterials}, or (3) a combination of the two \cite{Bobbio2022DesignCompositions}. In the future, these will likely be extended through (4) precipitation modeling improving the metastable material design, thanks to the recent release of open-source high-performance software Kawin \cite{Ury2023Kawin:Model}, and (5) automated modeling of manufacturing constraints, such as printability in AM \cite{SheikhAnAlloys}. Furthermore, one can also try to meet desirability (soft) constraints, such as the physical appearance of a composite material, which can be broken if needed. These two types of constraints are depicted in Figure~\ref{nimplex:fig:pathplanning1}, alongside an example path navigating through them.
 
-In Figure~\ref{fig:pathplanning1}, all infeasible points violating the constraints are annotated for visualization. However, doing so may be unnecessary when path-planning, especially iteratively based on neighbor connectivity, as the insides of the infeasible space could not be reached, thus reducing the total number of evaluations. 
+In Figure~\ref{nimplex:fig:pathplanning1}, all infeasible points violating the constraints are annotated for visualization. However, doing so may be unnecessary when path-planning, especially iteratively based on neighbor connectivity, as the insides of the infeasible space could not be reached, thus reducing the total number of evaluations. 
 
 
-In addition to the feasibility and desirability constraints, further considerations are often made to how the path optimizes values of a set of properties of interest, either individually or through some heuristics combining them. Usually, this optimization constitutes finding the path that minimizes or maximizes either average or extreme values over the set of visited states, exemplified by the pink path in Figure~\ref{fig:pathplanning2}. In the case of metal alloy FGMs, this can mean, for instance, minimizing the average evaporation rate of the molten metal \cite{Mukherjee2016PrintabilityManufacturing}, minimizing the maximum susceptibility to different cracking mechanisms \cite{Yang2023DesignCracking}, or maximizing the ductility \cite{Hu2021ScreeningAlloys}.
+In addition to the feasibility and desirability constraints, further considerations are often made to how the path optimizes values of a set of properties of interest, either individually or through some heuristics combining them. Usually, this optimization constitutes finding the path that minimizes or maximizes either average or extreme values over the set of visited states, exemplified by the pink path in Figure~\ref{nimplex:fig:pathplanning2}. In the case of metal alloy FGMs, this can mean, for instance, minimizing the average evaporation rate of the molten metal \cite{Mukherjee2016PrintabilityManufacturing}, minimizing the maximum susceptibility to different cracking mechanisms \cite{Yang2023DesignCracking}, or maximizing the ductility \cite{Hu2021ScreeningAlloys}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.475\textwidth]{PathPlanning_2.png}
+    \includegraphics[width=0.475\textwidth]{nimplex/PathPlanning_2.png}
     \caption{Two path examples in the attainable compositional space annotated with some virtual property. One (pink/inner) minimizes/maximizes the average property value given a number of fixed path lengths, and another (purple/outer) minimizes the gradient in the property along the path.} 
-    \label{fig:pathplanning2}
+    \label{nimplex:fig:pathplanning2}
 \end{figure}
 
-The last, fundamentally different, property optimization task has to do with the gradient, or more generally, the character, of transitions between intermediate states, which will be critical later in the context of graphs in Section~\ref{sec:simplexgraph}. Most commonly, one optimizes the path to minimize value function gradients, exemplified by the purple path in Figure~\ref{fig:pathplanning2}, in order to, for instance, minimize the thermal expansion coefficient mismatch and by extension stresses induced by temperature changes \cite{Kirk2021ComputationalMonotonicity}.
+The last, fundamentally different, property optimization task has to do with the gradient, or more generally, the character, of transitions between intermediate states, which will be critical later in the context of graphs in Section~\ref{nimplex:sec:simplexgraph}. Most commonly, one optimizes the path to minimize value function gradients, exemplified by the purple path in Figure~\ref{nimplex:fig:pathplanning2}, in order to, for instance, minimize the thermal expansion coefficient mismatch and by extension stresses induced by temperature changes \cite{Kirk2021ComputationalMonotonicity}.
 
 
 
-\subsection{Combinatorial Complexities} \label{ssec:combinatorialcomplexities}
+\subsection{Combinatorial Complexities} \label{nimplex:ssec:combinatorialcomplexities}
 
-As eluded to in Sections~\ref{ssec:compositionallycomplex} and \ref{ssec:functionallygraded}, when sampling compositions or partitioning corresponding spaces, the resulting combinatorial complexities have to be considered to determine whether a method will be computationally feasible. There are two key equations governing these complexities based on (1) the dimensionality of the space (number of components) $d$ and (2) the number of equal divisions made in each dimension $n_d$, which can be found for every feasible fractional step size (such that it can add to $100\%$). 
+As eluded to in Sections~\ref{nimplex:ssec:compositionallycomplex} and \ref{nimplex:ssec:functionallygraded}, when sampling compositions or partitioning corresponding spaces, the resulting combinatorial complexities have to be considered to determine whether a method will be computationally feasible. There are two key equations governing these complexities based on (1) the dimensionality of the space (number of components) $d$ and (2) the number of equal divisions made in each dimension $n_d$, which can be found for every feasible fractional step size (such that it can add to $100\%$). 
 
 The first, very intuitive equation gives the number of samples $N_C$ on a Cartesian grid in $d-1$ dimensions, with $-1$ term due to one of the components being considered dependent.
 \begin{equation}
     N_C(d, n_d) = (n_d+1)^{d-1}
-    \label{eq:nc}
+    \label{nimplex:eq:nc}
 \end{equation}
 The second equation gives the number of ways $n_d$ balls can be arranged in $d$ bins, which is well known to be equivalent to much simpler problems of choosing $d-1$ moves or $n_d$ placements from $d-1+n_d$ possible options (see \cite{Nijenhuis1978CombinatorialCalculators} or \cite{Chasalow1995AlgorithmPoints}). While these may seem unrelated to compositions, the former problem is precisely equivalent to finding a composition of an integer or distributing $n_d$ compositional fractions $\frac{1}{n_d}$ across components or chemical elements, giving the number $N_S$ of unique discrete compositions in the simplex space.
 \begin{equation}
     N_S(d, n_d) = \binom{d-1+n_d}{d-1} = \binom{d-1+n_d}{n_d}
-    \label{eq:ns1}
+    \label{nimplex:eq:ns1}
 \end{equation}
 In terms of factorials, both expressions can be simplified to the same
 \[N_S(d, n_d) = \frac{(d - 1 + n_d)!}{(d-1)!n_d!}\]
-Throughout Sections~\ref{sec:simplexgrid}~and~\ref{sec:simplexgraph}, the interplay between these equations will be utilized to contrast different computational methods, and their direct results will allow computational feasibility evaluation. 
+Throughout Sections~\ref{nimplex:sec:simplexgrid}~and~\ref{nimplex:sec:simplexgraph}, the interplay between these equations will be utilized to contrast different computational methods, and their direct results will allow computational feasibility evaluation. 
 
 
-\section{Simplex Uniform Random Sampling} \label{sec:randomuniformsampling}
+\section{Simplex Uniform Random Sampling} \label{nimplex:sec:randomuniformsampling}
 
-\subsection{Monte Carlo} \label{ssec:mc}
+\subsection{Monte Carlo} \label{nimplex:ssec:mc}
 
 Performing a uniform random sampling, also known as the Monte Carlo method, over a simplex space is a prevalent task; however, it is also one of the most common sources of inefficiency, bias, or errors when implemented incorrectly.
 
-Software (e.g., \texttt{alchemyst/ternplot} in Matlab \cite{Sandrock2017Alchemyst/ternplothttps://github.com/alchemyst/ternplot}) and methods dealing with low-dimensional or otherwise small compositional spaces, often utilize a na\"ive approach of sampling uniformly distributed points from a Cartesian space/grid in $d-1$ dimensions and then rejecting some infeasible points ($\sum^d_i x_i > 1$), as depicted in the left part of Figure~\ref{fig:samplinginternary}, which for small ($d \leq 4$) can be both easiest and computationally fastest. 
+Software (e.g., \texttt{alchemyst/ternplot} in Matlab \cite{Sandrock2017Alchemyst/ternplothttps://github.com/alchemyst/ternplot}) and methods dealing with low-dimensional or otherwise small compositional spaces, often utilize a na\"ive approach of sampling uniformly distributed points from a Cartesian space/grid in $d-1$ dimensions and then rejecting some infeasible points ($\sum^d_i x_i > 1$), as depicted in the left part of Figure~\ref{nimplex:fig:samplinginternary}, which for small ($d \leq 4$) can be both easiest and computationally fastest. 
 
 However, this method becomes inefficient for large $d$ because the fraction of rejected points increases with the dimensionality. While this problem is widely noted in the literature \cite{Allen2022AAlloys}, best to the authors' knowledge, it has yet to be discussed quantitatively despite being critical to estimating the sampling's computational complexity. Thus, it is derived herein.
 
@@ -131,22 +131,22 @@ One can consider that a grid of $N_S$ simplex-feasible points is a subset of a g
         f(d) &= \lim_{n_d\rightarrow\inf} \frac{N_S}{N_C} = \lim_{n_d\rightarrow\inf} \frac{\binom{d-1+n_d}{d-1}}{(n_d+1)^{d-1}}\\
         &= \Gamma(d)^{-1} = \frac{1}{(d-1)!} = \frac{d}{d!}
     \end{aligned}
-    \label{eq:fd}
+    \label{nimplex:eq:fd}
 \end{equation}
-As one can see in Equation~\ref{eq:fd}, the rejection rate exhibits factorial growth, and while it is not a significant obstacle for low-dimensional cases like ternary $f(3)=\frac{1}{2}$ or a quaternary $f(4) = \frac{1}{6}$, it will relatively quickly become a problem when compositionally complex materials are considered. For instance, in the case of nonary chemical space $f(9) = \frac{1}{40320}$ or only $\approx0.0025\%$ of points will fall into the feasible space. Such a rejection rate could have a particularly severe effect on ML-driven methods, such as generative CCM design.
+As one can see in Equation~\ref{nimplex:eq:fd}, the rejection rate exhibits factorial growth, and while it is not a significant obstacle for low-dimensional cases like ternary $f(3)=\frac{1}{2}$ or a quaternary $f(4) = \frac{1}{6}$, it will relatively quickly become a problem when compositionally complex materials are considered. For instance, in the case of nonary chemical space $f(9) = \frac{1}{40320}$ or only $\approx0.0025\%$ of points will fall into the feasible space. Such a rejection rate could have a particularly severe effect on ML-driven methods, such as generative CCM design.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.135\textwidth]{1A.png}
+    \includegraphics[width=0.135\textwidth]{nimplex/1A.png}
     \hfill
-    \includegraphics[width=0.16\textwidth]{1C.png}
+    \includegraphics[width=0.16\textwidth]{nimplex/1C.png}
     \hfill
-    \includegraphics[width=0.16\textwidth]{1B.png}
+    \includegraphics[width=0.16\textwidth]{nimplex/1B.png}
     \caption{(left) Uniform random sampling in 2-cube (square) filtered to fall onto a 2-simplex (ternary composition), showing 50\% rejection rate, (middle) random sampling in 3-cube projected onto 2-simplex by normalizing coordinates, showing oversampling in the center of each dimension, and (right) ideal uniform random sampling of a simplex.} 
-    \label{fig:samplinginternary}
+    \label{nimplex:fig:samplinginternary}
 \end{figure}
 
-To circumvent the rejection problem, one may randomly sample from N-cube and normalize to 1; however, as shown in the center of Figure~\ref{fig:samplinginternary} and commonly known in the literature \cite{Otis2017AnSystems}, this leads to oversampling in the center of each underlying dimension.
+To circumvent the rejection problem, one may randomly sample from N-cube and normalize to 1; however, as shown in the center of Figure~\ref{nimplex:fig:samplinginternary} and commonly known in the literature \cite{Otis2017AnSystems}, this leads to oversampling in the center of each underlying dimension.
 
 Thus, to achieve a uniform random sampling, \texttt{nimplex} and other carefully designed methods (e.g., \cite{Allen2022AAlloys} and \cite{Otis2017AnSystems}) tend to take Dirichlet distribution, where one samples points $\textbf{y}$ from Gamma distributions with density $\frac{y_i^{\alpha-1} e^{-y_i}}{\Gamma(\alpha)}$ and consider its special "flat" case, where $\alpha=1$ simplifies the density equation to just $\frac{1 e^{-y_i}}{1} = e^{-y_i}$. This is equivalent to sampling $\textbf{z}$ from linear distributions and calculating $y_i=-\log(z_i)$, which then can be normalized to obtain $\textbf{x}$ as $x_i = y_i / \sum \textbf{y}$. The following snippet shows \texttt{nimplex}'s implementation of this, which samples \textbf{z} with the high-performance \texttt{xoroshiro128+} random number generator \cite{Blackman2018ScrambledGenerators} underlying \texttt{randomTensor} function from the \texttt{Arraymancer} tensor library \cite{RatsimbazafyMratsim/Arraymancer:Backends}.
 
@@ -163,7 +163,7 @@ proc simplex_sampling_mc(
 An alternative approach worth mentioning, sometimes found in this context, is based on (1) generating a $(d+1)$-length list composed of $0$, $d-1$ random numbers, and $1$, (2) sorting it, and (3) obtaining $d$-length list of differences between consecutive elements, which is guaranteed to be uniformly distributed over a simplex as shown in \cite{Rubin1981TheBootstrap}. While this approach may be easier to conceptualize, it is much more computationally expensive due to the sorting step. On the author's laptop, for $d=9$, the method implemented in \texttt{nimplex} (involving calculation of 9 logarithms and normalizing them) takes $3.6$ns while the above (implemented with merge sort) takes $74.5$ns per iteration, i.e., over 20 times longer while not providing any clear benefit. Furthermore, their complexities are $\mathcal{O}(N)$ and $\mathcal{O}(N \ln N)$, respectively, so the computational cost difference will also slowly widen with increasing $d$. 
 
 
-\subsection{Quasi Monte Carlo} \label{ssec:qmc}
+\subsection{Quasi Monte Carlo} \label{nimplex:ssec:qmc}
 While beyond the current implementation scope of \texttt{nimplex}, it is beneficial to consider quasi-Monte Carlo (QMC) sampling methods, where quasi-random sequences of low discrepancy (having highly uniform coverage of all regions) are used to sample the space deterministically. Such an approach is guaranteed to be very beneficial in low-dimensional ($d\leq3$) problems and has been implemented in thermodynamic tools, including \texttt{pycalphad} \cite{Otis2017Pycalphad:Python, Otis2017AnSystems} improving sampling of ternary systems. However, the QMC can become problematic as one moves to higher dimensional problems. 
 
 Firstly, the upper discrepancy bounds for QMC quickly increase with increasing $N$, unlike MC, which depends only on the number of samples; thus, MC \textit{can} outperform it (thanks to better guarantees) unless a quickly (often exponentially) growing number of samples is taken (see discussion on p.271 in \cite{Asmussen2007StochasticAnalysis}). Because of this, even for quaternary ($d=4$) spaces, MC may be preferred for a low number of samples, even though QMC, especially with additional scrambling, \textit{can} outperform it, as shown in \cite{Otis2017AnSystems}. 
@@ -171,24 +171,24 @@ Firstly, the upper discrepancy bounds for QMC quickly increase with increasing $
 Another significant problem in QMC is the unequal sampling of different dimensions, which can be very severe in high dimensions (see p.154 in \cite{Lemieux2009MonteSampling}). In addition to causing under-performance in space-filling, such bias, combined with the standard alphabetical ordering of chemical components, can cause systematically worse exploration of, e.g., titanium compared to aluminum in CCMs, just based on their names.
 
 
-\section{Simplex Grid} \label{sec:simplexgrid}
+\section{Simplex Grid} \label{nimplex:sec:simplexgrid}
 
-\subsection{Full} \label{ssec:fullgrid}
+\subsection{Full} \label{nimplex:ssec:fullgrid}
 
-Next, one can consider the creation of a grid of uniformly distributed points, which is known to contain $\binom{d-1+n_d}{d-1}$ points, as discussed in Section~\ref{ssec:combinatorialcomplexities}. Similar to the random sampling discussed in Section~\ref{sec:randomuniformsampling}, such a compositional grid cannot be constructed by simply projecting a Cartesian grid in $(N-1)$-cube as patterns will emerge (explored in detail in \cite{Otis2017AnSystems}), but it can be quickly constructed through rejecting infeasible points, as shown in Figure~\ref{fig:simplexgrid}. However, it will suffer from a nearly as bad rejection rate, quantitatively dependent on both $d$ and $n_d$. For instance, if we consider $5\%$ spaced compositions in 9-components, the fraction of points summing to $100\%$ is $f_{M=20}(9) \approx \frac{1}{12,169}$ or $0.0082\%$. 
+Next, one can consider the creation of a grid of uniformly distributed points, which is known to contain $\binom{d-1+n_d}{d-1}$ points, as discussed in Section~\ref{nimplex:ssec:combinatorialcomplexities}. Similar to the random sampling discussed in Section~\ref{nimplex:sec:randomuniformsampling}, such a compositional grid cannot be constructed by simply projecting a Cartesian grid in $(N-1)$-cube as patterns will emerge (explored in detail in \cite{Otis2017AnSystems}), but it can be quickly constructed through rejecting infeasible points, as shown in Figure~\ref{nimplex:fig:simplexgrid}. However, it will suffer from a nearly as bad rejection rate, quantitatively dependent on both $d$ and $n_d$. For instance, if we consider $5\%$ spaced compositions in 9-components, the fraction of points summing to $100\%$ is $f_{M=20}(9) \approx \frac{1}{12,169}$ or $0.0082\%$. 
 
 \begin{figure}[h]
     \centering
     \hfill
-    \includegraphics[width=0.135\textwidth]{2A.png}
+    \includegraphics[width=0.135\textwidth]{nimplex/2A.png}
     \hfill
-    \includegraphics[width=0.16\textwidth]{2B.png}
+    \includegraphics[width=0.16\textwidth]{nimplex/2B.png}
     \hfill
     \caption{(left) Uniform grid ($n_d=24$) in 2-cube (square) filtered to fall onto a 2-simplex (ternary composition), showing $\frac{12}{25}=48\%$ rejection rate, (right) uniform grid in the corresponding simplex.} 
-    \label{fig:simplexgrid}
+    \label{nimplex:fig:simplexgrid}
 \end{figure}
 
-Fortunately, in their 1978 textbook, \citet{Nijenhuis1978CombinatorialCalculators} explored the problem and gave an efficient algorithm/routine called NEXCOM to procedurally generate these simplex lattice points for arbitrary $d$ and $n_d$, resulting in the grid shown in Figure~\ref{fig:simplexgrid} on the right.
+Fortunately, in their 1978 textbook, \citet{Nijenhuis1978CombinatorialCalculators} explored the problem and gave an efficient algorithm/routine called NEXCOM to procedurally generate these simplex lattice points for arbitrary $d$ and $n_d$, resulting in the grid shown in Figure~\ref{nimplex:fig:simplexgrid} on the right.
 
 In the following years, several authors made various modifications to the algorithm, and the most recent one by \citet{Chasalow1995AlgorithmPoints} improves performance without sacrificing simplicity. Over the years, it has been implemented in relatively modern languages such as FORTRAN90, C, MATLAB, and Python. Now, it has been implemented in Nim language as well, with the Nim code snippet shown below.
 
@@ -217,17 +217,17 @@ proc simplex_grid(
 
 As one can deduce from above, the algorithm proceeds through the simplex space starting from $[0, 0, ..., n_d]$ and redistributes one $\frac{1}{n_d}$ fraction $N_S-1$ times across dimensions, forming a zig-zag path to $[n_d, 0, ..., 0]$.
 
-\subsection{Internal} \label{ssec:internalgrid}
+\subsection{Internal} \label{nimplex:ssec:internalgrid}
 
-To the best of the authors' knowledge, something that has not been implemented before, but that is significant to exploration of CCMs  (see Sec \ref{ssec:compositionallycomplex}) is an algorithm to obtain only internal points of the simplex grid, i.e., points with non-zero values in all dimensions, to allow, e.g., generating all 7-component HEAs rather than all alloys in 7-component space. In principle, one can filter the output of the algorithm presented in Section~\ref{ssec:fullgrid}; however, this may quickly become inefficient, especially for $n_d$ low enough as to approach $d$. 
+To the best of the authors' knowledge, something that has not been implemented before, but that is significant to exploration of CCMs  (see Sec \ref{nimplex:ssec:compositionallycomplex}) is an algorithm to obtain only internal points of the simplex grid, i.e., points with non-zero values in all dimensions, to allow, e.g., generating all 7-component HEAs rather than all alloys in 7-component space. In principle, one can filter the output of the algorithm presented in Section~\ref{nimplex:ssec:fullgrid}; however, this may quickly become inefficient, especially for $n_d$ low enough as to approach $d$. 
 
-The number of points can be found by, again, considering the surrogate problem of ball compositions mentioned in Section~\ref{ssec:combinatorialcomplexities} and noting that if the last ball cannot be removed from any position, there will be $d$ fewer possible options to perform $d-1$ moves, thus resulting in $N_I$ samples:
+The number of points can be found by, again, considering the surrogate problem of ball compositions mentioned in Section~\ref{nimplex:ssec:combinatorialcomplexities} and noting that if the last ball cannot be removed from any position, there will be $d$ fewer possible options to perform $d-1$ moves, thus resulting in $N_I$ samples:
 \begin{equation}
     N_I(d, n_d) = \binom{n_d-1}{d-1}
 \end{equation}
 This can be quickly double-checked through summation of internal points of all lower $\delta$ dimensional spaces enclosed in $d$ space:
 \[\sum_{\delta=1}^d \Biggl[ \binom{n_d-1}{\delta-1} \times \binom{d}{\delta} \Biggr] =  \frac{(d - 1 + n_d)!}{(d-1)!n_d!} = N_S(d, n_d)\]
-We can now look at $N_I(d, n_d)$ to $N_S(d, n_d)$ ratio for the aforementioned case of generating all 7-component alloys. For $5\%$ grid ($n_d=20$) we get $\approx \frac{1}{8.5}$, and for $10\%$ grid ($n_d=10$) we get $\approx \frac{1}{95}$, showing a clear benefit of implementing the new method. This can be done by taking the modified-NEXCOM algorithm \cite{Chasalow1995AlgorithmPoints} from Section~\ref{ssec:fullgrid} and:
+We can now look at $N_I(d, n_d)$ to $N_S(d, n_d)$ ratio for the aforementioned case of generating all 7-component alloys. For $5\%$ grid ($n_d=20$) we get $\approx \frac{1}{8.5}$, and for $10\%$ grid ($n_d=10$) we get $\approx \frac{1}{95}$, showing a clear benefit of implementing the new method. This can be done by taking the modified-NEXCOM algorithm \cite{Chasalow1995AlgorithmPoints} from Section~\ref{nimplex:ssec:fullgrid} and:
 \begin{enumerate}
     \item Adjusting procedure length from $N_S$ to $N_I$.
     \item Initializing first states in \textbf{x} to 1.
@@ -261,19 +261,19 @@ proc simplex_internal_grid(
 \end{minted}
 
 
-\section{Simplex Graph} \label{sec:simplexgraph}
+\section{Simplex Graph} \label{nimplex:sec:simplexgraph}
 
-The simplex grid algorithm presented in Section~\ref{ssec:fullgrid} is used commonly; however, it has an important feature that has not been utilized yet and was only briefly noted by its authors \cite{Chasalow1995AlgorithmPoints}. Namely, the fact that generated points are sorted in a lexicographic order (forward or reverse, depending on convention) which opens the door for using pure combinatorics for finding certain interesting relations between points at near-zero costs compared to other popular methods.
+The simplex grid algorithm presented in Section~\ref{nimplex:ssec:fullgrid} is used commonly; however, it has an important feature that has not been utilized yet and was only briefly noted by its authors \cite{Chasalow1995AlgorithmPoints}. Namely, the fact that generated points are sorted in a lexicographic order (forward or reverse, depending on convention) which opens the door for using pure combinatorics for finding certain interesting relations between points at near-zero costs compared to other popular methods.
 
-\subsection{Binary} \label{ssec:binarygraph}
+\subsection{Binary} \label{nimplex:ssec:binarygraph}
 
-In the simplest possible case, which will be expanded upon later, one can look at a binary ($d=2$ / 1-simplex) compositional grid and write a straightforward function that will find all neighboring points (\emph{transitions} to them) to create a graph representation of the binary system like one presented in Figure~\ref{fig:binarysimplexgraph}, without any notion of distance calculations.
+In the simplest possible case, which will be expanded upon later, one can look at a binary ($d=2$ / 1-simplex) compositional grid and write a straightforward function that will find all neighboring points (\emph{transitions} to them) to create a graph representation of the binary system like one presented in Figure~\ref{nimplex:fig:binarysimplexgraph}, without any notion of distance calculations.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.45\textwidth]{SimplexGraphBinary.png}
+    \includegraphics[width=0.45\textwidth]{nimplex/SimplexGraphBinary.png}
     \caption{1-simplex graph corresponding to a binary system ($n_d=12$) with 13 nodes/compositions and 24 edges/transitions.} 
-    \label{fig:binarysimplexgraph}
+    \label{nimplex:fig:binarysimplexgraph}
 \end{figure}
 
 Such a function, shown below, can be implemented by setting up a \texttt{neighbors} list of lists ($N_S$ of $\leq2$ length) of integer positions and then, at the end of every $i$-th iteration, populating it with forward ($i+1$) and backward ($i-1$) transitions unless start ($[0,1]$) or end ($[1,0]$) points $\textbf{x}$ respectively, corresponding to lack of some component, have been reached.
@@ -290,9 +290,9 @@ proc neighborsLink2C(i:int, x:Tensor,
 
 While the above is trivial, it clearly demonstrates that the graph can be constructed within the original $\mathcal{O}(N)$ computational complexity of the simplex grid algorithm, unlike a similarly trivial distance matrix calculation, which would be $\mathcal{O}(N^2)$; thus, unlocking efficient generation of even massive graphs of this kind.
 
-\subsection{Ternary} \label{ssec:ternarygraph}
+\subsection{Ternary} \label{nimplex:ssec:ternarygraph}
 
-With the core of the approach set up in Section~\ref{ssec:binarygraph}, one can move to the more complex ternary ($d=3$  / 2-simplex) case, which can be conceptualized as a series of $13$ binary systems (already solved individually in Sec. \ref{ssec:binarygraph}) of lengths from $13$ to $1$ and with simple modification of positional coordinates shifted forward by 1 to accommodate for the new dimension. 
+With the core of the approach set up in Section~\ref{nimplex:ssec:binarygraph}, one can move to the more complex ternary ($d=3$  / 2-simplex) case, which can be conceptualized as a series of $13$ binary systems (already solved individually in Sec. \ref{nimplex:ssec:binarygraph}) of lengths from $13$ to $1$ and with simple modification of positional coordinates shifted forward by 1 to accommodate for the new dimension. 
 
 The newly allowed neighbor transitions across these binaries can be quickly noticed to be dependent on which of these binaries is considered; however, they can be intuitively found by considering that each transition in the 3rd dimension (increasing $x_0$) limits the size of the binary simplex by 1 from the original size of $\binom{d-1+n_d}{d-1} = \binom{2-1+n_d}{2-1} = n_d+1$. Thus, one can define two convenient jump lengths:
 \[
@@ -301,7 +301,7 @@ The newly allowed neighbor transitions across these binaries can be quickly noti
     J_1^{d=3}(x_0) &= 1 + n_d - x_0
 \end{aligned}
 \]
-Then, one can quickly visualize that (1) unless $x_2=0$, a transition by jump $J_1$ should be possible, (2) unless $x_1=0$, a transition by jump $J_1$ combined with backward jump $J_0$ in the target binary should be possible, and (3) unless $x_0=0$ (the first traversed binary is considered), transitions by both backward jump $J_1$ and backward jump $J_1+J_0$ (extra step within the earlier binary) should be possible. Thus, one arrives at the following algorithm, which requires additional $n_d$ ("ndiv") input on top of the one from Section~\ref{ssec:binarygraph} but retains its structure.
+Then, one can quickly visualize that (1) unless $x_2=0$, a transition by jump $J_1$ should be possible, (2) unless $x_1=0$, a transition by jump $J_1$ combined with backward jump $J_0$ in the target binary should be possible, and (3) unless $x_0=0$ (the first traversed binary is considered), transitions by both backward jump $J_1$ and backward jump $J_1+J_0$ (extra step within the earlier binary) should be possible. Thus, one arrives at the following algorithm, which requires additional $n_d$ ("ndiv") input on top of the one from Section~\ref{nimplex:ssec:binarygraph} but retains its structure.
 
 \begin{minted}[linenos=true, mathescape=true]{nim}
 proc neighborsLink3C(...,
@@ -319,25 +319,25 @@ proc neighborsLink3C(...,
       neighbors[i].add(i+jump1)
 \end{minted}
 
-Utilizing the above, the result presented in Figure~\ref{fig:ternarysimplexgraph} can be quickly obtained for any number of divisions. The numbering of points can help to visualize how the transitions were obtained.
+Utilizing the above, the result presented in Figure~\ref{nimplex:fig:ternarysimplexgraph} can be quickly obtained for any number of divisions. The numbering of points can help to visualize how the transitions were obtained.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.45\textwidth]{SimplexGraphTernaryBlue.png}
+    \includegraphics[width=0.45\textwidth]{nimplex/SimplexGraphTernaryBlue.png}
     \caption{2-simplex graph corresponding to a ternary system ($n_d=12$) with 91 nodes/compositions and 468 edges/transitions.} 
-    \label{fig:ternarysimplexgraph}
+    \label{nimplex:fig:ternarysimplexgraph}
 \end{figure}
 
-\subsection{N-Dimensional} \label{ssec:ndimgraph}
+\subsection{N-Dimensional} \label{nimplex:ssec:ndimgraph}
 
 Moving beyond ternary systems, one has to increase the number of tracked transitions to higher dimensions, which can be counted for every jump length $J_j$ with $\sum_0^{(d-j-2)}x_i$, and then utilized to obtain a general equation for all $d-1$ elements of jump length array $\textbf{J}$ as a function of current point $\textbf{x}$.
 \begin{equation}
     J_{j}(\textbf{x})= \binom{j+n_d- \sum_{i=0}^{(d-j-2)} x_i}{j}
-    \label{eq:jj}
+    \label{nimplex:eq:jj}
 \end{equation}
-As expected, for the special cases of $d=3$, the above agrees with $J_0$ and $J_1$ found for the ternary case in Section~\ref{ssec:ternarygraph}. One can also note that $J_0$ always equals to $1$ as $\binom{a}{0} = 1$ for any $a$.
+As expected, for the special cases of $d=3$, the above agrees with $J_0$ and $J_1$ found for the ternary case in Section~\ref{nimplex:ssec:ternarygraph}. One can also note that $J_0$ always equals to $1$ as $\binom{a}{0} = 1$ for any $a$.
 
-With $\textbf{J}$ defined, one can take a quaternary system (d=4 / 3-simplex) and perform a similar visualization thought exercise in the head as in Section~\ref{ssec:ternarygraph}, but in 3D, considering the new transitions to 3 neighbors above and 3 neighbors below, in order to set up \texttt{\textbf{neighborsLink4C}} procedure which is presented in \nameref{app3}. 
+With $\textbf{J}$ defined, one can take a quaternary system (d=4 / 3-simplex) and perform a similar visualization thought exercise in the head as in Section~\ref{nimplex:ssec:ternarygraph}, but in 3D, considering the new transitions to 3 neighbors above and 3 neighbors below, in order to set up \texttt{\textbf{neighborsLink4C}} procedure which is presented in \nameref{app3}. 
 
 Such an approach of visualizing and counting the possible jumps in the head becomes (a) challenging for quinary systems (d=5 / 4-simplex) case where one has to visualize 4 forward and 4 backward jumps to and from points inscribed in every tetrahedron formed by the 3-simplex tetrahedral grids, and (b) near impossible for higher orders, both because of the visualization dimensionality and the growing number of neighbors to track, given by $\sum_\delta^d 2(\delta-1)= d(d+1)$ or for $d=$ 6, 7, 8, and 9 corresponding to 30, 42, 56, and 72 neighbors respectively; thus prompting for an alternative.
 
@@ -364,85 +364,85 @@ proc neighborsLink(...): void =
         neighbors[i - trans].add(i)           
 \end{minted}
 
-The result of running the above algorithm with $d=4$ and relatively low $n_d$ is shown in Figure~\ref{fig:quaternarysimplexgraph} to help visualize neighbor-neighbor transitions despite the overlap when printed in 2D.
+The result of running the above algorithm with $d=4$ and relatively low $n_d$ is shown in Figure~\ref{nimplex:fig:quaternarysimplexgraph} to help visualize neighbor-neighbor transitions despite the overlap when printed in 2D.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.475\textwidth]{SimplexGraphQuaternaryAnnotated.png}
-    \caption{A quaternary (d=4 / 3-simplex) simplex graph ($n_d=6$) with 84 nodes (compositions) and 672 edges (possible moves). A set of nodes has been manually selected (highlighted in pink) to depict a toy example of infeasible points (similarly to Figure~\ref{fig:pathplanning1}), which forces a non-trivial path (highlighted in red) to traverse from the bottom-left corner at 1 to the bottom-right corner at 84.} 
-    \label{fig:quaternarysimplexgraph}
+    \includegraphics[width=0.475\textwidth]{nimplex/SimplexGraphQuaternaryAnnotated.png}
+    \caption{A quaternary (d=4 / 3-simplex) simplex graph ($n_d=6$) with 84 nodes (compositions) and 672 edges (possible moves). A set of nodes has been manually selected (highlighted in pink) to depict a toy example of infeasible points (similarly to Figure~\ref{nimplex:fig:pathplanning1}), which forces a non-trivial path (highlighted in red) to traverse from the bottom-left corner at 1 to the bottom-right corner at 84.} 
+    \label{nimplex:fig:quaternarysimplexgraph}
 \end{figure}
 
-It is critical to note that the above algorithm is still within the $\mathcal{O}(N)$ computational complexity for $N$ grid points, just like the forward/backward jumps discussed in Section~\ref{ssec:binarygraph}. Thus, for instance, the task of constructing 1\% resolution graph for a 6-component chemical space containing $N_S(d=6, n_d=100)$ or nearly \textit{100 million unique vertices} requiring \textit{2.76 billion edges} (possible chemistry changes) takes as little as \textit{23s} tested on author's laptop computer. This stands in stark contrast with $\mathcal{O}(N^2)$ distance-based graph construction, which, even when well implemented to take around $3ns$ per comparison, would take approximately 1 year on the same machine.
+It is critical to note that the above algorithm is still within the $\mathcal{O}(N)$ computational complexity for $N$ grid points, just like the forward/backward jumps discussed in Section~\ref{nimplex:ssec:binarygraph}. Thus, for instance, the task of constructing 1\% resolution graph for a 6-component chemical space containing $N_S(d=6, n_d=100)$ or nearly \textit{100 million unique vertices} requiring \textit{2.76 billion edges} (possible chemistry changes) takes as little as \textit{23s} tested on author's laptop computer. This stands in stark contrast with $\mathcal{O}(N^2)$ distance-based graph construction, which, even when well implemented to take around $3ns$ per comparison, would take approximately 1 year on the same machine.
 
 Furthermore, the method scales excellently with the increasing problem dimensionality. For a 12-component chemical space with $n_d=12$ divisions per dimension, even though up to $132$ neighbors have to be considered for all $N_S=1.35$ million vertices, the 93 million edges are constructed in 950 milliseconds.
 
 
-\subsection{Simplex Graph Complexes} \label{ssec:complexes}
+\subsection{Simplex Graph Complexes} \label{nimplex:ssec:complexes}
 
 Once able to rapidly set up simplex graphs in arbitrary dimensions, one can also efficiently combine them to construct more complex graphs representing non-trivial problem statements where many different paths are possible to explore, and prior knowledge can be incorporated as assumptions in the problem solution space if needed. At the same time, it allows the dimensionality of the intermediate compositional spaces to be kept within manufacturing feasibility, i.e., the number of material flow sources.
 
 Suppose one tries to connect elemental compositions A and F, but assumes prior knowledge that they cannot be combined directly in any quantity, and also knows that (1) A is compatible with B and C, (2) F is compatible with D and E, but (3) B and E are incompatible in any quantity, (4) C and D are incompatible in any quantity. Furthermore, (5) G and H are individually compatible with B and D, and (6) I and J are individually compatible with C and E. 
 
-These rules can be used to set up a problem graph like in the top of Figure~\ref{fig:graphcomplex1}, encoding everything that is known about the system \textit{a priori} and limiting the solution space from full $\binom{10-1+12}{12} \approx 300,000$ to $2\times\binom{3-1+12}{12} + 10\times\binom{2-1+12}{12} = 312$, or three orders of magnitude.
+These rules can be used to set up a problem graph like in the top of Figure~\ref{nimplex:fig:graphcomplex1}, encoding everything that is known about the system \textit{a priori} and limiting the solution space from full $\binom{10-1+12}{12} \approx 300,000$ to $2\times\binom{3-1+12}{12} + 10\times\binom{2-1+12}{12} = 312$, or three orders of magnitude.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.35\textwidth]{GraphComplexMap1.png}
-    \includegraphics[width=0.45\textwidth]{GraphComplex1Trim.png}
+    \includegraphics[width=0.35\textwidth]{nimplex/GraphComplexMap1.png}
+    \includegraphics[width=0.45\textwidth]{nimplex/GraphComplex1Trim.png}
     \caption{Graph Complex Example \#1 depicting a problem space where 2 ternary systems can be connected through 6 different binary paths.} 
-    \label{fig:graphcomplex1}
+    \label{nimplex:fig:graphcomplex1}
 \end{figure}
 
-The space constructed in Figure~\ref{fig:graphcomplex1} is kept very minimal in terms of going beyond known assumptions and dimensionality to illustrate the concept in a plane. However, real examples of this technique can be highly non-trivial and essential in bringing the number of considered points into a computationally feasible regime when tens of available compositions can be considered. 
+The space constructed in Figure~\ref{nimplex:fig:graphcomplex1} is kept very minimal in terms of going beyond known assumptions and dimensionality to illustrate the concept in a plane. However, real examples of this technique can be highly non-trivial and essential in bringing the number of considered points into a computationally feasible regime when tens of available compositions can be considered. 
 
-Furthermore, unlike in Figure~\ref{fig:graphcomplex1} where spaces are simply connected through single-components, the interfaces between the individual compositional spaces can be along any subspace (e.g., the ternary face of quaternary tetrahedron), allowing one to quickly set up search problems where one or more components are unknown, but their relations to others are fixed. 
+Furthermore, unlike in Figure~\ref{nimplex:fig:graphcomplex1} where spaces are simply connected through single-components, the interfaces between the individual compositional spaces can be along any subspace (e.g., the ternary face of quaternary tetrahedron), allowing one to quickly set up search problems where one or more components are unknown, but their relations to others are fixed. 
 
-One can quickly demonstrate the benefits of such ability by looking at the SS316 to Ti-6Al-4V problem studied by \citet{Bobbio2022DesignCompositions}. After idealizing and anonymizing the components, it becomes a problem where one tries to combine compositions A with G, which cannot be combined directly in almost any quantity, and also knows that (1) system ABC is highly feasible across it, but (2) C cannot be combined directly with G in any quantity, and (3) a complete path from pure B to G is not possible. In this case, a simple problem setup is to look at several BC\texttt{?} and BG\texttt{?} pairs, forming parallel pathways from ABC to G. This is depicted in Figure~\ref{fig:graphcomplex2} for 3 candidates D, E, F, forming 6 ternary spaces to consider, but nothing limits the method to be extended to an arbitrary number of candidates while still retaining its linear complexity.
+One can quickly demonstrate the benefits of such ability by looking at the SS316 to Ti-6Al-4V problem studied by \citet{Bobbio2022DesignCompositions}. After idealizing and anonymizing the components, it becomes a problem where one tries to combine compositions A with G, which cannot be combined directly in almost any quantity, and also knows that (1) system ABC is highly feasible across it, but (2) C cannot be combined directly with G in any quantity, and (3) a complete path from pure B to G is not possible. In this case, a simple problem setup is to look at several BC\texttt{?} and BG\texttt{?} pairs, forming parallel pathways from ABC to G. This is depicted in Figure~\ref{nimplex:fig:graphcomplex2} for 3 candidates D, E, F, forming 6 ternary spaces to consider, but nothing limits the method to be extended to an arbitrary number of candidates while still retaining its linear complexity.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.3\textwidth]{GraphComplexMap2.png}
-    \includegraphics[width=0.47\textwidth]{GraphComplex2.png}
+    \includegraphics[width=0.3\textwidth]{nimplex/GraphComplexMap2.png}
+    \includegraphics[width=0.47\textwidth]{nimplex/GraphComplex2.png}
     \caption{Graph Complex Example \#2 depicting a problem where 3 choices (D/E/F) can be made to traverse from ABC to G through dual ternary systems containing B. Vertices were spread in 3D to depict three possible ABC to G paths, which would exactly overlap in a plane.} 
-    \label{fig:graphcomplex2}
+    \label{nimplex:fig:graphcomplex2}
 \end{figure}
 
-In the above examples in Figures~\ref{fig:graphcomplex1}~and~\ref{fig:graphcomplex2}, all connections between compositional spaces were directional; however, that is not necessary, and in some problems it may be beneficial to allow bidirectional movement. Suppose one tries to combine compositions A with D, which cannot be combined directly in any quantity, and also knows that (1) system ABC is highly feasible across it, but (2) system BCD is not traversable on its own. Thus, E can be introduced to set up intermediate spaces BDE and CDE, allowing obstacles in BCD to be avoided. Furthermore, BCE can also be set up as an alternative, possibly shortening the total path. Figure~\ref{fig:graphcomplex3} depicts such a problem setup.
+In the above examples in Figures~\ref{nimplex:fig:graphcomplex1}~and~\ref{nimplex:fig:graphcomplex2}, all connections between compositional spaces were directional; however, that is not necessary, and in some problems it may be beneficial to allow bidirectional movement. Suppose one tries to combine compositions A with D, which cannot be combined directly in any quantity, and also knows that (1) system ABC is highly feasible across it, but (2) system BCD is not traversable on its own. Thus, E can be introduced to set up intermediate spaces BDE and CDE, allowing obstacles in BCD to be avoided. Furthermore, BCE can also be set up as an alternative, possibly shortening the total path. Figure~\ref{nimplex:fig:graphcomplex3} depicts such a problem setup.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.3\textwidth]{GraphComplexMap3.png}
-    \includegraphics[width=0.47\textwidth]{GraphComplex3.png}
+    \includegraphics[width=0.3\textwidth]{nimplex/GraphComplexMap3.png}
+    \includegraphics[width=0.47\textwidth]{nimplex/GraphComplex3.png}
     \caption{Graph Complex Example \#3 depicting the possibility of competing paths, including cycles.} 
-    \label{fig:graphcomplex3}
+    \label{nimplex:fig:graphcomplex3}
 \end{figure}
 
-Notably, while the above example in Figure~\ref{fig:graphcomplex3} depicts a single 5th component E to help visualize cycling between spaces, these concepts can be extended to many possible intermediate components. At the same time, the maximum dimensionality of individual compositional spaces is kept constant ($d=3$). Thus, it provides a powerful method to keep the problem solvable, even experimentally, while considering many possible pathways formally defined prior to path planning to fit within the feasibility of evaluation and manufacturing.
+Notably, while the above example in Figure~\ref{nimplex:fig:graphcomplex3} depicts a single 5th component E to help visualize cycling between spaces, these concepts can be extended to many possible intermediate components. At the same time, the maximum dimensionality of individual compositional spaces is kept constant ($d=3$). Thus, it provides a powerful method to keep the problem solvable, even experimentally, while considering many possible pathways formally defined prior to path planning to fit within the feasibility of evaluation and manufacturing.
 
 
 
 
-\subsection{Discussion of Exploration} \label{sec:discussion}
+\subsection{Discussion of Exploration} \label{nimplex:sec:discussion}
 
-Critically, creating such a homogeneous problem structure through graph representation allows one to deploy the same exploration strategies across many dimensionalities and even combinations of individual spaces shown in Section~\ref{ssec:complexes}. Furthermore, in the described graphs, points are on an equidistant grid; thus, it is easy to set up a heuristic function that can be both consistent and admissible. 
+Critically, creating such a homogeneous problem structure through graph representation allows one to deploy the same exploration strategies across many dimensionalities and even combinations of individual spaces shown in Section~\ref{nimplex:ssec:complexes}. Furthermore, in the described graphs, points are on an equidistant grid; thus, it is easy to set up a heuristic function that can be both consistent and admissible. 
 
 This, in turn, enables one to harvest many general-purpose graph traversal algorithms, which are actively researched and available through high-performance libraries. For instance, to navigate against constraints, the $A^*$ algorithm \cite{Hart1968APaths} can be used with such a heuristic and is mathematically guaranteed to find \textit{the} shortest feasible compositional path while exploring the least number of nodes \cite{Dechter1985GeneralizedA}, what can be critical if the shortest path is necessary while each evaluation is relatively expensive. Then, if one tries to find \emph{a} feasible solution first and then improve on it, modifications of the $A^*$ algorithms such as the $RWA^*$ \cite{Bhatia2021OnA} can be used to first make it more greedy and then gradually move towards $A^*$ to obtain the optimal solution if sufficient resources are available. Alternatively, for highly complex problems where exploration needs to proceed quickly towards the goal but the optimality guarantees are not needed, one can use a search algorithm based on the Monte Carlo tree search (MCTS), which has been famously used in conjunction with an ML model to master the game of Go \cite{Silver2016MasteringSearch}.
 
 
 
-\section{Summary and Conclusion} \label{sec:summary}
+\section{Summary and Conclusion} \label{nimplex:sec:summary}
 
-This work starts by providing an abstract description of compositional spaces applicable to a wide range of disciplines while formalizing several vital concepts. Then, Section~\ref{ssec:compositionallycomplex} discusses complex compositional spaces, using Compositionally Complex Materials (CCMs) as a real-world application and considers the challenges of exploring such spaces using different methods. Section~\ref{ssec:functionallygraded} uses another real-world application of Functionally Graded Materials (FGMs) to expand on that by discussing compositional spaces formed from compositions in other spaces and when these spaces are preferred for design. It also discusses key concepts related to path planning in relation to types of constraint and property optimizations. Last in the Introduction, Section \ref{ssec:combinatorialcomplexities} discusses some equations critical to investigating the combinatorial complexities in these problems.
+This work starts by providing an abstract description of compositional spaces applicable to a wide range of disciplines while formalizing several vital concepts. Then, Section~\ref{nimplex:ssec:compositionallycomplex} discusses complex compositional spaces, using Compositionally Complex Materials (CCMs) as a real-world application and considers the challenges of exploring such spaces using different methods. Section~\ref{nimplex:ssec:functionallygraded} uses another real-world application of Functionally Graded Materials (FGMs) to expand on that by discussing compositional spaces formed from compositions in other spaces and when these spaces are preferred for design. It also discusses key concepts related to path planning in relation to types of constraint and property optimizations. Last in the Introduction, Section \ref{nimplex:ssec:combinatorialcomplexities} discusses some equations critical to investigating the combinatorial complexities in these problems.
 
-Next, discussions and implementations are given for several methods for efficiently solving compositional problems through random sampling in Section~\ref{sec:randomuniformsampling}, grid-based methods in Section~\ref{sec:simplexgrid}, graph-based methods, including graphs combining multiple compositional spaces, in Section~\ref{sec:simplexgraph}. The three most critical contributions introduced in this process are:
+Next, discussions and implementations are given for several methods for efficiently solving compositional problems through random sampling in Section~\ref{nimplex:sec:randomuniformsampling}, grid-based methods in Section~\ref{nimplex:sec:simplexgrid}, graph-based methods, including graphs combining multiple compositional spaces, in Section~\ref{nimplex:sec:simplexgraph}. The three most critical contributions introduced in this process are:
 
 \begin{enumerate}
     \item Novel algorithm for rapid procedural generation of \emph{N-dimensional graph representations} of compositional spaces where uniformly distributed simplex grid points in $d$ dimensions are completely connected to up to $d(d-1)$ neighbors representing all possible component-pair changes. For instance, in economics, this could represent all possible compositions of a financial portfolio of 12 assets and, for each one of them, all 132 transfer choices that can be made to modify it. Critically, this method scales linearly with the number of points and generates graphs with billions of connections between millions of points in just seconds. Furthermore, this algorithm allows deterministic memory allocation during the graph construction, where arrays of pointers to neighboring compositions represent allowed transitions, resulting in a very high-performance data structure.
     
     \item The new free, open-source software (FOSS) package \texttt{nimplex} (\href{https://nimplex.phaseslab.org}{nimplex.phaseslab.org}), which gives high-performance implementations of both essential existing methods and all new methods introduced within this work including the simplex graphs.
     
-    \item The novel concept of combining many compositional spaces using graph representations to create homogeneous problem spaces, both simplifying the path planning and allowing for efficient incorporation of constraints and assumptions about problem spaces as demonstrated in Section~\ref{ssec:complexes}. 
+    \item The novel concept of combining many compositional spaces using graph representations to create homogeneous problem spaces, both simplifying the path planning and allowing for efficient incorporation of constraints and assumptions about problem spaces as demonstrated in Section~\ref{nimplex:ssec:complexes}. 
     
 \end{enumerate}
 
@@ -450,11 +450,11 @@ In addition to the above, three other new contributions are given in this work:
 
 \begin{enumerate}
     
-    \item Sections~\ref{sec:randomuniformsampling}~and~\ref{sec:simplexgrid} discuss random sampling and grid construction in simplex spaces in the context of the composition of chemical spaces. In the process, several theoretical results critical to the problem, which have not been discussed previously in this context, are presented. For instance, the commonly found random sampling of a $d-1$ hypercube and rejection of compositions $>100\%$ to sample a $d$-component space, commonly found in software, has a rejection rate exhibiting factorial growth and can severely impact when deploying ML models.
+    \item Sections~\ref{nimplex:sec:randomuniformsampling}~and~\ref{nimplex:sec:simplexgrid} discuss random sampling and grid construction in simplex spaces in the context of the composition of chemical spaces. In the process, several theoretical results critical to the problem, which have not been discussed previously in this context, are presented. For instance, the commonly found random sampling of a $d-1$ hypercube and rejection of compositions $>100\%$ to sample a $d$-component space, commonly found in software, has a rejection rate exhibiting factorial growth and can severely impact when deploying ML models.
     
-    \item In Section~\ref{ssec:internalgrid}, a new algorithm was developed to efficiently create internal (subspace-exclusive) grids in simplex spaces based on an algorithm from the literature (modified-NEXCOM \cite{Chasalow1995AlgorithmPoints}). It is beneficial to performance in cases of, for instance, sampling only $d$-component materials in $d$-component chemical space without considering lower-order points.
+    \item In Section~\ref{nimplex:ssec:internalgrid}, a new algorithm was developed to efficiently create internal (subspace-exclusive) grids in simplex spaces based on an algorithm from the literature (modified-NEXCOM \cite{Chasalow1995AlgorithmPoints}). It is beneficial to performance in cases of, for instance, sampling only $d$-component materials in $d$-component chemical space without considering lower-order points.
 
-    \item In a few areas, Section~\ref{ssec:functionallygraded} leverages its general character to go beyond the usual FGM literature introduction. For instance, it contrasts elemental spaces with attainable design spaces and discusses the use of similar compositions (alloy grades) in the design process to reduce cost and greenhouse emissions without making prior assumptions.
+    \item In a few areas, Section~\ref{nimplex:ssec:functionallygraded} leverages its general character to go beyond the usual FGM literature introduction. For instance, it contrasts elemental spaces with attainable design spaces and discusses the use of similar compositions (alloy grades) in the design process to reduce cost and greenhouse emissions without making prior assumptions.
     
 \end{enumerate}
 
@@ -488,16 +488,16 @@ Adam M. Krajewski would like to thank \textbf{Gonville \& Caius College} at the 
 
 We would also like to thank \textbf{Luke Myers} and \textbf{Ricardo Amaral} for testing code exercises and proofreading the documentation.
 
-\section{Appendix A} \label{app1}
+\section{Appendix A} \label{nimplex:app1}
 
-As mentioned in Section~\ref{ssec:functionallygraded}, different grades of base metals may have very different costs associated with them. For instance, as of December 2023, at \href{https://www.fishersci.com}{Fisher Scientific online store (fishersci.com)}, one can purchase:
+As mentioned in Section~\ref{nimplex:ssec:functionallygraded}, different grades of base metals may have very different costs associated with them. For instance, as of December 2023, at \href{https://www.fishersci.com}{Fisher Scientific online store (fishersci.com)}, one can purchase:
 \begin{itemize}
     \item High-purity Zr wire: $250cm$ of $0.25mm$-diameter (AA00416CB) for $\$317$ or $\approx 390\frac{\$}{g}$
     \item $99.2\%$ (Zr+$4.5\%$Hf) wire: $200cm$ of $0.25mm$-diameter (AA43334G2) for $\$63$ or $\approx 100\frac{\$}{g}$. 
     \item $99.97\%$ (Hf+$3\%$Zr) wire: $200cm$ of $0.25mm$-diameter (AA10200G2) for $\$200$ or $\approx 156\frac{\$}{g}$. 
 \end{itemize} 
 
-Now, if one tries to create FGMs which navigates Zr-rich regions in Hf-containing space, there are two possible choices for Zr source, namely, pure Zr or the (Zr+$4.5\%Hf$) alloy. The first one enables all possible Zr fractions, unlike the latter which establishes the minimum Hf fraction at 4.5\% at the "Zr" corner of the attainable space tetrahedron (anonymous example of this is in Figure~\ref{fig:fgmspaces}). Such an ability may be necessary, e.g., to avoid infeasible regions of space, but if not, it represents an unnecessary cost. 
+Now, if one tries to create FGMs which navigates Zr-rich regions in Hf-containing space, there are two possible choices for Zr source, namely, pure Zr or the (Zr+$4.5\%Hf$) alloy. The first one enables all possible Zr fractions, unlike the latter which establishes the minimum Hf fraction at 4.5\% at the "Zr" corner of the attainable space tetrahedron (anonymous example of this is in Figure~\ref{nimplex:fig:fgmspaces}). Such an ability may be necessary, e.g., to avoid infeasible regions of space, but if not, it represents an unnecessary cost. 
 
 For instance, to obtain (Zr+$10\%wt$Hf) alloy, one can combine high-purity Zr and (Hf+$3\%Zr$) for $\approx 360\frac{\$}{g}$ or equivalently from (Zr+$4.5\%$Hf) and (Hf+$3\%$Zr) for $\approx 103\frac{\$}{g}$, representing 3.5 times cost reduction.
 
@@ -511,13 +511,13 @@ At Fisher Scientific, as of writing this, the pure-Zr wire is only available in 
 If the above are used, one can now obtain the same (Zr+$10\%wt$Hf) alloy for $\approx 3\frac{\$}{g}$ or 120 times cheaper relative to using high purity Zr in the only available physical form factor.
     
 
-\section*{Appendix B}  \label{app2}
+\section*{Appendix B}  \label{nimplex:app2}
 
-The equation for the fraction of a cube bound by [111] plane, equivalent to the result for $f(4)$ in Section~\ref{sec:randomuniformsampling}, can be quickly obtained by considering that the volume of a pyramid is given by $V = \frac{A_B h}{3}$, where $A_B$ is the base area of equilateral triangle $\frac{\sqrt{3}}{4}\times\sqrt{2}^2 = \frac{\sqrt{3}}{2}$ and $h$ is $\frac{1}{\sqrt{3}}$. Thus we get 
+The equation for the fraction of a cube bound by [111] plane, equivalent to the result for $f(4)$ in Section~\ref{nimplex:sec:randomuniformsampling}, can be quickly obtained by considering that the volume of a pyramid is given by $V = \frac{A_B h}{3}$, where $A_B$ is the base area of equilateral triangle $\frac{\sqrt{3}}{4}\times\sqrt{2}^2 = \frac{\sqrt{3}}{2}$ and $h$ is $\frac{1}{\sqrt{3}}$. Thus we get 
 $$V = \frac{\frac{\sqrt{3}}{2} \frac{1}{\sqrt{3}}}{3} = \frac{1}{6}$$ 
-agreeing with the aforementioned result in Section~\ref{sec:randomuniformsampling}.
+agreeing with the aforementioned result in Section~\ref{nimplex:sec:randomuniformsampling}.
 
-\section*{Appendix C}  \label{app3}
+\section*{Appendix C}  \label{nimplex:app3}
 
 The equation for "forward" and "backward" jumps in 3-simplex graph corresponding to a quaternary chemical system. 
 
