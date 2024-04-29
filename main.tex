@@ -27,6 +27,7 @@
 
 % Bibliography
 \usepackage[
+    refsection=chapter,
     style=ieee, 
     isbn=false, 
     url=true, 
@@ -35,8 +36,8 @@
     maxcitenames=1,
     mincitenames=1
     ]{biblatex}
-\renewcommand*{\bibfont}{\footnotesize}
 \addbibresource{referencesAdam.bib}
+\renewcommand*{\bibfont}{\footnotesize}
 
 % Smaller figure captions 
 \usepackage{caption}
@@ -45,10 +46,11 @@
 % Section titles
 \usepackage{titlesec}
 
-% Section
+% Chapter
 \titleformat{\chapter}[display]
 {\Large\bfseries\centering}
-{Chapter \thechapter}{0.5em}{}
+{Chapter \thechapter}{0.5em}{}[\vspace{2ex}\titlerule]
+\titlespacing*{\chapter}{0pt}{0pt}{30pt}
 
 % Section
 \titleformat{\section}[hang]
@@ -194,9 +196,14 @@ ev4rmvk
 
 \newpage
 \chapter*{Acknowledgments}
+\label{acknowledgments}
+\addcontentsline{toc}{chapter}{\nameref{acknowledgments}}
 
 This work was made possible by the financial support and training provided by US Department of Energy (DOE) via Awards DE-FE0031553 and DE-EE0008456, DOE Advanced Research Projects Agency-Energy (ARPA-E) via DE-AR0001435, the DOE BES (Theoretical Condensed Matter Physics) via DE-SC0023185, US Office of Naval Research (ONR) via N00014-17-1-2567 and N00014-23-2721, The Pennsylvania State University via ICDS Seed Grant, US National Science Foundation (NSF) via CMMI-1825538, and Pathways to Enable Open-Source Ecosystems (POSE) via FAIN-2229690. Any opinions, findings, and conclusions or recommendations expressed in this publication are those of the author and do not necessarily reflect the views of the funding agencies.
 
+
+pySIPFENN:\\
+We would like to thank (1) \textbf{Jinchao Xu} from PSU/KAUST for his contribution to the development of SIPFENN, published in \cite{Krajewski2022ExtensibleNetworks}; (2) \textbf{Richard Otis} and \textbf{Brandon Bocklund} from \textbf{Materials Genome Foundation} for supporting this work since 2019 in a variety of ways, including invaluable guidance in organizing community workshops; (3) \textbf{Ricardo Amaral} for testing the \texttt{ModelAdjusters} submodule and reviewing the manuscript; (4) \textbf{Rushi Gong, Shuang Lin, ShunLi Shang, Hui Sun, Alexander Richter, and Luke Myers} from Phases Research Lab at PSU, \textbf{Kate Elder} from Lawrence Livermore National Lab, and others for providing feedback when testing the \texttt{pySIPFENN} software; and (5) \textbf{Jan Janssen} from Max-Planck Institut for assistance in deployment and maintenance of \texttt{pySIPFENN}'s \texttt{conda-forge} feedstock.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -211,6 +218,13 @@ This work was made possible by the financial support and training provided by US
 \include{pysipfenn}
 
 
-\printbibliography
+
+\newpage
+\chapter*{Vita}
+\thispagestyle{empty}
+
+Adam Krajewski was born in Europe, where he spent his childhood and received pre-college education at a public school nationally recognized for its university-level chemistry curriculum. He first came to the United States in 2013 and moved entirely in 2015, joining the Materials Science and Engineering Department at Case Western Reserve University. Within the first two months of enrollment, he began research in Prof. Welsch's group, and started to take graduate courses in his sophomore year. Around the same time, he joined Prof. Willard's group, progressively moving from experiments towards theory, modeling, and simulations. In late 2016, he enrolled in graduate courses in Artificial Intelligence and specialize in applying Machine Learning to his research problems in Materials Science. 
+
+After earning his B.S.E. degree in 2019, he moved directly to pursue PhD at Penn State under world-renowned thermodynamics expert Prof. Zi-Kui Liu and had the pleasure of working on implementing a variety of computational techniques, including machine learning, while having the support of colleagues who are specialists in ab-initio modeling, thermodynamic calculations, and materials discovery. Since 2022, he also extensively collaborated with LLNL and have spent two summers on-site at the lab.
 
 \end{document}
