@@ -8,10 +8,11 @@
 \usepackage{advdate, datenumber} %date packages
 \usepackage{amsmath} %math stuff
 %\usepackage{amsfonts}
-\usepackage{listings} %allows inserting code
 \usepackage{multirow}
 \usepackage{comment}
 \usepackage{xcolor}
+\usepackage{minted}
+\usepackage{adjustbox}
 
 %Font
 \usepackage[]{lineno}
@@ -205,9 +206,15 @@ ev4rmvk
 
 This work was made possible by the financial support and training provided by US Department of Energy (DOE) via Awards DE-FE0031553 and DE-EE0008456, DOE Advanced Research Projects Agency-Energy (ARPA-E) via DE-AR0001435, the DOE BES (Theoretical Condensed Matter Physics) via DE-SC0023185, US Office of Naval Research (ONR) via N00014-17-1-2567 and N00014-23-2721, The Pennsylvania State University via ICDS Seed Grant, US National Science Foundation (NSF) via CMMI-1825538, and Pathways to Enable Open-Source Ecosystems (POSE) via FAIN-2229690. Any opinions, findings, and conclusions or recommendations expressed in this publication are those of the author and do not necessarily reflect the views of the funding agencies.
 
+I would like to thank \textbf{Gonville \& Caius College} at the University of Cambridge and \textbf{Dr. Gareth Conduit} for generously hosting me as a visiting postgraduate student during the writing of this publication, and \textbf{Peter and Carol Thrower} for sponsoring the fellowship.
+
 
 pySIPFENN:\\
 We would like to thank (1) \textbf{Jinchao Xu} from PSU/KAUST for his contribution to the development of SIPFENN, published in \cite{Krajewski2022ExtensibleNetworks}; (2) \textbf{Richard Otis} and \textbf{Brandon Bocklund} from \textbf{Materials Genome Foundation} for supporting this work since 2019 in a variety of ways, including invaluable guidance in organizing community workshops; (3) \textbf{Ricardo Amaral} for testing the \texttt{ModelAdjusters} submodule and reviewing the manuscript; (4) \textbf{Rushi Gong, Shuang Lin, ShunLi Shang, Hui Sun, Alexander Richter, and Luke Myers} from Phases Research Lab at PSU, \textbf{Kate Elder} from Lawrence Livermore National Lab, and others for providing feedback when testing the \texttt{pySIPFENN} software; and (5) \textbf{Jan Janssen} from Max-Planck Institut for assistance in deployment and maintenance of \texttt{pySIPFENN}'s \texttt{conda-forge} feedstock.
+
+nimplex:\\
+Adam M. Krajewski 
+We would also like to thank \textbf{Luke Myers} and \textbf{Ricardo Amaral} for testing code exercises and proofreading the documentation.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -220,6 +227,8 @@ We would like to thank (1) \textbf{Jinchao Xu} from PSU/KAUST for his contributi
 \include{introduction}
 
 \include{pysipfenn}
+
+\include{nimplex}
 
 
 
