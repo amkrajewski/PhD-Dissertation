@@ -40,7 +40,7 @@ The resulting \texttt{pySIPFENN} computational framework is composed of several 
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.85\textwidth]{pySIPFENN_MainSchematic.png}
+    \includegraphics[width=0.85\textwidth]{pysipfenn/pySIPFENN_MainSchematic.png}
     \caption{Main schematic of \texttt{pySIPFENN} framework detailing the interplay of internal components described in Section \ref{pysipfenn:ssec:coreimprovements}. The user interface provides a high-level API to process structural data within \texttt{core.Calculator}, pass it to featurization submodules in \texttt{descriptorDefinitions} to obtain vector representation, then passed to models defined in \texttt{models.json} and (typically) run automatically through all available models. All internal data of \texttt{core.Calculator} is accessible directly, enabling rapid customization. An auxiliary high-level API enables advanced users to operate and retrain the models.}
     \label{pysipfenn:fig:pySIPFENNMainSchematic}
 \end{figure}
@@ -91,7 +91,7 @@ This presents an immediate and previously untapped opportunity for multiplying t
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.98\textwidth]{KS2022.png}
+    \includegraphics[width=0.98\textwidth]{pysipfenn/KS2022.png}
     \caption{
     Schematic of the general-purpose \texttt{KS2022} featurization routine with built-in optimization for ordered structures. First, the atomic structure (in \texttt{pymatgen Structure} object format \cite{Ong2013PythonAnalysis}) is loaded, and sites in it are annotated with their crystallographic orbits using \texttt{spglib} \cite{Togo2018Spglib:Search}. Then, one site is selected from each orbit to form a set of unique sites, for which Wigner-Seitz cells (depicted as colored polyhedra) are calculated with \texttt{Voro++} \cite{Rycroft2007MultiscaleFlow, Rycroft2009Voro++:C++, Lu2023AnCells} and featurized to get site-specific local chemical environment (LCE) descriptors. The complete site ensemble is then reconstructed based on multiplicities of Wyckoff positions corresponding to the sites. A non-trivial example of $\sigma$-phase with 30 atoms belonging to 5 crystallographic orbits with interesting Wigner-Seitz cells (relative to usually shown FCC/BCC ones \cite{Bohm1996VoronoiLattices}) has been depicted.
     }
@@ -114,7 +114,7 @@ The \texttt{KS2022\_dilute} featurization routine, schematically depicted in Fig
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.85\textwidth]{KS2022_dilute.png}
+    \includegraphics[width=0.85\textwidth]{pysipfenn/KS2022_dilute.png}
     \caption{Core schematic of the \texttt{KS2022\_dilute} featurizer. The dilute structure is compared to either the explicit or implicit base structure to identify the dilute site, which is then featurized alongside all crystallographically unique sites in the base structure. Information extracted from dilute structure featurization is then used to identify previously-equivalent sites affected by it, which go through the second round of featurization. Lastly, the complete ensemble is reconstructed, and \texttt{KS2022} are obtained. BCC supercell is used as an example.}
     \label{pysipfenn:fig:KS2022dilute}
 \end{figure}
@@ -139,7 +139,7 @@ Thus, the objective of optimization is shifted towards consistency in convergenc
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.95\textwidth]{KS2022_randomSolution.png}
+    \includegraphics[width=0.95\textwidth]{pysipfenn/KS2022_randomSolution.png}
     \caption{
     Core schematic of the \texttt{KS2022\_randomSolutions} featurizer. The target structure given explicitly or implicitly is expanded to form a (lattice) (i.e. template) supercell. It is then iteratively populated with target composition (slightly adjusted each time) and divided into individual sites, which are featurized (like in \texttt{KS2022}) and added to the global ensemble. The process repeats until the composition is converged, all species have had a chance to occur, and \emph{every individual feature} has converged. Lastly, the global \texttt{KS2022} feature vector and metadata are returned. FCC supercell is used as an example.
     }
