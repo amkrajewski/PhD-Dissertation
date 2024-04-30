@@ -30,7 +30,7 @@ When treating materials on the single atomic configuration level, descriptors ca
 
 It is important to recognize that the descriptor choice impacts both the performance and applicability of the model. In the case of prediction of material properties, such as formation energy, selecting a composition-based descriptor, no matter how complex, limits the model to either a specific arrangement of atoms, such as BCC or amorphous, or some defined pattern of structures, such as the convex hull of lowest-energy structures. Such limitation of the problem domain, given a comparable amount of data, allows to quickly achieve much lower prediction error at a cost of fundamentally changing the problem, making a comparison between methods impossible. Furthermore, a composition-only representation is inherently unsuitable for the direct prediction of most material properties that depend on the atomic structure. The structure-informed descriptors can include much more information related to interatomic interactions, making them more robust and more physics-relevant. They also, implicitly or explicitly, include symmetries present in the material, which can be used to predict certain properties, such as zero piezoelectric response, with high confidence. Furthermore, such descriptors often include extensive composition-based arguments within them \cite{Ward2017IncludingTessellations}, making it possible to both recognize patterns in the property coming from different chemical species occupying the same structure and structural effects in the case of a single composition.
 
-At the same time, it is important to consider that physically existing materials are rarely described by a single atomic configuration, usually requiring considerations for defects and coexisting configurations. Thus, like a traditional DFT-based modeling, in order to reproduce real material behavior, a structure-informed model will often require utilization of a method such as CALPHAD \cite{Kaufman1970ComputerMetals, Liu2018OceanLearning}. One of such methods, recently developed by authors and named "zentropy theory" shows the potential to connect individual configurations to predict macroscopic properties, such as colossal positive and negative thermal expansions \cite{Liu2021ZentropyExpansions}.
+At the same time, it is important to consider that physically existing materials are rarely described by a single atomic configuration, usually requiring considerations for defects and coexisting configurations. Thus, like a traditional DFT-based modeling, in order to reproduce real material behavior, a structure-informed model will often require utilization of a method such as CALPHAD \cite{Kaufman1970ComputerMetals, Liu2018OceanLearning}. One of such methods, recently developed by authors and named "zentropy theory" shows the potential to connect individual configurations to predict macroscopic properties, such as colossal positive and negative thermal expansions \cite{Liu2022ZentropyExpansion}.
 
 In some cases however, investigating all configurations can be a very challenging task (e.g., for high entropy alloys), necessitating the use of an elemental-only model trained to give predictions assuming future observations to be consistent with the past ones \cite{Debnath2021GenerativeAlloys}. 
 
@@ -135,9 +135,11 @@ A complete table list of features is given in Table \ref{sipfenn:feature-table}.
 
 \subsection{Machine Learning Techniques Overview} \label{sipfenn:ref:machinelearningoverview}
 This section gives a brief overview of the employed machine learning techniques and terminology, described in more detail in the Appendix \ref{sipfenn:appedix1}. The interest is placed on the statistical problem of regression, whose goal is to learn a functional relationship $f:X\rightarrow Y$ which minimizes the risk (also known as loss or expected error) \cite{vapnik1999overview} given by
-\begin{equation}\label{sipfenn:true_risk}
+
+\begin{equation} \label{sipfenn:true_risk}
     R(f) = \mathbb{E}_{x,y\sim \mathcal{P}} l(y,f(x)).
 \end{equation}
+
 Here $X$ denotes a space of input features, $Y$ denotes an output space, the expectation above is taken over an unknown distribution $\mathcal{P}$ on $X\times Y$ (representing the true relationship between inputs and outputs), and $l$ is a given loss function. 
 
 In the specific application considered here, the function $f$ which is to be learned, maps input material structures (arrangements of atoms) $x$ to the predicted formation energy $y$. The distribution $\mathcal{P}$ is unknown, but samples $(x_i,y_i)$ are given, consisting of structures $x_i$ and corresponding predictions $y_i$ which are used to learning $f$. In the present case, this data comes from the OQMD and other smaller materials databases.
@@ -150,9 +152,11 @@ In the specific application considered here, the function $f$ which is to be lea
 % \end{figure}
 
 In order to learn the relationship $f$ from the data, the empirical risk
+
 \begin{equation}\label{sipfenn:empirical_risk}
     L(f) = \frac{1}{n}\displaystyle\sum_{i=1}^n l(y_i, f(x_i)),
 \end{equation}
+
 is minimized over a class of functions defined by a neural network architecture. A neural network architecture consists of a sequence of alternating linear functions and point-wise non-linear functions defined by an activation function (see \cite{goodfellow2016deep} for more information about neural networks). As the loss function $l$ in \eqref{empirical_risk} the $\ell^1$-loss function $l(y,x) = |x-y|$ is used. The neural networks are trained on this loss \eqref{empirical_risk} using the common ADAM optimizer \cite{kingma2014adam}. 
 
 An important issue when training complex statistical models is the overfitting, which occurs when a model accurately fits the training data but fails to generalize well to new examples. In order to detect overfitting, the standard practice of dividing the data into training, validation, and test datasets \cite{hastie2009elements} is used. In order to mitigate overfitting, dropout \cite{srivastava2014dropout} and weight decay, two standard methods for regularizing neural networks, are used. In Section \ref{sipfenn:sssec:DesignedModels}, Figure \ref{sipfenn:fig:trainingvalidation-body} illustrates overfitting mitigation effects on the training process of neural networks designed in the present paper.
@@ -178,14 +182,12 @@ This section conceptually outlines the network design process leading to the fin
 
 The design started with the simplest single-layer neural network (perceptron) with the Sigmoid activation function, trained on the ICSD and its smaller subset, to provide a baseline for the design. Then, the process was conducted in the following steps:
 
-    \begin{wrapfigure}{r}{0.57\textwidth}
-    \vspace{-12pt}
+    \begin{figure}[H]
     \centering
     \includegraphics[width=0.56\textwidth]{sipfenn/SIPFENN_design_updated.png}
     \caption{The model design process schematic.}
     \label{sipfenn:fig:designprocess}
-    \vspace{-18pt}
-    \end{wrapfigure}
+    \end{figure}
 
 \textbf{1. }The network size has been increased step-wise while training on the ICSD dataset (30k+ entries). Results were extrapolated to estimate network size suitable for larger OQMD (400k+) to be 4 hidden layers in a (10000, 10000, 1000, 100) configuration.
 
@@ -220,19 +222,17 @@ Throughout the architecture design process described in \ref{sipfenn:sssec:NetDe
     \frame{\includegraphics[width=0.30\textwidth]{sipfenn/NN24_architecture.PNG}}
     \caption{Three selected architectures designed within the present work. Optimized for: (Left) OQMD performance, (Middle) predicting new materials, (Right) small size at good performance. Internally in the code, they are designated as NN9, NN20, and NN24.}
     \label{sipfenn:fig:architectures}
-    \vspace{-6pt}
 \end{figure}
 
 Out of all trained neural networks, three were selected and can be considered final outcomes of the design process, optimized for different objectives. Their architectures are presented in Figure \ref{sipfenn:fig:architectures}. The first one, denoted NN9, was created specifically for the OQMD performance. This was the same objective as in the study by Ward et al. \cite{Ward2017IncludingTessellations} and its performance serves as a direct comparison to the Random Forest method employed in that paper \cite{Ward2017IncludingTessellations} and other works \cite{Schutt2014HowProperties, Seko2017RepresentationProperties}.
 
 
-\begin{wrapfigure}{r}{0.53\textwidth}
-    \vspace{-12pt}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.52\textwidth]{sipfenn/validationtotraining_generalized.png}
     \caption{Training Loss to Validation Loss in a model that does without (NN9) and with overfitting mitigation (NN20), plotted versus training progress.}
     \label{sipfenn:fig:trainingvalidation-body}
-\end{wrapfigure}
+\end{figure}
 
 The second network was optimized for improved pattern recognition on OQMD and improved performance on non-OQMD datasets used in the present work (i.e. SQS/$\sigma$-phase datasets). This was achieved primarily through extensive overfitting mitigation, applied during design and training (see Figure \ref{sipfenn:fig:trainingvalidation-body}), which leads to a network with improved generalization/materials-discovery capability. Furthermore, one fo the overfitting mitigation methods, namely the regularization described in \ref{sipfenn:ref:machinelearningoverview}, have allowed identification of descriptor attributes that contributed the most to the predictive capability and the ones that were almost completely discarded once the penalty for considering them was assigned. Figure \ref{sipfenn:fig:squaredweights} presents the distribution of sums of squared weights between each neuron in the input layer (each of the 273 descriptor features) and all 10,000 neurons in the first hidden layer. 
 
@@ -298,14 +298,14 @@ The results are shown in Table \ref{sipfenn:comparison-results}. The SIPFENN con
 \subsection{Non-OQMD Data Performance} \label{sipfenn:ssec:sigmasqsperformance}
 
 \begin{comment}
-\begin{wrapfigure}{r}{0.4\textwidth}
+\begin{figure}[H]
     \centering
     %\vspace{-48pt}
     \includegraphics[width=0.3\textwidth]{sipfenn/NN20_test_sigmasqs.png}
     \caption{Predictions of formation energy using the new-materials-optimized network (NN20) evaluated on (red) Fe-Cr-Ni $\sigma$-phase, and (blue) SQS structures. Compare to Figure \ref{sipfenn:fig:oqmdperformance} with the same axis for OQMD data.}
     \label{sipfenn:fig:sqssigmabroad}
     \vspace{-12pt}
-\end{wrapfigure}
+\end{figure}
 \end{comment}
 
 Models created in the present work, specifically the ones optimized for predicting the formation energy of new materials, were designed and implemented to serve as tools for materials discovery. Evaluating their performance on data from the same source as the training set done in \ref{sipfenn:ssec:oqmdperformance} is inherently biased towards favoring models that provide the best fit to the prior (training) knowledge. This is amplified by the fact that many entries in the database are reported in groups that come from common studies and span similar materials, causing high domain clustering, which in some cases effectively makes such evaluation more akin to interpolation than extrapolation of knowledge.
@@ -395,7 +395,6 @@ Discussion of such relaxation procedure in detail is extensive and beyond the sc
     \includegraphics[width=0.65\textwidth]{sipfenn/localRelaxation_6.png}
     \caption{Local energy landscape relaxation of \ce{Pd_8Zn_5} $\gamma$-brass crystal structure guided by Novel Material Model (NN20).}
     \label{sipfenn:fig:localrelaxationpdzn}
-    \vspace{-12pt}
 \end{figure}
 
 As shown in \ref{sipfenn:fig:localrelaxationpdzn}, the resulting relaxation reduced predicted formation energy by 4 meV/atom for this particular end-member. In the other 15 cases, results were similar, ranging between near 0 and 15 meV/atom, converging into fine local minima, expected to correspond with true local relaxations; however, extensive research into the problem is needed before conclusions can be drawn.
@@ -409,18 +408,15 @@ One of the main objectives of the present paper was to create a tool that is tra
     \centering
     \includegraphics[width=0.67\textwidth]{sipfenn/SIPFENN_GraphicalAbstract_noPerformance.png}
     \caption{SIPFENN schematic description of operation.}
-    \vspace{-12pt}
     \label{sipfenn:fig:sipfenn}
 \end{figure}
 
-\begin{wrapfigure}{r}{0.5\textwidth}
+\begin{figure}[H]
     \centering
-    \vspace{-12pt}
     \frame{\includegraphics[width=0.49\textwidth]{sipfenn/sipfennGUI.PNG}}
     \caption{A snapshot of the graphical user interface of SIPFENN.}
     \label{sipfenn:fig:sipfennGUI}
-    \vspace{-24pt}
-\end{wrapfigure}
+\end{figure}
 
 SIPFENN was written entirely in Python to allow other researchers to easily modify it and adjust it to specific needs. Its schematic of operation is presented in Figure \ref{sipfenn:fig:sipfenn}. In broad scope, it first performs the structure analysis and modifications using the Python Materials Genomics library (pymatgen) \cite{Ong2013PythonAnalysis}. In the current implementation, it imports all structure files, analyzes the stoichiometry, creates unique names based on that, and exports them as POSCAR files. This is a rather simple task, however pymatgen is a powerful tool with a suit of more complex analytical tools that can be quickly implemented into SIPFENN by the user with even basic Python skills. Following the analysis, SIPFENN runs java-based Magpie \cite{Ward2016AMaterials} which calculates a descriptor for every imported structure and exports the result as a CSV file. This file is a descriptor table, where each row corresponds to a single material, and which can be stored and re-used later to run multiple predictive models at a fraction of the original computation time. It can also be used to create datasets for training procedures by replacing the last column with calculated or experimental values of formation energy.
 
@@ -454,10 +450,6 @@ All neural networks are stored in both (1) open-source MXNet format maintained b
 For ensured longevity of results, SIPFENN neural networks are stored through the courtesy of Zenodo.org service under \hyperlink{doi:10.5281/zenodo.4006803}{doi:10.5281/zenodo.4006803} at the CERN’s Data Centre.
 
 
-\printbibliography[heading=subbibintoc]
-
-\appendix
-
 \section{Machine Learning Overview} \label{sipfenn:appedix1}
 The class of deep learning methods has been remarkably successful in recent years in applications ranging from computer vision to natural language processing and simulations of quantum systems \cite{lecun2015deep,silver2016mastering,devlin2018bert,carleo2017solving}. Although deep neural networks have existed for a long time \cite{rosenblatt1958perceptron}, and had been successfully applied to computer vision tasks \cite{lecun1995comparison,lecun1990handwritten,lecun1998gradient}, a major breakthrough was the AlexNet network \cite{krizhevsky2012imagenet}, which dramatically improved the accuracy achievable on large-scale image classification. Following this success, deep neural networks have been very intensively studied and applied to a variety of problems \cite{lecun2015deep,silver2016mastering,devlin2018bert}. Deep neural networks are particularly effective when applied to regression problems, where one is learning a functional relationship between a feature and a prediction. For many problems, deep neural networks are able to achieve significantly better performance than competing machine learning methods, due to their ability to learn more complex relationships. With materials science being a field where many complex dependencies are intertwined, it is to be expected that this superior pattern recognition can carry over to the improvement in the prediction of material properties.
 
@@ -485,7 +477,7 @@ In addition, one must specify the type of relationship that is expected to be fo
 
 In this the class of functions $\mathcal{F}$ is chosen as the set of functions defined by a neural network architecture (schematic in Figure \ref{sipfenn:fig:nnschematic}), which leads to a deep learning method. A neural network architecture consists of a sequence of alternating linear functions and point-wise non-linear functions \cite{goodfellow2016deep}. In the figure \ref{sipfenn:fig:nnschematic} the nodes, or neurons, represent applications of a point-wise non-linear function, called an activation function, and the connections between nodes represent linear functions from the output of the nodes in one layer to the input of the next layer.
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{sipfenn/NN_schematic.png}
     \caption{Simplified artificial neural network schematic}
@@ -497,8 +489,8 @@ The class of functions represented by the neural network consists of the functio
 \begin{equation}
     f_{W_1,...,W_n,b_1,...,b_n}(x) = W_n\cdots\sigma(W_3\sigma(W_2\sigma(W_1x+b_1)+b_2)+b_3)\cdots + b_n
 \end{equation}
-where $\sigma$, called the activation function, is applied pointwise to each entry of the vector input (previous layer output). The neural network architecture is determined by the type, dimensionality, activation function $\sigma$, and arrangement of intermediate layers. This can potentially introduce some additional restrictions on the linear maps $W_i$, see for instance convolutional neural networks, where the linear maps $W_i$ are restricted to be convolutions with small kernels \cite{krizhevsky2012imagenet,lecun1995comparison,lecun1998gradient}.
 
+where $\sigma$, called the activation function, is applied pointwise to each entry of the vector input (previous layer output). The neural network architecture is determined by the type, dimensionality, activation function $\sigma$, and arrangement of intermediate layers. This can potentially introduce some additional restrictions on the linear maps $W_i$, see for instance convolutional neural networks, where the linear maps $W_i$ are restricted to be convolutions with small kernels \cite{krizhevsky2012imagenet,lecun1995comparison,lecun1998gradient}.
 
 
 Once the neural network architecture has been set, one must fit the values of the parameters $W_1,...,W_n$ and $b_1,...,b_n$ by optimizing the training loss $L$,
@@ -528,6 +520,7 @@ Overfitting is typically detected by separating the training data into two sets,
 \begin{equation}\label{sipfenn:validation_loss}
     L_{val} = \frac{1}{m}\displaystyle\sum_{i=1}^m l(\tilde{y}_i, f(\tilde{x}_i)),
 \end{equation}
+
 where $(\tilde{y}_i,\tilde{x}_i)$ for $i=1,...,m$ is the validation set, which was not presented to the network when adjusting its parameters, is used to detect overfitting. 
 %%
 The fraction of the data set aside for validation set should be large enough to be representative of the whole dataset to provide statistically significant conclusions, yet small enough so that knowledge loss in the process is minimized. In the present work, a randomly selected 15\% of every dataset has been used as validation sets for all training. This corresponded to 65,300 data points in the case of the OQDM dataset described in \ref{sipfenn:sssec:Data}.
@@ -558,7 +551,7 @@ Methods for avoiding overfitting typically come with one or more "hyperparameter
 
 One typically trains the model on the training dataset using a number of different hyperparameters and then subsequently chooses the best set of them using the validation error. This allows the determination of hyperparameter values that are appropriate to the problem at hand. However, in order to ensure that the determined hyperparameter values are not overly specific to the validation set, the final accuracy of the model is evaluated on a test set that was not used at all during training \cite{hastie2009elements}.
 
-\begin{figure}{h}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.65\textwidth]{sipfenn/Overfitting_discovery.png}
     \caption{A conceptual drawing depicting how overfitting mitigation effort can improve performance beyond regions with high known data density.}
@@ -580,21 +573,20 @@ the present work adds to this evidence by showing that a network trained on the 
 \section{Intermediate Neural Network Models} \label{sipfenn:appendix2}
 
 
-\begin{wrapfigure}{R}{0.4\textwidth}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.3\textwidth]{sipfenn/NN1_test.png}
     \caption{Test of perceptron trained on the data from the first 5000 entries in the ICSD dataset and evaluated on the test set of 230 randomly selected entries ($\approx5\%$)}
-    \vspace{-12pt}
     \label{sipfenn:fig:nn1performance}
-\end{wrapfigure}
+\end{figure}
 
 The neural network design process was conducted in incremental fashion, starting from a perceptron, which is the simplest type of neural network proposed by Frank Rosenblatt in 1957 \cite{Rosenblatt1957TheAutomaton}. It effectively operates as a linear function $f(\vec{d}) = A(w_1 d_1 + w_2 d_2 + ... + w_n d_n)$ where $d_i$ is i-th element of the descriptor $\vec{d}$, $w_i$ is the weight associated with it, and $A$ is an activation function that can introduce non-linearity or turn it into a classifier. Here, the popular Sigmoid activation function was used. 
 
-\begin{wrapfigure}{R}{0.55\textwidth}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.53\textwidth]{sipfenn/SIPFENN_design_updated.png}
     \caption{The network design process schematic leading to the three final models.}
-\end{wrapfigure}
+\end{figure}
 
 The perceptron was first trained on the data from the first 5000 entries in the ICSD, to check whether the training was set up correctly. It achieved a MAE of 195 meV/atom on the test set of 230 randomly selected entries ($\approx 5\% \text{ from } 5000$). Results are shown in Figure \ref{sipfenn:fig:nn1performance}. When trained on the data from all entries in the ICSD, it achieved an MAE of 364 meV/atom on the test set ($\approx5\% \text{ from } 32116$). This error is comparable to the performance of a random forest model based on PRDF (370 meV/atom), is slightly worse than a CM (250 meV/atom), and is significantly worse than a random-forest model trained on the same descriptor (90 meV/atom), as reported by Ward et al. \cite{Ward2017IncludingTessellations}. Part of the significance of these results is the evident quality of the descriptor, as the model achieved performance that would be considered excellent just a few years prior to the present work while being much less complex and computationally costly. Furthermore, it is important to note the time- and space-complexity of the perceptron model. Training the final network took less than 8 seconds compared to around 10,000 seconds reported for the aforementioned random-forest methods, and the resulting model occupied less than 1kb of memory. Following the testing of a perceptron, which allowed rough estimation of the a good size of the network (i.e. number of weights), the design of the actual architecture began. All of these steps are schematically depicted in Figure \ref{sipfenn:fig:designprocess}.
 
@@ -608,12 +600,12 @@ Once the main objective of the design process was obtained, i.e. the performance
 
 With these new objectives, two Dropout layers in the middle part of the network were introduced to promote the distribution of pattern recognition abilities across the network. \cite{Srivastava2014Dropout:Overfitting} This introduced a problem with convergence as the network became more likely to fall into local minima at the initial stages of the training, which was solved by introducing custom learning rate schedules. Specifically, the learning rate was initially set to a value orders of magnitude lower than during the default initial training and then ramped up to the previous (ADAM default setting in the majority of frameworks) learning rate of 0.001 (or above) after around 2 rounds of training. This type of learning rate schedule is known as a warm-up in the deep learning literature \cite{gotmare2018closer}. The schedule found to perform the best is presented in Figure \ref{sipfenn:fig:learningrate}.
 
-\begin{wrapfigure}{R}{0.37\textwidth}
+\begin{figure}[H]
 \centering
     \includegraphics[width=0.35\textwidth]{sipfenn/nn18_learningrate_linonly.png}
     \caption{The learning rate schedule used for training of more complex networks in the later stage of the design process (e.g., NN18).}
     \label{sipfenn:fig:learningrate}
-\end{wrapfigure}
+\end{figure}
 
 
 The next step was the introduction of $\ell^2$ regularization, which is a technique that favors simplification of the descriptor and effectively rejects features of the descriptor that do not contribute to prediction performance \cite{L2Regularization}. An overview on it is given in Section \ref{sipfenn:ref:machinelearningoverview}. In the models reported in the present work an $\ell^2$ value of $10^{-6}$ was used. Higher values were found to stop the training at early stages, impairing the pattern recognition, or in extreme cases (above $10^{-3}$) force the network to discard the input completely, resulting in constant or near-constant output (i.e. mean value from the training dataset predicted for any structure).
@@ -907,3 +899,5 @@ min\_NsUnfilled & 0.02051 \\ \hline
 min\_GSbandgap & 0.01299 \\ \hline
 min\_GSmagmom & 0.00132 \\ \hline
 \end{longtable}
+
+\printbibliography[heading=subbibintoc]
