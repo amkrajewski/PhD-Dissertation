@@ -4,20 +4,20 @@
 \usepackage[T1]{fontenc}
 \usepackage{graphicx, lipsum, textcomp, float} %figure formatting
 \usepackage{hyperref} %referancing package
-\usepackage[version=4]{mhchem}  %chemical equations and formulas
-\usepackage{advdate, datenumber} %date packages
+%\usepackage[version=4]{mhchem}  %chemical equations and formulas
+%\usepackage{advdate, datenumber} %date packages
 \usepackage{amsmath}
 \usepackage{amssymb}
 %\usepackage{amsfonts}
 \usepackage{multirow}
-\usepackage{comment}
+%\usepackage{comment}
 \usepackage{longtable}
 \usepackage{xcolor}
+\usepackage{listings}
 \usepackage{minted}
 \usepackage{adjustbox}
 
 %Font
-\usepackage[]{lineno}
 \renewcommand{\thelinenumber}{\raisebox{1pt}{\textcolor[RGB]{200,200,200}{\arabic{linenumber}}}}
 \usepackage[scaled]{beramono}
 \renewcommand{\familydefault}{\sfdefault} 
@@ -66,8 +66,6 @@
 {\large\bfseries}
 {\thesubsection}{0.5em}{}
 
-
-
 % less section skip in the table of contents
 \usepackage{tocbasic}
 
@@ -83,15 +81,13 @@
   dynnumwidth
 ]{tocline}{chapter}
 \newcommand*\entrywithprefix[2]{#1~#2}
-  
-%Abstract customization
-\usepackage{abstract}
-\usepackage{titling}
-\renewcommand{\abstractnamefont}{\normalfont\bfseries}
 
-%\renewcommand{\citeleft}{\textcolor{red}{[}} %temporary makes brackets red
-%\renewcommand{\citeright}{\textcolor{red}{]}}. 
+% Appendix
+\usepackage[toc]{appendix}
+\newcommand{\mypart}[1]{\thispagestyle{empty}\part*{#1}\addtocounter{page}{-1}}
 
+
+% MISC
 \setlength\parindent{6pt} %paragraph indentation
 \setlength{\parskip}{6pt} %paragraph spacing
 
@@ -102,6 +98,7 @@
 \definecolor{mauroblue}{RGB}{53, 48, 217}
 \definecolor{citegreen}{RGB}{15, 133, 13}
 \definecolor{hyperlinkpurple}{RGB}{42, 0, 163}
+\definecolor{subtlegray}{gray}{0.98}
 \hypersetup{
     colorlinks=true,
     linkcolor=hyperlinkpurple,
@@ -186,7 +183,10 @@ Associate Professor of Mathematics\\
 
 \newpage
 \chapter*{Abstract}
-ev4rmvk
+
+This 
+
+The true power of computational research typically can lay in either what it accomplishes or what it enables other to accomplish 
 
 \setstretch{1}
 \newpage
@@ -219,6 +219,14 @@ nimplex:\\
 Adam M. Krajewski 
 We would also like to thank \textbf{Luke Myers} and \textbf{Ricardo Amaral} for testing code exercises and proofreading the documentation.
 
+nimCSO:\\
+This work has been funded through grants: DOE-ARPA-E DE-AR0001435, NSF-POSE FAIN-2229690, and ONR N00014-23-2721. We would also like to acknowledge Dr. Jonathan Siegel at Texas A\&M University for several valuable discussions and feedback on the project.
+
+
+
+Co-Authors:
+Jonathan Siegel who assisted me in writing my first-author publications adopted here as Chapters \ref{chap:sipfenn} and \ref{chap:pysipfenn}, with particularly significant contributions to Subsection \ref{sipfenn:sec:methodology}, Subsection \ref{sipfenn:ref:machinelearningoverview}, and Section \ref{sipfenn:appedix1}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -229,12 +237,36 @@ We would also like to thank \textbf{Luke Myers} and \textbf{Ricardo Amaral} for 
 
 \include{introduction}
 
+\include{mpdd}
+
+\include{crystall}
+
 \include{sipfenn}
 
 \include{pysipfenn}
 
+\include{ultera}
+
+\include{inversedesign}
+
+\include{nimcso}
+
 \include{nimplex}
 
+\include{infeasibilitygliding}
+
+\include{pathplanning}
+
+% Appendices
+
+\begin{appendices}
+
+\mypart{Appendices}
+
+\include{nimplexTutorial2}
+
+
+\end{appendices}
 
 
 \newpage

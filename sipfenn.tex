@@ -153,7 +153,7 @@ In the specific application considered here, the function $f$ which is to be lea
 
 In order to learn the relationship $f$ from the data, the empirical risk
 
-\begin{equation}\label{sipfenn:empirical_risk}
+\begin{equation} \label{sipfenn:empirical_risk}
     L(f) = \frac{1}{n}\displaystyle\sum_{i=1}^n l(y_i, f(x_i)),
 \end{equation}
 
@@ -162,6 +162,7 @@ is minimized over a class of functions defined by a neural network architecture.
 An important issue when training complex statistical models is the overfitting, which occurs when a model accurately fits the training data but fails to generalize well to new examples. In order to detect overfitting, the standard practice of dividing the data into training, validation, and test datasets \cite{hastie2009elements} is used. In order to mitigate overfitting, dropout \cite{srivastava2014dropout} and weight decay, two standard methods for regularizing neural networks, are used. In Section \ref{sipfenn:sssec:DesignedModels}, Figure \ref{sipfenn:fig:trainingvalidation-body} illustrates overfitting mitigation effects on the training process of neural networks designed in the present paper.
 
 \subsection{Software Used} \label{sipfenn:sssec:SoftwareUsed}
+
 The choice of software for the machine learning portion of this project was Apache MXNet \cite{ChenMXNet:Systems} due to it's open source nature, model portability, and state-of-the-art scalability, allowing the same code to run on a laptop with a low-power CPU/GPU and a supercomputer (e.g., ORNL Summit) with hundreds of powerful GPU's. It's portability allows trained networks to be converted and used with other popular frameworks such as Google Tensorflow, PyTorch, or even Apple Core ML, making results of the present paper highly accessible.
 
 MXNet framework was used through Wolfram and Python languages. Wolfram Language was used primarily for the network architecture design, training, and testing, as it provides an excellent interface with detailed training results shown in real-time during the training process. It also provides good out-of-the-box performance due to its well-optimized memory handling when training on a single GPU setup. 
@@ -297,7 +298,6 @@ The results are shown in Table \ref{sipfenn:comparison-results}. The SIPFENN con
 
 \subsection{Non-OQMD Data Performance} \label{sipfenn:ssec:sigmasqsperformance}
 
-\begin{comment}
 \begin{figure}[H]
     \centering
     %\vspace{-48pt}
@@ -306,7 +306,6 @@ The results are shown in Table \ref{sipfenn:comparison-results}. The SIPFENN con
     \label{sipfenn:fig:sqssigmabroad}
     \vspace{-12pt}
 \end{figure}
-\end{comment}
 
 Models created in the present work, specifically the ones optimized for predicting the formation energy of new materials, were designed and implemented to serve as tools for materials discovery. Evaluating their performance on data from the same source as the training set done in \ref{sipfenn:ssec:oqmdperformance} is inherently biased towards favoring models that provide the best fit to the prior (training) knowledge. This is amplified by the fact that many entries in the database are reported in groups that come from common studies and span similar materials, causing high domain clustering, which in some cases effectively makes such evaluation more akin to interpolation than extrapolation of knowledge.
 
@@ -384,16 +383,16 @@ Furthermore, the presented transfer learning capability could be used for a more
 As presented in Figure \ref{sipfenn:fig:transfersigmaVsDatapoints}, adding just a small number of new data points allows to nearly half the MAE (around 20 datapoints). Furthermore, evident from the right plot, the mean performance increase is on average linear in log-lin scale and highly predictable ($R^2=0.98$).
 
 \subsection{Model Limitations} \label{sipfenn:ssec:modellimitations}
-As with any modeling tool, this modeling effort has some inherent limitations, coning from both data and methods used to create it. The most significant one comes from the type of data used for training of the model, where all data points correspond to DFT-relaxed structures, sitting in local minima in the configuration energy landscape. Thus, all energy predictions are given under an assumption that the input structure is fully relaxed with DFT settings inherited from the OQMD database \cite{Saal2013MaterialsOQMD}. At the same time, since the model was trained on many local energy minima configurations analyzed on the level of single-atom chemical environments, it should be able to approximate values for unrelaxed structures based on substitution from prototypes or similar compounds. Testing of this is performed by Ward 2017 \cite{Ward2017IncludingTessellations}, where it is shown that (a) in most of the test cases, the before-after relaxation energy difference is negligible in comparison to the DFT-ML difference for Ward 2017 model and usually much lower than the test MAE for models discussed in this work, and (b) in some particular cases (\ce{Li_6CaCeO_6}) can be very high.
+As with any modeling tool, this modeling effort has some inherent limitations, coning from both data and methods used to create it. The most significant one comes from the type of data used for training of the model, where all data points correspond to DFT-relaxed structures, sitting in local minima in the configuration energy landscape. Thus, all energy predictions are given under an assumption that the input structure is fully relaxed with DFT settings inherited from the OQMD database \cite{Saal2013MaterialsOQMD}. At the same time, since the model was trained on many local energy minima configurations analyzed on the level of single-atom chemical environments, it should be able to approximate values for unrelaxed structures based on substitution from prototypes or similar compounds. Testing of this is performed by Ward 2017 \cite{Ward2017IncludingTessellations}, where it is shown that (a) in most of the test cases, the before-after relaxation energy difference is negligible in comparison to the DFT-ML difference for Ward 2017 model and usually much lower than the test MAE for models discussed in this work, and (b) in some particular cases ($Li_6CaCeO_6$) can be very high.
 
 When faced with a new configuration, the model can thus either be used to (1) give an accurate prediction if the configuration is already relaxed or (2) give an approximate result that needs to be validated with DFT if confidence in the result is needed. This is inherent to all structure-informed ML models. One possible solution to partially mitigate this limitation is to perform relaxation using the model, which should work reasonably well for most materials. 
 
-Discussion of such relaxation procedure in detail is extensive and beyond the scope of this work, yet a preliminary approach was constructed using the Novel Material Model (NN2) and deployed on all 16 end-members of Pd-Zn $\gamma$-brass crystal structure in an iterative fashion. At each iteration, first, the local energy gradient for each atom was calculated by comparing the starting configuration with perturbations in x, y, z directions. Then, all atoms were displaced proportionally to the gradient in 100 discrete steps, reaching some local minimum, which acted as a starting point for the next iteration. An example for \ce{Pd_8Zn_5} is presented in Figure \ref{sipfenn:fig:localrelaxationpdzn}.
+Discussion of such relaxation procedure in detail is extensive and beyond the scope of this work, yet a preliminary approach was constructed using the Novel Material Model (NN2) and deployed on all 16 end-members of Pd-Zn $\gamma$-brass crystal structure in an iterative fashion. At each iteration, first, the local energy gradient for each atom was calculated by comparing the starting configuration with perturbations in x, y, z directions. Then, all atoms were displaced proportionally to the gradient in 100 discrete steps, reaching some local minimum, which acted as a starting point for the next iteration. An example for $Pd_8Zn_5$ is presented in Figure \ref{sipfenn:fig:localrelaxationpdzn}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.65\textwidth]{sipfenn/localRelaxation_6.png}
-    \caption{Local energy landscape relaxation of \ce{Pd_8Zn_5} $\gamma$-brass crystal structure guided by Novel Material Model (NN20).}
+    \caption{Local energy landscape relaxation of $Pd_8Zn_5$ $\gamma$-brass crystal structure guided by Novel Material Model (NN20).}
     \label{sipfenn:fig:localrelaxationpdzn}
 \end{figure}
 
