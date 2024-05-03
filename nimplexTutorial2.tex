@@ -21,13 +21,13 @@ connectivity between the points in the space has been abstracted into
 graph adjacency. If you wish to add another alloy to the design process,
 you add it to the list, and you are done!
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true]{python}
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
 # Import nimplex and some of its plotting utilities.
 import nimplex
 from utils import plotting
 \end{minted}
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true]{python}
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
 # Python wrapper for Plotly library
 import plotly.express as px
 import plotly.io as pio
@@ -115,7 +115,7 @@ px.scatter_3d(
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{nimplextutorial2/02.AdditiveManufacturingPathPlanning_11_0.pdf}
-    \caption{Plot of RMSAD values over compositional tetrahedron (3-simplex) formed by all combinations of Ti50 Zr50, Hf95 Ti5, Mo33 Nb33 Ta33, Mo80 Nb10 W10 discretized at 12 divisions per dimension. The positions in the 7-component elemental space obtained from \texttt{nimplex} \cite{Krajewski2024Nimplex} were used to run RMSAD model by \cite{Tandoc2023MiningAlloys} and projected into Cartesian space for plotting by \texttt{simplex2cartesian} utility in \texttt{nimplex}}
+    \caption{Re-rendering of Figure \ref{nimplextutorial1:fig:quaternaryattainablecoloredlabel} from Appendix \ref{chap:nimplextutorial1}.}
     \label{nimplextutorial2:fig:propertyfield}
 \end{figure}
 

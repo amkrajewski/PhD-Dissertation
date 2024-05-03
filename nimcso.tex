@@ -1,59 +1,316 @@
 \chapter{Optimization of Compositional Dataset Domain towards Reliable Machine Learning Training and Deployment} \label{chap:nimcso}
 
-\section{Background and Motivation} \label{sec:background}
+\section{Background and Motivation} \label{nimcso:sec:background}
+
+\texttt{nimCSO} is an interdisciplinary tool applicable to any field
+where data is composed of a large number of independent components and
+their interaction is of interest in a modeling effort, ranging from
+market economics, through medicine where drug interactions can have a
+significant impact on the treatment, to materials science, where the
+composition and processing history are critical to resulting properties.
+The latter has been the root motivation for the development of
+\texttt{nimCSO} within the \href{https://ultera.org}{ULTERA Project
+(ultera.org)} carried under the
+\href{https://arpa-e.energy.gov/?q=arpa-e-programs/ultimate}{US DOE
+ARPA-E ULTIMATE} program, which aims to develop a new generation of
+ultra-high temperature materials for aerospace applications, through
+generative machine learning models \cite{Debnath2021} driving
+thermodynamic modeling, alloy design, and manufacturing \cite{Li2024}.
+
+One of the most promising materials for such applications are the
+aforementioned CCMs and their metal-focused subset of Refractory High
+Entropy Alloys (RHEAs) \cite{Senkov2018}, which have rapidly grown since first proposed by
+\citet{Cantor2004} and
+\citet{Yeh2004}. Contrary to most of
+the traditional alloys, they contain many chemical elements (typically
+4-9) in similar proportions in the hope of thermodynamically stabilizing
+the material by increasing its configurational entropy
+(\(\Delta S_{conf} = \Sigma_i^N x_i \ln{x_i}\) for ideal mixing of \(N\)
+elements with fractions \(x_i\)), which encourages sampling from a large
+palette of chemical elements. At the time of writing, the ULTERA
+Database is the largest collection of HEA data, containing over 6,300
+points manually extracted from almost 550 publications. It covers 37
+chemical elements resulting in extremely large compositional spaces (see Section \ref{nimplex:ssec:combinatorialcomplexities});
+thus, it becomes critical to answer questions like \emph{``Which
+combination of how many elements will unlock the most expansive and
+simultaneously dense dataset?''} which has \(2^{37}-1\) or 137 billion
+possible solutions.
+
+Another significant example of intended use is to perform similar
+optimizations over large (many millions) datasets of quantum mechanics
+calculations spanning 93 chemical elements and accessible through
+OPTIMADE API \cite{Evans2024} described in Section \ref{mpdd:sec:optimade}.
 
 
-A
+\section{nimCSO - A Nim Package for Compositional Space Optimization} \label{nimcso:sec:nimcsosoftware}
+
+\texttt{nimCSO} is a high-performance tool implementing several methods
+for selecting components (data dimensions) in compositional datasets,
+which optimize the data availability and density for applications such
+as machine learning. Making said choice is a combinatorically hard
+problem for complex compositions existing in highly dimensional spaces
+due to the interdependency of components being present. Such spaces are
+encountered, for instance, in materials science, where datasets on
+Compositionally Complex Materials (CCMs) often span 20-45 chemical
+elements, 5-10 processing types, and several temperature regimes, for up
+to 60 total data dimensions.
+
+At its core, \texttt{nimCSO} leverages the metaprogramming ability of
+the Nim language \cite{Rumpf2006Nim:github.com/nim-lang/Nim} to
+optimize itself at the compile time, both in terms of speed and memory
+handling, to the specific problem statement and dataset at hand based on
+a human-readable configuration file. As demonstrated in Section \ref{nimcso:sec:methods}, \texttt{nimCSO} reaches the physical limits of the hardware (L1
+cache latency) and can outperform an efficient native Python
+implementation over 400 times in terms of speed and 50 times in terms of
+memory usage (\emph{not} counting interpreter), while also outperforming
+NumPy implementation 35 and 17 times, respectively, when checking a
+candidate solution.
+
+\texttt{nimCSO} is designed to be both (1) a user-ready tool,
+implementing two efficient brute-force approaches (for handling up to 25
+dimensions), a custom search algorithm (for up to 40 dimensions), and a
+genetic algorithm (for any dimensionality), and (2) a scaffold for
+building even more elaborate methods in the future, including heuristics
+going beyond data availability. All configuration is done with a simple
+human-readable \texttt{YAML} config file and plain text data files,
+making it easy to modify the search method and its parameters with no
+knowledge of programming and only basic command line skills.
 
 
 
-\section{nimCSO - A Nim Package for Compositional Space Optimization} \label{sec:nimcsosoftware}
+\section{Novel Methods and their Performance} \label{nimcso:sec:methods}
+
+\subsection{Overview} \label{nimcso:sec:methodsoverview}
+
+As shown in Figure \ref{nimcso:fig:main}, \texttt{nimCSO} can be used as a
+user-tool based on human-readable configuration and a data file
+containing data ``elements'' which can be any strings representing
+problem-specific names of, e.g., market stocks, drug names, or chemical
+formulas. A single command is then used to recompile
+(\texttt{nim\ c\ -f}) and run (\texttt{-r}) problem
+(\texttt{-d:configPath=config.yaml}) with \texttt{nimCSO}
+(\texttt{src/nimcso}) using one of several methods. Advanced users can
+also quickly customize the provided methods with brief scripts using the
+\texttt{nimCSO} as a data-centric library.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{nimcso/nimCSO_mainFigure.png}
+\caption{Schematic of core nimCSO data flow with a description of key
+methods. Metaprogramming techniques are used to compile the software optimized to
+the human-readable data and configuration files at hand.}
+\label{nimcso:fig:main}
+\end{figure}
+
+Internally, \texttt{nimCSO} is built around storing the data and
+solutions in one of two ways. The first is as bits inside an integer
+(\texttt{uint64}), which allows for the highest speed and lowest memory
+consumption possible but is limited to 64 dimensions and does not allow
+for easy extension to other use cases; thus, as of publication, it is
+used only in a particular \texttt{bruteForceInt} routine. The second
+one, used in \texttt{bruteForce}, \texttt{algorithmSearch}, and
+\texttt{geneticSearch}, implements a custom easily extensible
+\texttt{ElSolution} type containing heuristic value and
+\texttt{BitArray} payload, which is defined at compile time based on the
+configuration file to minimize necessary overheads. Both encodings
+outperform typical native Python and NumPy implementations, as shown in
+Table \ref{nimcso:tab:methodbenchmarks}.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1478}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1478}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1652}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2609}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2522}}@{}}
+\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Tool
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Object
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Time per Dataset
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Time per Entry \emph{(Relative)}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Database Size \emph{(Relative)}
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Tool
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Object
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Time per Dataset
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Time per Entry \emph{(Relative)}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Database Size \emph{(Relative)}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\midrule\noalign{}
+\texttt{Python}\textsuperscript{3.11} & \texttt{set} & 327.4 µs & 152.3
+ns \emph{(x1)} & 871.5 kB \emph{(x1)} \\
+\texttt{NumPy}\textsuperscript{1.26} & \texttt{array} & 40.1 µs & 18.6
+ns \emph{(x8.3)} & 79.7 kB \emph{(x10.9)} \\
+\texttt{nimCSO}\textsuperscript{0.6} & \texttt{BitArray} & 9.2 µs & 4.4
+ns \emph{(x34.6)} & 50.4 kB \emph{(x17.3)} \\
+\texttt{nimCSO}\textsuperscript{0.6} & \texttt{uint64} & 0.79 µs & 0.37
+ns \emph{(x413)} & 16.8 kB \emph{(x52)} \\
+\bottomrule\noalign{}
+\caption{Benchmarks of average time to evaluate how many datapoints
+would be lost if 5 selected components were removed from a dataset with
+2,150 data points spanning 37 components (10,000 run average), and
+the size of the data structure representing the dataset. Values were
+obtained by running scripts in \texttt{benchmarks} on Apple M2
+Max CPU.}
+\label{nimcso:tab:methodbenchmarks}
+\endlastfoot
+\end{longtable}
 
 
-B
-
-\section{Novel Methods and their Performance}
 
 
+\subsection{High-Performance Brute-Force through Compile Time Metaprogramming} \label{nimcso:ssec:bruteforce}
+
+The brute-force search is a naïve method of evaluating all
+possibilities; however, its near-zero overhead can make it the most
+efficient for small problems. In this implementation, all entries in the
+\emph{power set} of \(N\) considered elements are represented as a range
+of integers from \(0\) to \(2^{N} - 1\), and used to initialize
+\texttt{uint64}/\texttt{BitArray}s on the fly. To minimize the memory
+footprint of solutions, the algorithm only keeps track of the best
+solution for a given number of elements present in the solution. Current
+implementations are limited to 64 elements, as it is not feasible beyond
+approximately 30 elements; however, the one based on \texttt{BitArray}
+could be easily extended if needed.
+
+\subsection{Algorithmic Searches} \label{nimcso:ssec:algorithmicsearches}
+
+The algorithm implemented in the \texttt{algorithmSearch} routine,
+targeting high dimensional problems (20-50), iteratively expands and
+evaluates candidates from a priority queue (implemented through an
+efficient binary heap \cite{Williams1964AlgorithmHeapsort} while leveraging the fact that \emph{the number of data points lost when removing elements \texttt{A} and \texttt{B} from the dataset
+has to be at least as large as when removing either \texttt{A} or
+\texttt{B} alone} to delay exploration of candidates until they can
+contribute to the solution. Furthermore, to (1) avoid revisiting the
+same candidate without keeping track of visited states and (2) further
+inhibit the exploration of unlikely candidates, the algorithm
+\emph{assumes} that while searching for a given order of solution,
+elements present in already expanded solutions will not improve those
+not yet expanded. This effectively prunes candidate branches requiring
+two or more levels of backtracking. In the authors' tests, this method
+has generated the same results as \texttt{bruteForce}, except for
+occasional differences in the last explored solution.
 
 
-C
+\subsection{Searches Based on Genetic Algorithms} \label{nimcso:ssec:geneticsearches}
 
-\subsubsection{Overview}
+Beyond 50 components, the
+\protect\hyperlink{algorithm-based-search}{algorithm-based} method will
+likely run out of memory on most personal systems. The
+\texttt{geneticSearch} routine resolves this issue through an evolution
+strategy to iteratively improve solutions based on custom
+\texttt{mutate} and \texttt{crossover} procedures. Both are of uniform
+type \cite{Goldberg1989} with
+additional constraint of Hamming weight
+\cite{Knuth} preservation in order to
+preserve number of considered elements in parents and offspring. In
+\texttt{mutate} this is achieved by using purely random bit swapping,
+rather than more common flipping, as demonstrated in the Figure
+\ref{nimcso:fig:mutate}.
 
-D
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.3\textwidth]{nimcso/nimcso_mutate.drawio.png}
+  \caption{Schematic of \texttt{mutate} procedure where bits are swapping
+  randomly, so that (1) bit can swap itself, (2) bits can swap causing a
+  flip, or (3) bits can swap with no effect.}
+  \label{nimcso:fig:mutate}
+\end{figure}
+
+Meanwhile, in \texttt{crossover}, this constraint is satisfied by
+passing overlapping bits directly, while non-overlapping bits are
+shuffled and distributed at positions present in one of the parents, as
+shown in Figure \ref{nimcso:fig:crossover}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{nimcso/nimcso_crossover.drawio.png}
+\caption{Schematic of uniform \texttt{crossover} procedure preserving
+Hamming weight implemented in \texttt{nimCSO}.}
+\label{nimcso:fig:crossover}
+\end{figure}
+
+The above are applied iteratively, with best solutions carried to next
+generation, until the solution converges or the maximum number of
+iterations is reached. Unlike the other methods, the present method is
+not limited by the number of components and lets user control both time
+and memory requirements, either to make big problems feasible or to get
+a good-enough solution quickly in small problems. However, it comes with
+no optimality guarantees.
 
 
+\subsection{Use Examples and Benchmarks}
+
+The tool comes with two pre-defined example problems to demonstrate its
+use. The first one is defined in the default \texttt{config.yaml} file
+and goes through the complete dataset of 2,150 data points spanning 37
+components in \texttt{dataList.txt} based on the ULTERA Dataset, described in Chapter \ref{chap:ultera}, as of January 2024. It is
+intended to showcase \texttt{algorithmSearch}/\texttt{-as} and
+\texttt{geneticSearch}/\texttt{-gs} methods, as brute-forcing would take
+around one day. The second one is defined in \texttt{config\_rhea.yaml}
+and uses the same dataset but a limited scope of components critical to
+RHEAs \cite{Senkov2018} and is
+intended to showcase \texttt{bruteForce}/\texttt{-bf} and
+\texttt{bruteForceInt}/\texttt{-bfi} methods. With four simple commands
+(see Table \ref{nimcso:tab:benchmarksmethods} below), the user can compare the methods' performance and the solutions' quality.
 
 
-\subsection{High-Performance Brute-Force through Compile Time Metaprogramming}
-
-E
-
-
-
-
-\subsubsection{Algorithmic Searches}
-
-F
-
-
-
-
-\subsubsection{Searches Based on Genetic Algorithms}
-
-G
-
-
-
-
-
-\subsubsection{Use Examples and Benchmarks}
-
-H
-
-
-
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.6623}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1429}}
+  >{\centering\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1818}}@{}}
+\caption{Four example tasks alongside typical CPU time and memory usage
+on Apple M2 Max.}
+\label{nimcso:tab:benchmarksmethods}
+\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Task Definition (\texttt{nim\ c\ -r\ -f\ -d:release\ ...})
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Time (s)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Memory (MB)
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Task Definition (\texttt{nim\ c\ -r\ -f\ -d:release\ ...})
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Time (s)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Memory (MB)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{-d:configPath=config.yaml\ src/nimcso\ -as} & 302s & 488 MB \\
+\texttt{-d:configPath=config.yaml\ src/nimcso\ -gs} & 5.8s & 3.2 MB \\
+\texttt{-d:configPath=config\_rhea.yaml\ src/nimcso\ -as} & 0.076s & 2.2
+MB \\
+\texttt{-d:configPath=config\_rhea.yaml\ src/nimcso\ -gs} & 0.429s & 2.1
+MB \\
+\texttt{-d:configPath=config\_rhea.yaml\ src/nimcso\ -bf} & 4.171s & 2.0
+MB \\
+\texttt{-d:configPath=config\_rhea.yaml\ src/nimcso\ -bfi} & 0.459s &
+2.0 MB \\
+\end{longtable}
 
 
 \printbibliography[heading=subbibintoc]

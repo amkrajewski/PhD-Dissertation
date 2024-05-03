@@ -16,6 +16,7 @@
 \usepackage{listings}
 \usepackage{minted}
 \usepackage{adjustbox}
+\usepackage{array, booktabs}
 
 %Font
 \renewcommand{\thelinenumber}{\raisebox{1pt}{\textcolor[RGB]{200,200,200}{\arabic{linenumber}}}}
@@ -40,6 +41,7 @@
     mincitenames=1
     ]{biblatex}
 \addbibresource{referencesAdam.bib}
+\addbibresource{extras/nimcsoRefs.bib}
 \addbibresource{extras/referencesSiegel.bib}
 \renewcommand*{\bibfont}{\footnotesize}
 
@@ -130,7 +132,7 @@ The Graduate School\\
 \setstretch{2}
 {
 \Large
-\textbf{EFFICIENT MATERIALS INFORMATICS THROUGH DOMAIN KNOWLEDGE}\\
+\textbf{EFFICIENT MATERIALS INFORMATICS BETWEEN ELECTRONS AND ROCKETS}\\
 }
 \vfill
 A Dissertation in\\
@@ -220,7 +222,7 @@ Adam M. Krajewski
 We would also like to thank \textbf{Luke Myers} and \textbf{Ricardo Amaral} for testing code exercises and proofreading the documentation.
 
 nimCSO:\\
-This work has been funded through grants: DOE-ARPA-E DE-AR0001435, NSF-POSE FAIN-2229690, and ONR N00014-23-2721. We would also like to acknowledge Dr. Jonathan Siegel at Texas A\&M University for several valuable discussions and feedback on the project.
+We would also like to acknowledge Dr. Jonathan Siegel at Texas A\&M University for several valuable discussions and feedback on the project.
 
 
 
@@ -262,6 +264,8 @@ Jonathan Siegel who assisted me in writing my first-author publications adopted 
 \begin{appendices}
 
 \mypart{Appendices}
+
+\include{nimplexTutorial1}
 
 \include{nimplexTutorial2}
 
