@@ -1,9 +1,9 @@
 \chapter{Efficient generation of grids and traversal graphs in compositional spaces towards exploration and path planning exemplified in materials} \label{chap:nimplex}
 
+\acknowledge{
+This chapter adopts verbatim a preprint by \citet{Krajewski2024Nimplex} submitted for publication to the npj Unconventional Computing. This work was co-authored with Wesley F. Reinhart, Allison M. Beese, and Zi-Kui Liu. All text and associated software was written by Adam M. Krajewski, while co-authors provided edits and guidance.
+}
 
-Many disciplines of science and engineering deal with problems related to compositions, ranging from chemical compositions in materials science to portfolio compositions in economics. They exist in non-Euclidean simplex spaces, causing many standard tools to be incorrect or inefficient, which is significant in combinatorically or structurally challenging spaces exemplified by Compositionally Complex Materials (CCMs) and Functionally Graded Materials (FGMs). Here, we explore them conceptually in terms of problem spaces and quantitatively in terms of computational feasibility.
-
-This work implements several essential methods specific to the compositional (simplex) spaces through a high-performance open-source library \texttt{nimplex}. Most significantly, we derive and implement an algorithm for constructing a novel n-dimensional simplex graph data structure, which contains all discretized compositions and all possible neighbor-to-neighbor transitions as pointer arrays. Critically, no distance or neighborhood calculations are performed, instead leveraging pure combinatorics and the ordering in procedurally generated simplex grids, keeping the algorithm $\mathcal{O}(N)$, so that graphs with billions of transitions take seconds to construct on a laptop. Furthermore, we demonstrate how such graph representations can be combined to express path-planning problem spaces and to incorporate prior knowledge while keeping the problem space homogeneous. This allows for efficient deployment of existing high-performance gradient descent, graph traversal search, and other path optimization algorithms.
 
 \section{Introduction} \label{nimplex:sec:introduction}
 
@@ -486,83 +486,5 @@ All distributions of the source contain (1) the core library, (2) additional uti
     \item (Selected Major Versions) A public repository archive on Zenodo under DOI: \href{https://doi.org/10.5281/zenodo.10611931}{10.5281/zenodo.10611931}.
 \end{itemize}
 
-\section*{Contributions}
-\textbf{Adam M. Krajewski:} Conceptualization, Methodology, Software, Writing - Original Draft, Validation, Visualization
-\textbf{Alison Beese:} Funding acquisition, Writing - Review \& Editing
-\textbf{Wesley F. Reinhart:} Funding acquisition, Writing - Review \& Editing
-\textbf{Zi-Kui Liu:} Funding acquisition, Supervision, Writing - Review \& Editing, Resources
-
-
-\section{Appendix A} \label{nimplex:app1}
-
-As mentioned in Section~\ref{nimplex:ssec:functionallygraded}, different grades of base metals may have very different costs associated with them. For instance, as of December 2023, at \href{https://www.fishersci.com}{Fisher Scientific online store (fishersci.com)}, one can purchase:
-\begin{itemize}
-    \item High-purity Zr wire: $250cm$ of $0.25mm$-diameter (AA00416CB) for $\$317$ or $\approx 390\frac{\$}{g}$
-    \item $99.2\%$ (Zr+$4.5\%$Hf) wire: $200cm$ of $0.25mm$-diameter (AA43334G2) for $\$63$ or $\approx 100\frac{\$}{g}$. 
-    \item $99.97\%$ (Hf+$3\%$Zr) wire: $200cm$ of $0.25mm$-diameter (AA10200G2) for $\$200$ or $\approx 156\frac{\$}{g}$. 
-\end{itemize} 
-
-Now, if one tries to create FGMs which navigates Zr-rich regions in Hf-containing space, there are two possible choices for Zr source, namely, pure Zr or the (Zr+$4.5\%Hf$) alloy. The first one enables all possible Zr fractions, unlike the latter which establishes the minimum Hf fraction at 4.5\% at the "Zr" corner of the attainable space tetrahedron (anonymous example of this is in Figure~\ref{nimplex:fig:fgmspaces}). Such an ability may be necessary, e.g., to avoid infeasible regions of space, but if not, it represents an unnecessary cost. 
-
-For instance, to obtain (Zr+$10\%wt$Hf) alloy, one can combine high-purity Zr and (Hf+$3\%Zr$) for $\approx 360\frac{\$}{g}$ or equivalently from (Zr+$4.5\%$Hf) and (Hf+$3\%$Zr) for $\approx 103\frac{\$}{g}$, representing 3.5 times cost reduction.
-
-At Fisher Scientific, as of writing this, the pure-Zr wire is only available in $0.25mm$ diameter, thus, the above considerations were restricted to it to keep the comparisons fair. However, for the (Zr+$4.5\%$Hf) grade, many less-expensive form factors are available as it is much more industry relevant. Furthermore, larger package sizes ($\geq50g$) are available driving the cost down further. For instance, the following $1mm$ wires can be purchased:
-
-\begin{itemize}
-    \item $99.2\%$ (Zr+$4.5\%$Hf) wire: $10m$ of $1mm$-diameter  (AA14627H2) for $\$130$ or $\approx 2.5\frac{\$}{g}$. 
-    \item $99.97\%$ (Hf+$3\%$Zr) wire: $5m$ of $1mm$-diameter (AA10205CC) for $\$580$ or $\approx 11.3\frac{\$}{g}$. 
-\end{itemize}
-
-If the above are used, one can now obtain the same (Zr+$10\%wt$Hf) alloy for $\approx 3\frac{\$}{g}$ or 120 times cheaper relative to using high purity Zr in the only available physical form factor.
-    
-
-\section*{Appendix B}  \label{nimplex:app2}
-
-The equation for the fraction of a cube bound by [111] plane, equivalent to the result for $f(4)$ in Section~\ref{nimplex:sec:randomuniformsampling}, can be quickly obtained by considering that the volume of a pyramid is given by $V = \frac{A_B h}{3}$, where $A_B$ is the base area of equilateral triangle $\frac{\sqrt{3}}{4}\times\sqrt{2}^2 = \frac{\sqrt{3}}{2}$ and $h$ is $\frac{1}{\sqrt{3}}$. Thus we get 
-$$V = \frac{\frac{\sqrt{3}}{2} \frac{1}{\sqrt{3}}}{3} = \frac{1}{6}$$ 
-agreeing with the aforementioned result in Section~\ref{nimplex:sec:randomuniformsampling}.
-
-\section*{Appendix C}  \label{nimplex:app3}
-
-The equation for "forward" and "backward" jumps in 3-simplex graph corresponding to a quaternary chemical system. 
-
-\begin{minted}[xleftmargin=3\parindent]{nim}
-proc neighborsLink4C(...): void =
-  let jump0 = 1  #binom(x, 0)=1
-  let jump1 = binom(1+ndiv-x[0]-x[1], 1)
-  let jump2 = binom(2+ndiv-x[0], 2)
-  
-  if x[0] != 0:
-    # quaternary
-    neighbors[i].add(i - jump2)
-    # quaternary
-    neighbors[i].add(i - jump2 - jump1)
-    # quaternary
-    neighbors[i].add(i - jump2 - jump1 - jump0) 
-  
-  if x[1] != 0:
-    # ternary
-    neighbors[i].add(i - jump1)    
-    # ternary
-    neighbors[i].add(i - jump1 - jump0)         
-    # quaternary
-    neighbors[i].add(i + jump2 - jump1 - x[1])  
-  
-  if x[2] != 0:
-    # binary
-    neighbors[i].add(i - jump0)     
-    # ternary
-    neighbors[i].add(i + jump1 - jump0)    
-    # quaternary
-    neighbors[i].add(i + jump2 - jump0 - x[1])  
-  
-  if x[3] != 0:
-    # binary
-    neighbors[i].add(i + jump0)        
-    # ternary
-    neighbors[i].add(i + jump1)          
-    # quaternary     
-    neighbors[i].add(i + jump2 - x[1])              
-\end{minted}
 
 \printbibliography[heading=subbibintoc]

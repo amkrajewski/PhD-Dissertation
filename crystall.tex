@@ -1,23 +1,77 @@
 \chapter{Ergodic Ensemble Approach to the Material Discovery} \label{chap:crystall}
 
-\section{New Stable Structures?} \label{sec:newstable}
+\acknowledge{
+This chapter adopts parts of a manuscript draft planned for publication before dissertation submission, co-authored with Ricardo Amaral, Jonathan W. Siegel, Rushi Gong, ShunLi Shang, and Zi-Kui Liu. All of included text was written by Adam M. Krajewski. Described software has been developed by Adam M. Krajewski since 2020 and by Ricardo Amaral since 2024, with Rushi Gong and ShunLi Shang developing it through testing-feedback loop. ShunLi Shang and Zi-Kui Liu provided edits and guidance. It also adapts excerpt written by Adam M. Krajewski for \citet{Im2022ThermodynamicModeling}. 
+}
 
-crystALL introduction
+\section{New Stable Structure Prediction?} \label{crystall:sec:newstable}
+
+The ability to determine atomic structure of existing or hypothetical solids formed by chemical elements is one of the fundamental challanges in theoritical crystallography and in materials science as a whole. For the last several decades \cite{Hawthorne1994}, the two remaining challenges are predictions of (a) compositions forming compounds of interest and (b) candidate topologies or approximate atomic arrangements they can form. Given these, the exact structure can be solved experimentally, by matching X-ray diffraction profile to candidates using the method by \citet{LeBail1988} and interpreting the profile, or using deep learning \cite{Yue2024}. Similar analysis can be done, e.g., on the Raman spectrum \cite{Ferrari2013}. For hypothetical compounds in their pure states, the exact structure can also be solved using ab initio quantum mechanical methods, such as Kohn-Sham density functional theory (DFT) \cite{Kohn1965}, which are computationally expensive but can provide accurate results and continue to improve \cite{Kothakonda2023}.
+
+The latter problem of proposing the topologies has been traditionally approached by finding geometries satisfying constraints, like the principles systematized by [@Pauling1929], which included then-novel concepts like coördination. Over decades, this has evolved into automated computational tools like the \texttt{GRINSP} by \citet{LeBail2005} which can propose such structures. More recently, increasing computational power shifted focus towards testing many options, with some of the methods starting from random arrangements and collapsing them into local minima, like \texttt{AIRSS} by \citet{Pickard2011}, or by evolutionary techniques, like \texttt{USPEX} \cite{Glass2006}. 
+
+Several efforts have been made to tackle both topological and compositional challenges simultaneously, such as high-throughput construction of the \texttt{AFLOW} \cite{Curtarolo2012} DFT Database \cite{Toher2018} (and others, described in Chapter \ref{chap:mpdd}) built by systematically populating the earlier, yet continuously growing, library of prototype structures \cite{Mehl2016} with new chemistries based on the expert knowledge. However, even for a limited set of elements, this problem becomes combinatorically challenging \cite{Krajewski2024Nimplex}. This prompted recent efforts into (1) systematic similarity-driven prediction of substitutions which would result in finding new low-energy structures \cite{Wang2021}; (2) into brute-force substitutions filtered by machine learning (ML) models \cite{Schmidt2023}; and (3) the combination thereof in \citet{Ye2022} and \citet{Merchant2023}, leading to rapid discovery of new structures stable at 0K temperature and 0Pa pressure against competing arrangements.
+
+While finding new candidates for zero-temperature zero-pressure hypothetical structures certainly opens the world for new discoveries, it warrants some key questions. Firstly, *"To what degree have we biased the discovery of new structures?"* through many iterations of biasing the search to our expectations, which is philosophically analogous to how retraining Large Language Models (LLMs) and other ML models on generated data makes them underestimate improbable events causing, so called, *Model Collapse* \cite{Shumailov2023}, and drift from the distribution of the real data \cite{Alemohammad2023}. In the context of materials, the latter is depicted well by Fig. 5 in \citet{Ye2022} showing relatively small overlap between experimentally known structures and new ones predicted to be stable.
+
+In case the data becomes biased towards low-energy solutions, one needs to ask *"Do we need the diverse energy landscapes to discover new materials?"* to which the answer is a multifaceted yes.
+
+\vspace{24pt}
+\textbf{TODO: One more neat paragraph covering:}
+\begin{itemize}
+    \item Metastable are critical to fitting thermodyamic models as protodata. At the same time, CALPHAD does not care and can model unknown *phases* \citet{Olson2023}
+    \item Going beyond stability. It is not enough \cite{Zunger2019} because of the complexities involved in the synthesis of new materials. Phase coexistance can take properties to extreme, e.g. infinitely negative thermal expansion \cite{Liu2022}. 
+    \item Superconductors \cite{Ferreira2023}
+    \item AIRSS generates polymorph populations like Fig. 6 in [@Pickard2011] providing a diverse set of many metastable structures.
+\end{itemize}
 
 
-\section{Purely data-driven automated structure1
-prediction for unidentified chemical compounds} \label{sec:crystall}
+\section{\texttt{crystALL} - Purely Data-Driven Structure Prediction for Unidentified Chemical Compounds} \label{crystall:sec:crystall}
 
 A
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{crystall/NdBi2_GraphicalAbstract_V4.png}
+    \includegraphics[width=0.7\textwidth]{crystall/NdBi2_GraphicalAbstract_V4.png}
     \caption{\texttt{crystALL} core schematic of operation based around performing all permutations of elemental substitutions and energy predictions, exemplified in the case of $NdBi_2$ intermetallic.}
-    \label{fig:crystallcompound}
+    \label{crystall:fig:crystallcompound}
 \end{figure}
 
-\section{Identifying $NdBi_2$ Structure} 
+
+
+\section{Succesfully Identifying \ch{NdBi_2} Structure} \label{crystall:ndbi2}
+
+The first deployment of the \texttt{crystALL} method happened within \citet{Im2022ThermodynamicModeling} work which re-assesed thermodynamic models of Nd-Bi chemical system, which was an important step towards rational design of rare-earth alloys for clean energy technologies through, e.g., electrochemical recovery of rare-earth elements and prospects of novel energy storage devices like liquid metal batteries. As noted in the publication, the \ch{NdBi_2} compound has long been known to be thermodynamically stable \cite{Yoshihara1975Rare-earthBismuthides}; however its crystal structure has remained unknown presenting a significant obstacle in using ab initio methods to study it. Using \texttt{crystALL}'s data-mining approach deployed on \texttt{MPDD}, the possible configurations of \ch{NdBi_2} were determined and later validated by DFT-based methods, as depicted earlier in Figure \ref{crystall:fig:crystallcompound}.
+
+First, all of the 26,055 \ch{AB_2}-type configurations were extracted from the contemporary mid-2020 snapshot of \texttt{MPDD}, which at the time had approximately 1.3 million total configurations dataset of DFT-relaxed or experimental structures covering all materials contained in the Open Quantum Materials Database (OQMD), the Materials Project (MP), the Joint Automated Repository for Various Integrated Simulations (JARVIS), and the Crystallography Open Database (COD), described in Chapter \ref{chap:mpdd}. Following the extraction and substitution, all generated candidates have been featurized using \texttt{Ward2017} \cite{Ward2017IncludingTessellations} and their energies were predicted through \texttt{SIPFENN} Novel Materials Model (NN20) described in Chapter \ref{chap:sipfenn}. The 1,000 lowest energy candidates were selected and their feature-space representations were embedded into lower dimensional space (3D) using popular t-distributed stochastic neighbor embedding (t-SNE) \cite{HintonStochasticEmbedding}, and clustered using k-means approach, as depicted in Figure \ref{crystall:fig:ndbi2clusters}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{crystall/crystall_NdBi2.png}
+    \caption{\texttt{crystALL}'s t-SNE low-dimensional (3D) embedding of \texttt{Ward2017} feature vectors of 1,000 lowest energy \ch{NdBi_2} candidates, as predicted by \texttt{SIPFENN}, clustered with k-means approach to determine the ensemble of unique structures.}
+    \label{crystall:fig:ndbi2clusters}
+\end{figure}
+
+
+Next, the \texttt{SIPFENN}-predicted formation energies were overlaid on the candidate space, as shown in Figure \ref{crystall:fig:ndbi2energies}, and the most stable candidate from each cluster has been selected for further evaluation under 3 different DFT settings in the order of predicted stability.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{crystall/crystall_NdBi2_energies.png}
+    \caption{\texttt{crystALL}'s t-SNE low-dimensional (3D) embedding of \texttt{Ward2017} feature vectors of 1,000 lowest energy \ch{NdBi_2} candidates overlaid with \texttt{SIPFENN} formation energies depicting low energy ("hot") regions.}
+    \label{crystall:fig:ndbi2energies}
+\end{figure}
+
+
+Simultaneously to \texttt{crystALL} method, an alternative, \texttt{USPEX} evolutionary structure search \cite{Lyakhov2013NewUSPEX}, mentioned earlier in Section \ref{crystall:sec:newstable}, has also been deployed and, as shown in Figure \ref{crystall:fig:ndbi2dft}, and found a lower energy structure than any of the 20 generated by \texttt{crystALL}, as shown in Figure \ref{crystall:fig:ndbi2dft}. However, as explained in Section \ref{crystall:sec:newstable}, the 0K lowest energy structure is not necessarily the one being searched for. This has been precisely the case in \citet{Im2022ThermodynamicModeling}, as the XRD patterns have been matched to a mixture of two 0K metastable configurations, denoted by arrows in \ref{crystall:fig:ndbi2dft}, which were present in the \texttt{crystALL}-generated ensemble of states.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{crystall/crystall_NdBi2dft.jpg}
+    \caption{0K formation energies of structure candidates predicted by USPEX (\#3) and \texttt{crystALL} (\#4-23). The mixture of 2nd and 6th lowest-energy candidates has matched the experimental observations of \ch{NdBi_2} demonstrating both \texttt{crystALL}'s predictive ability and criticality of 0K metastable structures.}
+    \label{crystall:fig:ndbi2dft}
+\end{figure}
 
 
 \section{Predicting Compounds of Uncertain Compositions} \label{sec:crystallcompositional}
@@ -33,7 +87,11 @@ B
 
 \section{Connection to Zentropy} \label{sec:crystallzentropy}
 
-Zentropy
+\begin{itemize}
+    \item 
+    \item
+    \item
+\end{itemize}
 
 
 \printbibliography[heading=subbibintoc]

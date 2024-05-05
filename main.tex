@@ -5,6 +5,7 @@
 \usepackage{graphicx, lipsum, textcomp, float} %figure formatting
 \usepackage{hyperref} %referancing package
 %\usepackage[version=4]{mhchem}  %chemical equations and formulas
+\usepackage{chemformula}
 %\usepackage{advdate, datenumber} %date packages
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -17,6 +18,7 @@
 \usepackage{minted}
 \usepackage{adjustbox}
 \usepackage{array, booktabs}
+\usepackage{nameref}
 
 %Font
 \renewcommand{\thelinenumber}{\raisebox{1pt}{\textcolor[RGB]{200,200,200}{\arabic{linenumber}}}}
@@ -42,6 +44,7 @@
     ]{biblatex}
 \addbibresource{referencesAdam.bib}
 \addbibresource{extras/nimcsoRefs.bib}
+\addbibresource{extras/crystallRefs.bib}
 \addbibresource{extras/referencesSiegel.bib}
 \renewcommand*{\bibfont}{\footnotesize}
 
@@ -101,6 +104,7 @@
 \definecolor{citegreen}{RGB}{15, 133, 13}
 \definecolor{hyperlinkpurple}{RGB}{42, 0, 163}
 \definecolor{subtlegray}{gray}{0.98}
+\definecolor{subduedgray}{gray}{0.75}
 \hypersetup{
     colorlinks=true,
     linkcolor=hyperlinkpurple,
@@ -108,6 +112,27 @@
     urlcolor=teal,
     citecolor=citegreen
 }
+
+% Macros:
+% Full number and reference name hyperlinking
+\newcommand*{\fullref}[1]{\hyperref[{#1}]{\ref*{#1} \nameref*{#1}}}
+% Acknoledgments on per-chapter basis
+\newcommand{\acknowledge}[1]{\textit{
+\small
+Acknowledgment: #1
+}}
+% TODO markers.
+\newcommand{\todo}{
+\begin{center}
+\textcolor{mauroblue}{
+\textit{
+This section is currently under preparation.
+}}
+\end{center}
+}
+
+
+
 
 % Notes:
 % Reference prefixing on Mac: sed -i '' -E 's/\\(label|ref|nameref|autoref|eqref){([^}]*)/\\\1{pysipfenn:\2/g' pysipfenn.tex
@@ -225,11 +250,6 @@ nimCSO:\\
 We would also like to acknowledge Dr. Jonathan Siegel at Texas A\&M University for several valuable discussions and feedback on the project.
 
 
-
-Co-Authors:
-Jonathan Siegel who assisted me in writing my first-author publications adopted here as Chapters \ref{chap:sipfenn} and \ref{chap:pysipfenn}, with particularly significant contributions to Subsection \ref{sipfenn:sec:methodology}, Subsection \ref{sipfenn:ref:machinelearningoverview}, and Section \ref{sipfenn:appedix1}.
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage
@@ -239,19 +259,21 @@ Jonathan Siegel who assisted me in writing my first-author publications adopted 
 
 \include{introduction}
 
-\include{mpdd}
-
-\include{crystall}
-
 \include{sipfenn}
 
 \include{pysipfenn}
 
+\include{mpdd}
+
+\include{crystall}
+
 \include{ultera}
 
-\include{inversedesign}
+\include{pyqalloy}
 
 \include{nimcso}
+
+\include{inversedesign}
 
 \include{nimplex}
 
@@ -264,6 +286,8 @@ Jonathan Siegel who assisted me in writing my first-author publications adopted 
 \begin{appendices}
 
 \mypart{Appendices}
+
+\include{supdiscussions}
 
 \include{nimplexTutorial1}
 
