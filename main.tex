@@ -25,7 +25,7 @@
 \usepackage[scaled]{beramono}
 \renewcommand{\familydefault}{\sfdefault} 
 \definecolor{darkgreen}{rgb}{0.05, 0.3, 0.1}
-%\usepackage[htt]{hyphenat} %texttt hyphenation breaks
+\usepackage[htt]{hyphenat} %texttt hyphenation breaks
 \let\oldtexttt\texttt
 \renewcommand{\texttt}[1]{\oldtexttt{\textcolor{darkgreen}{#1}}}
 
@@ -116,7 +116,7 @@
 
 % Macros:
 % Full number and reference name hyperlinking
-\newcommand*{\fullref}[1]{\hyperref[{#1}]{\ref*{#1} \nameref*{#1}}}
+\newcommand*{\fullref}[1]{\hyperref[{#1}]{\ref*{#1} on \nameref*{#1}}}
 % Acknoledgments on per-chapter basis
 \newcommand{\acknowledge}[1]{\textit{
 \small
@@ -158,7 +158,7 @@ The Graduate School\\
 \setstretch{2}
 {
 \Large
-\textbf{EFFICIENT MATERIALS INFORMATICS BETWEEN ELECTRONS AND ROCKETS}\\
+\textbf{EFFICIENT MATERIALS INFORMATICS BETWEEN ROCKETS AND ELECTRONS}\\
 }
 \vfill
 A Dissertation in\\
@@ -212,9 +212,12 @@ Associate Professor of Mathematics\\
 \newpage
 \chapter*{Abstract}
 
-This 
+The true power of computational research typically can lay in either what it accomplishes or what it enables others to accomplish. In this work, both avenues are simultaneously embraced across several distinct efforts existing at three general scales of abstractions of what a material is - atomistic, physical, and design. At each, an efficient materials informatics infrastructure is being built from the ground up based on (1) the fundamental understanding of the underlying prior knowledge, including the data, (2) deployment routes that take advantage of it, and (3) pathways to extend it in an autonomous or semi-autonomous fashion, while heavily relying on artificial intelligence (AI) to guide well-established DFT-based ab initio and CALPHAD-based thermodynamic methods.
 
-The true power of computational research typically can lay in either what it accomplishes or what it enables other to accomplish 
+The resulting multi-level discovery infrastructure is highly generalizable as it focuses on encoding problems to solve them easily rather than looking for an existing solution. To showcase it, this dissertation discusses the design of multi-alloy functionally graded materials (FGMs) incorporating ultra-high temperature refractory high entropy alloys (RHEAs) towards gas turbine and jet engine efficiency increase reducing \ch{CO_2} emissions, as well as hypersonic vehicles. It leverages a new graph representation of underlying mathematical space using a newly developed algorithm based on combinatorics, not subject to many problems troubling the community. Underneath, property models and phase relations are learned from optimized samplings of the largest and highest quality dataset of HEA in the world, called ULTERA. At the atomistic level, a data ecosystem optimized for machine learning (ML) from over 4.5 million relaxed structures, called MPDD, is used to inform experimental observations and improve thermodynamic models by providing stability data enabled by a new efficient featurization framework.
+
+
+
 
 \setstretch{1}
 \newpage
@@ -235,20 +238,31 @@ The true power of computational research typically can lay in either what it acc
 \label{acknowledgments}
 \addcontentsline{toc}{chapter}{\nameref{acknowledgments}}
 
+PSU:\\
+There will be many names here and I will try to include everyone.
+
+\todo
+
 This work was made possible by the financial support and training provided by US Department of Energy (DOE) via Awards DE-FE0031553 and DE-EE0008456, DOE Advanced Research Projects Agency-Energy (ARPA-E) via DE-AR0001435, the DOE BES (Theoretical Condensed Matter Physics) via DE-SC0023185, US Office of Naval Research (ONR) via N00014-17-1-2567 and N00014-23-2721, The Pennsylvania State University via ICDS Seed Grant, US National Science Foundation (NSF) via CMMI-1825538, and Pathways to Enable Open-Source Ecosystems (POSE) via FAIN-2229690. Any opinions, findings, and conclusions or recommendations expressed in this publication are those of the author and do not necessarily reflect the views of the funding agencies.
 
-I would like to thank \textbf{Gonville \& Caius College} at the University of Cambridge and \textbf{Dr. Gareth Conduit} for generously hosting me as a visiting postgraduate student during the writing of this publication, and \textbf{Peter and Carol Thrower} for sponsoring the fellowship.
+General:\\
+I would like to thank Gonville \& Caius College at the University of Cambridge and Dr. Gareth Conduit for generously hosting me as a visiting postgraduate student during the writing of this publication, and Peter and Carol Thrower for sponsoring the fellowship.
 
+LLNL:\\
+I would like to thank Aurelien Perron, Brandon Bocklund, Kate Elder, Joseph McKeown, and other amazing colleagues from Materials Science Division at Lawrence Livermore National Lab (LLNL) for having the opportunity of working with them on solving challenging problems with great implementation flexibility which prompted me to deepen my understanding of highly dimensional design spaces, without which some of the work in this dissertation would never happen.
+
+SIPFENN:\\
+I would like to thank Zhengqi Liu for his help implementing the graphical user interface, Dr. ShunLi Shang for providing the Fe-Cr-Ni $\sigma$-phase dataset, and Brandon Bocklund for providing the SQS dataset.
 
 pySIPFENN:\\
-We would like to thank (1) \textbf{Jinchao Xu} from PSU/KAUST for his contribution to the development of SIPFENN, published in \cite{Krajewski2022ExtensibleNetworks}; (2) \textbf{Richard Otis} and \textbf{Brandon Bocklund} from \textbf{Materials Genome Foundation} for supporting this work since 2019 in a variety of ways, including invaluable guidance in organizing community workshops; (3) \textbf{Ricardo Amaral} for testing the \texttt{ModelAdjusters} submodule and reviewing the manuscript; (4) \textbf{Rushi Gong, Shuang Lin, ShunLi Shang, Hui Sun, Alexander Richter, and Luke Myers} from Phases Research Lab at PSU, \textbf{Kate Elder} from Lawrence Livermore National Lab, and others for providing feedback when testing the \texttt{pySIPFENN} software; and (5) \textbf{Jan Janssen} from Max-Planck Institut for assistance in deployment and maintenance of \texttt{pySIPFENN}'s \texttt{conda-forge} feedstock.
+I would like to thank (1) Jinchao Xu from PSU/KAUST for his contribution to the development of SIPFENN, published in \cite{Krajewski2022ExtensibleNetworks}; (2) Richard Otis and Brandon Bocklund from Materials Genome Foundation for supporting this work since 2019 in a variety of ways, including invaluable guidance in organizing community workshops; (3) Ricardo Amaral for testing; (4) Rushi Gong, Shuang Lin, ShunLi Shang, Hui Sun, Alexander Richter, and Luke Myers from Phases Research Lab at PSU, Kate Elder from Lawrence Livermore National Lab, and others for providing feedback when testing the \texttt{pySIPFENN} software.
 
 nimplex:\\
 Adam M. Krajewski 
-We would also like to thank \textbf{Luke Myers} and \textbf{Ricardo Amaral} for testing code exercises and proofreading the documentation.
+I would also like to thank \textbf{Luke Myers} and \textbf{Ricardo Amaral} for testing code exercises and proofreading the documentation.
 
 nimCSO:\\
-We would also like to acknowledge Dr. Jonathan Siegel at Texas A\&M University for several valuable discussions and feedback on the project.
+I would also like to acknowledge Dr. Jonathan Siegel at Texas A\&M University for several valuable discussions and feedback on the project.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -290,6 +304,8 @@ We would also like to acknowledge Dr. Jonathan Siegel at Texas A\&M University f
 
 \include{supdiscussions}
 
+\include{tangentialsoft}
+
 \include{nimplexTutorial1}
 
 \include{nimplexTutorial2}
@@ -302,7 +318,7 @@ We would also like to acknowledge Dr. Jonathan Siegel at Texas A\&M University f
 \chapter*{Vita}
 \thispagestyle{empty}
 
-Adam Krajewski was born in Europe, where he spent his childhood and received pre-college education at a public school nationally recognized for its university-level chemistry curriculum. He first came to the United States in 2013 and moved entirely in 2015, joining the Materials Science and Engineering Department at Case Western Reserve University. Within the first two months of enrollment, he began research in Prof. Welsch's group, and started to take graduate courses in his sophomore year. Around the same time, he joined Prof. Willard's group, progressively moving from experiments towards theory, modeling, and simulations. In late 2016, he enrolled in graduate courses in Artificial Intelligence and specialize in applying Machine Learning to his research problems in Materials Science. 
+Adam Krajewski was born in Europe, where he spent his childhood and received pre-college education at a public school nationally recognized for its university-level chemistry curriculum. He first came to the United States in 2013 and moved entirely in 2015, joining the Materials Science and Engineering Department at Case Western Reserve University. Within the first two months of enrollment, he began research in Prof. Welsch's group, and started to take graduate courses in his sophomore year. Around the same time, he joined Prof. Willard's group, progressively moving from experiments towards theory, modeling, and simulations. In late 2016, he enrolled in graduate courses in Artificial Intelligence and specialized in applying Machine Learning to his research problems in Materials Science. 
 
 After earning his B.S.E. degree in 2019, he moved directly to pursue PhD at Penn State under world-renowned thermodynamics expert Prof. Zi-Kui Liu and had the pleasure of working on implementing a variety of computational techniques, including machine learning, while having the support of colleagues who are specialists in ab-initio modeling, thermodynamic calculations, and materials discovery. Since 2022, he also extensively collaborated with LLNL and have spent two summers on-site at the lab.
 
