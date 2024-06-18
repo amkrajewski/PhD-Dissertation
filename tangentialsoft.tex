@@ -7,7 +7,7 @@
 
 This VS Code Language Extension, developed from scratch by Adam M. Krajewski, provides syntax highlighting for the Thermodynamic DataBase (\texttt{TDB}) files used in the CALPHAD community to describe thermodynamic properties of materials. 
 
-As of April 2024, it was installed by 140 users of VS Code and holds 5/5 stars rating in the VS Code Marketplace under \href{https://marketplace.visualstudio.com/items?itemName=amkrajewski.tdb-highlighter#review-details}{AMKrajewski.tdb-highlighter} software identifier.
+As of June 2024, it was installed by 173 users of VS Code and holds 5/5 stars rating in the VS Code Marketplace under \href{https://marketplace.visualstudio.com/items?itemName=amkrajewski.tdb-highlighter#review-details}{AMKrajewski.tdb-highlighter} software identifier.
 
 \textbf{Most critically, if something is highlighted differently than you expect, you know something may be wrong with it}. E.g., in \texttt{+1.95033E-07*T**3-.01798O876*T**2+78.5244752*T*LN(T)-722.59722*T+229382.886-93813648*T**(-1); 3290 Y} one of the numbers is not a number and will be red. One can guess which one... Likewise, that \texttt{LAVE\_C36} phase one just typed will stand out.
 
@@ -20,8 +20,32 @@ Features include:
     \item A number of TDB syntax keywords are specifically highlighted in neutral colors matching their functions to make them stand out in case of typos.
 \end{itemize}
 
-Together, they yield the following neat-looking TDB header and function definitions:
+Together, they yield the following neat-looking TDB header shown in Figure~\ref{osoft:fig:tdbheader}.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{tangentialsoft/Fig1.png}
+    \caption{Header of am example TDB file (including some function definitions) syntax-highlighted using \texttt{TDB-Highlighter}.}
+    \label{osoft:fig:tdbheader}
+\end{figure}
+
+As well as easy-to-read function definitions shown in Figure~\ref{osoft:fig:tdbfunctions}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{tangentialsoft/Fig2-2.png}
+    \caption{Thermodynamic parameter definitions in an example TDB file syntax-highlighted using \texttt{TDB-Highlighter}.}
+    \label{osoft:fig:tdbfunctions}
+\end{figure}
+
+Furthermore, since the syntax-highlighting is not encoding colors, but rather tokens classifying TDB based on patterns, \texttt{TDB-Highlighter} works with any color scheme giving it improved customizability and accessibility. These include high-contrast schemes for people with poor vision, different types of color-blind schemes, or their dark versions, such as the one shown in Figure~\ref{osoft:fig:tdbdarkmode}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{tangentialsoft/Fig3.png}
+    \caption{An example of \texttt{TDB-Highlighter} output under a "dark-mode" color scheme example.}
+    \label{osoft:fig:tdbdarkmode}
+\end{figure}
 
 \hspace{24pt} 
 \textit{Source available at:} 

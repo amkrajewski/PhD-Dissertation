@@ -4,18 +4,17 @@
 \hypertarget{introduction}{%
 \section{Introduction}\label{pysipfenntutorial:introduction}}
 
-In this guest lecture, we will cover: 1.
-\protect\hyperlink{Manipulating-and-analyzing-materials}{Manipulating
-and analyzing materials} - using
-\href{https://github.com/materialsproject/pymatgen}{pymatgen} 2.
-\protect\hyperlink{Setting-up-MongoDB}{Setting up a small NoSQL database
-on the cloud to synchronize decentralized processing} - using
-\href{https://www.mongodb.com/atlas}{MongoDB Atlas} Free Tier 3.
-\protect\hyperlink{pymongo}{Interacting with the database} - using
-\href{https://github.com/mongodb/mongo-python-driver}{pymongo} library
-4. \protect\hyperlink{pysipfenn-install}{Installing machine learning
-(ML) tools} to predict stability of materials - using
-\href{https://pysipfenn.readthedocs.io/en/stable/}{pySIPFENN}
+In this guest lecture, we will cover: 
+
+\begin{enumerate}
+    \item \protect\hyperlink{Manipulating-and-analyzing-materials}{Manipulating and analyzing materials} - using \href{https://github.com/materialsproject/pymatgen}{pymatgen}
+
+    \item \protect\hyperlink{Setting-up-MongoDB}{Setting up a small NoSQL database on the cloud to synchronize decentralized processing} - using \href{https://www.mongodb.com/atlas}{MongoDB Atlas} Free Tier 
+
+    \item \protect\hyperlink{pymongo}{Interacting with the database} - using \href{https://github.com/mongodb/mongo-python-driver}{pymongo} library
+
+    \item \protect\hyperlink{pysipfenn-install}{Installing machine learning (ML) tools} to predict stability of materials - using \href{https://pysipfenn.readthedocs.io/en/stable/}{pySIPFENN}
+\end{enumerate}1.
 
 Before you begin, you will need to set up a few essential development
 tools.
@@ -109,9 +108,11 @@ tutorial last week:
 \begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
 from pymatgen.core import Structure
 
-s = Structure(lattice=[[4.0384, 0, 0], [0, 4.0384, 0], [0, 0, 4.0384]],
-              species=['Al', 'Al', 'Al', 'Al'],
-              coords=[[0.0, 0.0, 0.0], [0, 0.5, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0]])
+s = Structure(
+        lattice=[[4.0384, 0, 0], [0, 4.0384, 0], [0, 0, 4.0384]],
+        species=['Al', 'Al', 'Al', 'Al'],
+        coords=[[0.0, 0.0, 0.0], [0, 0.5, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0]]
+    )
 \end{minted}
 
 Now, \texttt{s} holds our initialized structure, and we
@@ -233,9 +234,11 @@ can get (or regenerate) original \texttt{s} and use the
 \begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
 from copy import copy
 
-s = Structure(lattice=[[4.0384, 0, 0], [0, 4.0384, 0], [0, 0, 4.0384]],
-              species=['Al', 'Al', 'Al', 'Al'],
-              coords=[[0.0, 0.0, 0.0], [0, 0.5, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0]])
+s = Structure(
+        lattice=[[4.0384, 0, 0], [0, 4.0384, 0], [0, 0, 4.0384]],
+        species=['Al', 'Al', 'Al', 'Al'],
+        coords=[[0.0, 0.0, 0.0], [0, 0.5, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0]]
+    )
 \end{minted}
 
 \begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
@@ -504,7 +507,7 @@ direct
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{pysipfennTutorial1/112-Cr12Fe10Ni8.png}
+    \includegraphics[width=0.6\textwidth]{pysipfennTutorial1/112-Cr12Fe10Ni8.png}
     \caption{Rendering of $Cr_{12}Fe_{10}Ni_8$ endmember occupancy of the $\sigma$-phase.}
     \label{pysipfenntutorial:simgaexample}
 \end{figure}
@@ -738,7 +741,9 @@ defaultdict(<class 'list'>,
 \begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
 from itertools import product
 allPermutations = list(product(['Fe', 'Cr', 'Ni'], repeat=5))
-print(f'Obtained {len(allPermutations)} permutations of the sublattice occupancy\nE.g.:  {allPermutations[32]}')
+print(
+    f'Obtained {len(allPermutations)} permutations of the sublattice occupancy\n'
+    'E.g.:  {allPermutations[32]}')
 \end{minted}
 
 \begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
@@ -933,9 +938,12 @@ use the following schema:
 
 \begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
 def struct2entry(s: Structure):
-    strcutreDict = {'structure': s.as_dict()} # convert to pymatgen Structure dictionary default
-    compositionDict = {'composition': s.composition.as_dict()} # convert to pymatgen Composition dictionary default
-    entry = {**strcutreDict, **compositionDict} # merge the two dictionaries
+    # convert to pymatgen Structure dictionary default
+    strcutreDict = {'structure': s.as_dict()} 
+    # convert to pymatgen Composition dictionary default
+    compositionDict = {'composition': s.composition.as_dict()} 
+    # merge the two dictionaries
+    entry = {**strcutreDict, **compositionDict} 
     # add some extra information
     entry.update({'density': s.density,
                   'volume': s.volume,
@@ -1033,7 +1041,9 @@ over all entries present in the collection and calculating it:
 for entry in collection.find():
     id = entry['_id']
     s = Structure.from_dict(entry['structure'])
-    collection.update_one({'_id': id}, {'$set': {'averageElectronegativity': s.composition.average_electroneg}})
+    collection.update_one(
+        {'_id': id}, 
+        {'$set': {'averageElectronegativity': s.composition.average_electroneg}})
 \end{minted}
 
 Or, to remove a field, like \texttt{volume}, which
@@ -1145,7 +1155,8 @@ c = Calculator()
 
 \begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
 *********  Initializing pySIPFENN Calculator  **********
-Loading model definitions from: /Users/adam/opt/anaconda3/envs/580demo/lib/python3.10/site-packages/pysipfenn/modelsSIPFENN/models.json
+Loading model definitions from: 
+  /Users/adam/opt/anaconda3/envs/580demo/lib/python3.10/site-packages/pysipfenn/modelsSIPFENN/models.json
 Found 4 network definitions in models.json
   SIPFENN_Krajewski2020 Standard Materials Model
   SIPFENN_Krajewski2020 Novel Materials Model
@@ -1153,7 +1164,6 @@ Found 4 network definitions in models.json
   SIPFENN_Krajewski2022 KS2022 Novel Materials Model
 Loading all available models (autoLoad=True)
 Loading models:
-
 
 100%|||||||||||||||||||||||||||||||| 4/4 [00:14<00:00,  3.63s/it]
 
@@ -1168,10 +1178,6 @@ c.downloadModels()
 
 \begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
 Fetching all networks!
-SIPFENN_Krajewski2020_NN9 detected on disk. Ready to use.
-SIPFENN_Krajewski2020_NN20 detected on disk. Ready to use.
-SIPFENN_Krajewski2020_NN24 detected on disk. Ready to use.
-SIPFENN_Krajewski2022_NN30 detected on disk. Ready to use.
 All networks available!
   SIPFENN_Krajewski2020 Standard Materials Model
   SIPFENN_Krajewski2020 Novel Materials Model

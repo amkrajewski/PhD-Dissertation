@@ -23,16 +23,12 @@ in Lecture 1} and that you:
 
     \item Have a MongoDB database called \texttt{matse580} with collection \texttt{structures} to which you have access:
     \begin{itemize}
-      \item
-        username (e.g.~\texttt{student})
-      \item
-        API key / password string
+      \item username (e.g.~\texttt{student})
+      \item API key / password string
         (e.g.~\texttt{sk39mIM2f35Iwc})
-      \item
-        whitelisted your IP address or \texttt{0.0.0.0/0}
+      \item Whitelisted your IP address or \texttt{0.0.0.0/0}
         (entire internet)
-      \item
-        know the connection string (URI) to the database
+      \item Know the connection string (URI) to the database
         (e.g.~\texttt{mongodb+srv://student:sk39mIM2f35Iwc@cluster0.3wlhaan.mongodb.net/?retryWrites=true\&w=majority})
     \end{itemize}
 
@@ -68,8 +64,7 @@ connection to our database we have set up.
 
 \begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
 from pymongo import MongoClient
-uri = 'mongodb+srv://amk7137:kASMuF5au1069Go8
-  @cluster0.3wlhaan.mongodb.net/?retryWrites=true&w=majority'
+uri = 'mongodb+srv://amk7137:kASMuF5au1069Go8@cluster0.3wlhaan.mongodb.net/?retryWrites=true&w=majority'
 client = MongoClient(uri)
 \end{minted}
 
@@ -271,7 +266,6 @@ v SIPFENN_Krajewski2020 Light Model
 v SIPFENN_Krajewski2022 KS2022 Novel Materials Model
 Loading all available models (autoLoad=True)
 Loading models:
-
 
 100%|||||||||||||||||||||||||||||||| 4/4 [00:13<00:00,  3.27s/it]
 
