@@ -81,10 +81,20 @@ The ULTERA Alloy Discovery Infrastructure, first published conceptually in 2021 
 
 In addition to the \texttt{CURATED} and \texttt{AGGREGATED} collections depicted in Figure~\ref{ultera:fig:dataschematic}, there are several other that are hidden from the end-user but perform critical functions as intermediate stages, deployment targets, and provenance metadata sources. These are:
 \begin{itemize}
-    \item \texttt{ALL} - 
-    \item \texttt{COMPOSITIONAL} - 
-    \item \texttt{STRUCTURAL} - 
-    \item \texttt{DOI} - 
+    \item Many (20+) individual user-specific or source-specific data collections with fine-grained permissions assigned based on current stewardship distribution. 
+
+
+    \item \texttt{ALL} - combines (nearly) all source collections into one for further processing using MongoDB aggregation pipelines, after trimming fields that were empty (due to, e.g., single whitespace in spreadsheet) and removing test data entries marked with comments like \texttt{'test'}.
+
+
+    \item \texttt{STRUCTURAL} - which groups the \texttt{CURATED} collection around unique materials \emph{except for processing history, comments, and observation temperature} to act as a deployment target for models taking into account alloy composition and structure.
+
+
+    \item \texttt{COMPOSITIONAL} - which groups the \texttt{CURATED} collection around unique materials \emph{except for structure-related fields, processing history, comments, and observation temperature} to act as a deployment target for models taking into account only the alloy composition.
+
+
+    \item \texttt{DOI} - used to store references based on the DOIs and link back to the \texttt{CURATED} collection. The reference fetching is performed only when new DOI is inserted, but linking is refreshed every time \texttt{CURATED} data changes.
+
     \item \texttt{CURATED\_Jul2023} and other versioned-backup collections - used to produce results presented in scientific publications.
 \end{itemize}
 
@@ -114,18 +124,18 @@ In addition to the \texttt{CURATED} and \texttt{AGGREGATED} collections depicted
 
 \section{Community Contributions} \label{ultera:sec:contributions}
 
-\todo
-
-
+While ULTERA is internally organized based on a cloud non-relational database with elaborate data processing, explored in Sections \ref{ultera:sec:infrastructure} and \ref{ultera:sec:pipeline}, the majority of data ingested into the system has to pass through researchers not familiar with the ecosystem specifics or programming in general. Thus, a contribution template, shown in Figure~\ref{ultera:fig:contributiontemplate}, has been developed to contain \emph{unprocessed} source data mapping fields shown in Figure~\ref{ultera:fig:material}, needed to construct ULTERA entries.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\textwidth]{ultera/ULTERA_Contribute.png}
+    \includegraphics[width=0.97\textwidth]{ultera/ULTERA_Contribute.png}
     \caption{Header and example data rows of a formatted Excel spreadsheet template used to streamline and increase accessibility to the contribution system for non-technical members of the community. An automated system processes them on the cloud into git-tracked plain-text CSV records then passed to uploading system.}
     \label{ultera:fig:contributiontemplate}
 \end{figure}
 
+Such spreadsheet templates can be either (a) stored locally and passed manually by users who want to make a small singular contribution, e.g., to accompany a publication, or (b) stored in a \texttt{git} repository on GitHub, which can be linked and automatically ingested into ULTERA based on the internal meta-repository. To simplify the latter, an origin repository has been made available at \href{http://contribute.ultera.org/}{contribute.ultera.org} for forking.
 
+Furthermore, the provided template repository also includes several automations described in its \texttt{README.md}, which are built around GitHub Actions and enable functionalities, such as git-tracking of the Excel's \texttt{XLSX} spreadsheet contents by casting it into plain-text \texttt{CSV} on every push to a branch. In the future when ULTERA will be made fully open, data quality analysis methods, described in Chapter \ref{chap:pyqalloy}, will also be included at this step.
 
 
 \section{Automatic Modeling} \label{ultera:sec:automodel}
@@ -153,11 +163,54 @@ In addition to the \texttt{CURATED} and \texttt{AGGREGATED} collections depicted
 
 \subsection{Automated CALPHAD Modeling} \label{ultera:ssec:autocalphad}
 
-\todo
+Within ULTERA, a pipeline has been created to automatically deploy results of CALPHAD \cite{Olson2023GenomicDynamics} based calculations, into the \emph{modeled} \texttt{compositionalProperties} fields of end-user collections, whenever such calculation can be performed given chemical compositions scope of a given thermodynamic database (TDB), such as one created by Shuang Lin and shared through a GitHub repository \cite{LinShuangLin212/refractory-elements-database:ZR}. Lin's TDB was used to generate the example of data structure below, where one can see, that the reported data contains several phase equilibrium calculation results, including metadata, phase fractions under \texttt{phaseDict} (assuming no miscibility gaps, i.e., two BCC phases are counted as one) and \texttt{phaseFullDict}, presented in two formats, as well as \texttt{zpfPositions} which give zero-phase-fraction (ZPF) points critical to interpretation of experimental results \cite{Li2024DesignExperiments} and modeling phase stability with AI approaches \cite{Wu2023EstimatingApproach}.
 
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{json}
+{
+  "_id": {
+    "$oid": "638a980130b7ffbd9fa64947"
+  },
+  ...
+  "compositionalProperties": {
+    ...
+    "calphad_Feb2023": {
+      "T": 1473,
+      "TDB": "CrHfMoNbTaTiVWZr_9element_Feb2023",
+      "calphadStructure": "BCC+C15",
+      "phaseDict": {
+        "BCC_A2": 0.817,
+        "LAVES_C15": 0.183
+      },
+      "phaseFullDict": {
+        "BCC_A2": 0.817,
+        "LAVES_C15": 0.183
+      },
+      "nPhases": 2,
+      "phaseDictString": "{'BCC_A2': 0.817, 'LAVES_C15': 0.183}",
+      "phaseFullDictString": "{'BCC_A2': 0.817, 'LAVES_C15': 0.183}",
+      "zpfPositions": {
+        "BCC_A2": {
+          "HF": 0.201232305,
+          "MO": 0.184393688,
+          "NB": 0.244705403,
+          "V": 0.15600952,
+          "ZR": 0.213659083
+        },
+        "LAVES_C15": {
+          "HF": 0.194433862,
+          "MO": 0.269743594,
+          "NB": 0.000002969,
+          "V": 0.396690129,
+          "ZR": 0.139129446
+        }
+      },
+      "BCC_SS": 0,
+      "BCC_SSS": 0
+  }
+}
+\end{minted}
 
-
-
+In the example shown, the persisted output is not semantically versioned, but rather marked with unique name \texttt{calphad\_Feb2023} corresponding to a well-defined effort of the team. This design choice has been selected based on character of CALPHAD modelling, where iterations of the TDBs are not numerous, while end-users traditionally favor descriptive names, such as \texttt{Shuang\_May2024\_RefractoryBCO}, which are then fixed and backed by a literature publication.
 
 
 \subsection{MPDD Atomic Configuration Data Fetching} \label{ultera:ssec:mpdd}
@@ -166,7 +219,7 @@ In addition to the \texttt{CURATED} and \texttt{AGGREGATED} collections depicted
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{ultera/ULTERA_BasicThermodynamics_V1.png}
+    \includegraphics[width=0.8\textwidth]{ultera/ULTERA_BasicThermodynamics_V1.png}
     \caption{Conceptual schematic of how MPDD is directly utilized within ULTERA, going beyond interaction through CALPHAD models, to include basic thermodynamic information. For each composition, a convex hull of compounds present in corresponding chemical system is calculated based on MPDD data and can be used (a) to immediately identify candidates for experimentally observed compounds based on 0K low-energy configurations or (b) convex hull depth can be used as an input to ML model indicating strength of interatomic interactions.}
     \label{ultera:fig:mpdd}
 \end{figure}
