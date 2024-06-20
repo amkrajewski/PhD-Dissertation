@@ -27,11 +27,11 @@ Notably, the depicted path belongs to a \emph{set of several equivalent shortest
 
 As demonstrated in detail in Appendix~\ref{chap:nimplextutorial2}, \texttt{nimplex} graph representations offer a very flexible framework for encoding additional characteristics of the problem at hand, like the common FGM-related task of minimization of thermal expansion coefficient (TCE) gradients \cite{Kirk2021ComputationalMonotonicity} to avoid cracking at elevated temperatures, or elastic modulus gradients to avoid cracking in certain stress conditions.
 
-\citet{Tandoc2023MiningAlloys}
+
 
 \subsection{Stretching the Space} \label{pathplan:ssec:gradientstretch}
 
-One can, for instance, linearly stretch the edges between points shown in the Figure~\ref{pathplan:fig:shortestpath} by adding a penalty 
+One can, for instance, stretch the edges between points shown earlier in the Figure~\ref{pathplan:fig:shortestpath} by adding a penalty linearly proportional to the magnitude of the gradient of a property value. In the Appendix~\ref{chap:nimplextutorial2}, an exmaple property of choice has been the Root Mean Square Average Deviation (RMSAD) model for BCC solid solutions by \citet{Tandoc2023MiningAlloys}, modified to fit ULTERA model pattern. The result of such stretching is shown in Figure~\ref{pathplan:fig:lowgradient}, where the path has been biased towards low-gradient regions achieving the singular shortest design path under such conditions. 
 
 \begin{figure}[H]
     \centering
@@ -40,9 +40,11 @@ One can, for instance, linearly stretch the edges between points shown in the Fi
     \label{pathplan:fig:lowgradient}
 \end{figure}
 
+Notably, while the resulting path is different compared to one in Figure~\ref{pathplan:fig:shortestpath}, it still belongs to the set of shortest paths in terms of unstretched distance (number of transitions) for any scale of gradient penalty, as neighboring derivative paths are similarily affected by the penalty.
+
 \subsection{Non-Linear Penalties Escaping Embedding} \label{pathplan:ssec:gradientsquare}
 
-\todo
+Introduction of a non-linear gradient results in distances cannot be easily visualized as stretching of the space, as depicted in Figure~\ref{pathplan:fig:lowgradientsquared}, but can encode avoidance of singular gradient changes, which can be much more critical in the design of FGMs deposited layer-by-layer where resistance to cracking may be primarily dependent on a few most vounurable tranistions.
 
 \begin{figure}[H]
     \centering
@@ -64,11 +66,6 @@ Since the transitions between neighboring compositions are described through two
     \caption{A selection of an optimal path, similar to one in Figure \ref{pathplan:fig:shortestpath} but biased towards high property value regions (green) by penalizing going to lower property regions.}
     \label{pathplan:fig:highrmsad}
 \end{figure}
-
-\section{Key Consequences of This Work} \label{pathplan:sec:keyconsequences}
-
-\todo
-
 
 
 \printbibliography[heading=subbibintoc]
