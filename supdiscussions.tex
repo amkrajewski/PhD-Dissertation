@@ -335,6 +335,44 @@ min\_GSbandgap & 0.01299 \\ \hline
 min\_GSmagmom & 0.00132 \\ \hline
 \end{longtable}
 
+\section{Extended Statistics and Visualizations of Materials-Property-Descriptor Database} \label{mpdd:app1}
+
+The three key statistics presented in Figure~\ref{mpdd:fig:dataset} are a small subset of the larger dashboard available at \href{https://phaseslab.org/mpdd}{phaseslab.org/mpdd} web page, which is presented in Figure~\ref{sup:mpdd:dashboard}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{mpdd/mpdddashboard.png}
+    \caption{The main MPDD dashboard with statistics over MPDD dataset, as of April 2024, demonstrating the dataset in terms of different levels of "corese-graining" the uniqueness criteria, and coverage of chemical systems of different order.}
+    \label{sup:mpdd:dashboard}
+\end{figure}
+
+Partial data on all of the MPDD data points can be accessed through a graphical user interface (GUI), available at \href{https://mpdd.org}{mpdd.org}, presented in Figure~\ref{sup:mpdd:gui}. It enables users to query the database based on fields including chemical formula, chemical system, or space group number, to facilitate easy access for users not familiar with programming and those who only need to access a small subset of it.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{mpdd/mpddgui.png}
+    \caption{A basic MPDD graphical user interface (GUI) set up for easy access to the data based on a couple of common query fields.}
+    \label{sup:mpdd:gui}
+\end{figure}
+
+The OPTIMADE API \cite{Evans2024DevelopmentsExchange}, as discussed in Section~\ref{mpdd:sec:optimade}, can be accessed using software like \texttt{optimade-python-tools} \cite{Evans2021} or by going to the \href{http://optimade.mpdd.org}{optimade.mpdd.org} endpoint. Figure~\ref{sup:mpdd:optimade} depicts the expected web page, as of May 2024.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{mpdd/mpddoptimade.png}
+    \caption{Printout of the MPDD OPTIMADE API endpoint page.}
+    \label{sup:mpdd:optimade}
+\end{figure}
+
+One can use the endpoint page shown in Figure~\ref{sup:mpdd:optimade} to quickly check (1) accessibility of the database, and (2) investigate its schema, by following endpoint like \href{http://optimade.mpdd.org/v1/structures}{optimade.mpdd.org/v1/structures} to see example data response, like the one shown in Figure~\ref{sup:mpdd:optimadeout}, or \href{http://optimade.mpdd.org/v1/info}{optimade.mpdd.org/v1/info} to see MPDD provider information page.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{mpdd/mpddoptimadeout.png}
+    \caption{An example printout of (partial) MPDD's OPTIMADE response upon a query to the \texttt{http://optimade.mpdd.org/v1/structures} endpoint, depicting human-unreadable but machine-readable output.}
+    \label{sup:mpdd:optimadeout}
+\end{figure}
+
 
 \section{Motivation for Multi-Grade Compositional Design of Materials Exemplified with Hf-Zr Powders} \label{nimplex:app1}
 
