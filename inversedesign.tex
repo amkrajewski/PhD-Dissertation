@@ -6,7 +6,9 @@ This chapter is primarily a new piece of writing which intended to put ULTERA Da
 
 \section{Principles of Machine Learning Driven Design Patterns} \label{inverse:sec:principles}
 
-\todo
+Traditionally, over thousands of years, humanity performed various design tasks either with no approach (i.e., by chance) or utilizing scientific-method-based \emph{rational approach} where results of experiments were used to update the design and achieve desired results. With the advance of science, engineering, and communication methods, this approach has evolved into the de-facto standard for most studies, with experts guiding them.
+
+Thanks to the improvements in a number of key computational methods developed over the last several decades, including machine learning (ML) modeling, nowadays design efforts are often guided through \emph{screening patterns or optimizations algorithms} which dictate what to perform next and can leverage surrogate models, which often run orders of magnitude faster relative to experiments in a laboratory or expensive computational methods.
 
 \begin{figure}[H]
     \centering
@@ -15,15 +17,16 @@ This chapter is primarily a new piece of writing which intended to put ULTERA Da
     \label{inverse:fig:designs}
 \end{figure}
 
+Most recently, the inverse design paradigm, based around \emph{generative models} is becoming increasingly popular thanks to further increases in computational power and novel machine learning models, such as generative adversarial networks (GANs) \cite{Goodfellow2020GenerativeNetworks}, which can generate distributions of outputs mimicking prior data, while finding underlying patterns that may be hard to find for even an expert due to high data complexity or quantity. Figure~\ref{inverse:fig:designs} summarizes and contrasts these three design paradigms.
 
 
 \section{Conditional Generative Design} \label{inverse:sec:cgan}
 
-\todo
+Materials design tends to focus on ability to obtain certain properties, unlike some other ML-related studies like cat or dog image generation, that may be primarily concerned about realistic sampling of the underlying distribution \cite{Ching-YuanBaiJuliaElliott2019GenerativeImages}. Thus, the creation of generator models for materials is usually accomplished with a slightly more elaborate architecture, shown in Figure~\ref{inverse:fig:cgan} and called conditional GAN or \emph{cGAN}, which enables biasing the generated outputs (e.g., compositions) towards specific property values \cite{Mirza2014ConditionalNets, Arjovsky2017WassersteinNetworks}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{inversedesign/inverse_fig2.png}
+    \includegraphics[width=0.55\textwidth]{inversedesign/inverse_fig2.png}
     \caption{The conditional GAN (cGAN) architecture. It is a variation of the GAN architecture, with the modification that an additional conditioning vector is provided as an input to both $\mathbb{G}$ and $\mathbb{D}$, allowing biasing the model to certain property values. Reproduced from \cite{Debnath2023ComparingAlloys} under permission.}
     \label{inverse:fig:cgan}
 \end{figure}
@@ -47,16 +50,16 @@ The values of these properties were normalized to ensure that the importance of 
 
 \subsection{Biasing the Predictions to Property Values} \label{inverse:ssec:propbias}
 
-With a trained conditional generative model $\mathbb{G}$, one can begin to asses effects of the conditioning by, for instance, biasing it to prediction of certain property values. In \citet{Debnath2021GenerativeAlloys}, this process is not exact and results in the sampling of regions of the latent space which are better aligned with the desired outcome. This effect was observed, e.g., in increasing value of shear modulus causing the frequency of elements like W, Re, and Ru with high elemental shear modulus (173, 150, and 149 GPa, respectively) to increase, while elements like Hf, Mo, and Zr with low elemental shear modulus (30.4, 19.7, and 32.7 GPa) decreased.
-
-Furthermore
+With a trained conditional generative model $\mathbb{G}$, one can begin to asses effects of the conditioning by, for instance, biasing it to prediction of certain property values. As demonstrated in \citet{Debnath2021GenerativeAlloys}, this process is not exact; however, it does result in the sampling of regions of the latent space which are better aligned with the desired outcome, thus, making it a valuable design tool. As shown in Figure~\ref{inverse:fig:propbias}, one can obtain very different distributions of values in space of fracture toughness and shear modulus values when different targets are selected. Notably, given targets for which the cGAN had a lot of starting data (point c) it can generally generate narrow distributions, while it struggles in the sparse regions (points a, b, d), highlighting the need for robust training datasets, like one described in Section~\ref{ultera:sec:datadescription}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{inversedesign/fixed_cond_multi_points.pdf}
-    \caption{(A) Correlation between training shear modulus and fracture toughness values of the real ULTERA compositions. Points a, b, c and d represent four conditioning cases of interest. (B) Histograms of shear modulus and fracture toughness for generated compositions. The intensity of blue in the histograms indicates a greater number of compositions with the corresponding values of shear modulus and fracture toughness. In addition to targeted bias, the cross-property correlations are visible. Reproduced from \cite{Debnath2021GenerativeAlloys} under permission.}
+    \caption{(A) Correlation between training shear modulus and fracture toughness values of the compositions from an old version of ULTERA. Points a, b, c and d represent four conditioning cases of interest. (B) Histograms of shear modulus and fracture toughness for generated compositions. The intensity of blue in the histograms indicates a greater number of compositions with the corresponding values of shear modulus and fracture toughness. In addition to targeted bias, the cross-property correlations are visible. Reproduced from \cite{Debnath2021GenerativeAlloys} under permission.}
     \label{inverse:fig:propbias}
 \end{figure}
+
+This effect was observed to usually follow generally expected trends, e.g., in increasing value of shear modulus target causing the frequency of elements like W, Re, and Ru with high elemental shear modulus (173, 150, and 149 GPa, respectively) to increase, while elements like Hf, Mo, and Zr with low elemental shear modulus (30.4, 19.7, and 32.7 GPa) decreased.
 
 
 \subsection{Biasing the Predictions to Compositional Ranges} \label{inverse:ssec:compbias}

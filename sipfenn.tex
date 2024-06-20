@@ -298,14 +298,14 @@ The results are shown in Table \ref{sipfenn:comparison-results}. The SIPFENN con
 
 \subsection{Non-OQMD Data Performance} \label{sipfenn:ssec:sigmasqsperformance}
 
-\begin{figure}[H]
-    \centering
-    %\vspace{-48pt}
-    \includegraphics[width=0.3\textwidth]{sipfenn/NN20_test_sigmasqs.png}
-    \caption{Predictions of formation energy using the new-materials-optimized network (NN20) evaluated on (red) Fe-Cr-Ni $\sigma$-phase, and (blue) SQS structures. Compare to Figure \ref{sipfenn:fig:oqmdperformance} with the same axis for OQMD data.}
-    \label{sipfenn:fig:sqssigmabroad}
-    \vspace{-12pt}
-\end{figure}
+%\begin{figure}[H]
+%    \centering
+%    %\vspace{-48pt}
+%    \includegraphics[width=0.3\textwidth]{sipfenn/NN20_test_sigmasqs.png}
+%    \caption{Predictions of formation energy using the new-materials-optimized network (NN20) evaluated on (red) Fe-Cr-Ni $\sigma$-phase, and (blue) SQS structures. Compare to Figure \ref{sipfenn:fig:oqmdperformance} with the same axis for OQMD data.}
+%    \label{sipfenn:fig:sqssigmabroad}
+%    \vspace{-12pt}
+%\end{figure}
 
 Models created in the present work, specifically the ones optimized for predicting the formation energy of new materials, were designed and implemented to serve as tools for materials discovery. Evaluating their performance on data from the same source as the training set done in \ref{sipfenn:ssec:oqmdperformance} is inherently biased towards favoring models that provide the best fit to the prior (training) knowledge. This is amplified by the fact that many entries in the database are reported in groups that come from common studies and span similar materials, causing high domain clustering, which in some cases effectively makes such evaluation more akin to interpolation than extrapolation of knowledge.
 
@@ -510,7 +510,7 @@ This methodology has been successfully applied to a variety of practical machine
     \label{sipfenn:fig:overfitting}
 \end{figure}
 
-A major problem in statistical learning is avoiding overfitting \cite{hastie2009elements}, which, in simple terms, signifies that the model memorizes the training data instead of learning the true  relationship between descriptors $x$ and predictions $y$. This occurs when the class of functions $\mathcal{F}$ is too large, and at the optimal function $f^*$ in \eqref{sipfenn:empirical_risk_min_eq} the empirical \eqref{sipfenn:empirical_risk_app} and true risk \eqref{sipfenn:true_risk} diverge sharply. This results in very low training error, but poor performance on data that was not presented to the network.
+A major problem in statistical learning is avoiding overfitting \cite{hastie2009elements}, which, in simple terms, signifies that the model memorizes the training data instead of learning the true  relationship between descriptors $x$ and predictions $y$, as depicted in Figure~\ref{sipfenn:fig:overfitting}. This occurs when the class of functions $\mathcal{F}$ is too large, and at the optimal function $f^*$ in \eqref{sipfenn:empirical_risk_min_eq} the empirical \eqref{sipfenn:empirical_risk_app} and true risk \eqref{sipfenn:true_risk} diverge sharply. This results in very low training error, but poor performance on data that was not presented to the network.
 
 Overfitting is typically detected by separating the training data into two sets, the data used in \eqref{sipfenn:empirical_risk_min_eq} to learn the function $f^*$, called the training data, and a separate set of data used to evaluate the performance of $f^*$, called the validation set. Consequently, in addition to the training loss in \eqref{sipfenn:empirical_risk_min_eq}, the validation error
 
