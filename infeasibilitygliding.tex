@@ -12,7 +12,7 @@ It is important, however, to note that the assumptions imposed on the design spa
 
 \section{Exploiting Compositional Graph Representation} \label{infglide:sec:exploitgraph}
 
-To set up an approach exploring only feasible or otherwise desirable spaces, one can begin by leveraging \texttt{nimplex}'s compositional graph representation, described in Section~\ref{nimplex:sec:simplexgraph}, which enable one to easily traverse all compositions based on their adjacency, starting from one or more points.
+To set up an approach exploring only feasible or otherwise desirable spaces, one can begin by leveraging \texttt{nimplex}'s compositional graph representation, described in Section~\ref{nimplex:sec:simplexgraph}, which enable one to easily traverse all compositions based on their adjacency, starting from one or more points, akin to typical high-throughput screenings that exhaust the design space population \cite{Feng2021High-throughputAlloys, Wang2023SearchingExperiments, Yang2022AHardness, Maresca2020Mechanistic1900K}.
 
 Figure~\ref{infeasibilitygliding:fig:fullcomputation} depicts an example result of such approach for a specific 4-component design space in a 7-component elemental space, with roughly half of the points being feasible (green), forming a complex concave shape, and half being infeasible (red).
 
@@ -29,7 +29,7 @@ As shown in Figure~\ref{infeasibilitygliding:fig:fullcomputation}, the infeasibl
 
 \subsection{Underlying Assumptions} \label{infglide:ssec:assumptions}
 
-One core assumption that needs to be considered in exploration based on the infeasibility gliding is that the bounding the infeasible space is surface is smooth. 
+One core assumption that needs to be considered in exploration based on the infeasibility gliding is that the bounding the infeasible space is surface is smooth in the compositional space, or in terms of phase stability, that the region where a given infeasible phase exists (often spanning multiple phase regions) is smoothly bound. While not possible to be proven to be valid in every system, it can be shown to be reasonable for exploration problems, as it (1) is \emph{not required} for the method to glide around the boundary, but only to argue for low computational cost, and (2) it is generally true for metallic systems of interest, as depicted in an example in Figure~\ref{infeasibilitygliding:fig:katesphasemap} from \citet{Elder2023ComputationalValidation}, as well as many other studies, like ones by \citet{Bobbio2022DesignCompositions}, \citet{Sun2024MaterialsMap:Ag-Al-Cu}, \citet{Gao2016SenaryHfNbTaTiVZr}, or \citet{Zhao2014ExperimentalSystem}.
 
 \begin{figure}[H]
     \centering
@@ -41,7 +41,7 @@ One core assumption that needs to be considered in exploration based on the infe
 
 \subsection{Unbiased Exploration Searches} \label{infglide:ssec:unbiasedexplore}
 
-\todo 
+With the infeasibility gliding approach, one can now perform the same traversal over a graph as done in Section~\ref{infglide:sec:exploitgraph}; however, limited to exploring only the neighborhood of the feasible points and, thus, not going into the inside of the infeasible region. This is shown in Figure~\ref{infglide:sec:glide}, in contrast to the earlier Figure~\ref{infeasibilitygliding:fig:fullcomputation}. The presented results are taken from the second \texttt{nimplex} workshop, which has been adapted as Appendix~\ref{chap:nimplextutorial2} and can be consulted for step-by-step details of an example implementation.
 
 \begin{figure}[H]
     \centering

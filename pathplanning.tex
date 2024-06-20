@@ -6,12 +6,13 @@ This chapter is part of work described in Chapter \ref{chap:infeasibilitygliding
 
 \section{Introduction} \label{pathplan:sec:intro}
 
-\todo
+Once (1) models developed in Chapters \ref{chap:sipfenn} through \ref{chap:nimcso} are available, and (2) the approach to traversing the compositional space established in Chapters \ref{chap:nimplex} and \ref{chap:infeasibilitygliding} is deployed, one can begin to design multi-composition entities, such as coexisting compositional regions on paths joining multiple compositions in Functionally Graded Alloys (FGMs) discussed in Section~\ref{nimplex:ssec:functionallygraded}. In general, this will entail constructing continuous composition sub-graphs based on certain value rules allowing one to optimize the design.
 
+All results and figures presented throughout this Chapter have been obtained and can be reproduces based on the second \texttt{nimplex} workshop, which has been adapted as Appendix~\ref{chap:nimplextutorial2} and can be consulted for step-by-step details, including an example implementation, which can be easily modified to work in a variety of problems with minimal changes.
 
 \section{Shortest Path Planning} \label{pathplan:sec:shortest}
 
-\todo
+The most common and most simply defined task in the FGM path planning is to identify a short \cite{Bobbio2022DesignCompositions} or the shortest path. Figure~\ref{pathplan:sec:shortest} presents an example of such path, constructed using Dijkstra's algorithm \cite{Dijkstra1959AGraphs} between two points of choice, over the feasable space graph extracted from results underlying Figure~\ref{infeasibilitygliding:fig:glide} discussed in the last chapter. 
 
 \begin{figure}[H]
     \centering
@@ -20,15 +21,17 @@ This chapter is part of work described in Chapter \ref{chap:infeasibilitygliding
     \label{pathplan:fig:shortestpath}
 \end{figure}
 
+Notably, the depicted path belongs to a \emph{set of several equivalent shortest paths} between the two considered points. This situation is similar to more common path plannings on rectangular grids; however, as explored in Chapter~\ref{chap:nimplex}, the number of possible transitions from each point in increasingly dimensional simplex space grows much faster ($d(d-1)$) relative to corresponding Cartesian space ($2d$), what can have a significant effect on memory requirements of certain planning algorithms.
+
 \section{Property Gradient Minimization} \label{pathplan:sec:gradientmin}
 
-\todo
+As demonstrated in detail in Appendix~\ref{chap:nimplextutorial2}, \texttt{nimplex} graph representations offer a very flexible framework for encoding additional characteristics of the problem at hand, like the common FGM-related task of minimization of thermal expansion coefficient (TCE) gradients \cite{Kirk2021ComputationalMonotonicity} to avoid cracking at elevated temperatures, or elastic modulus gradients to avoid cracking in certain stress conditions.
 
 \citet{Tandoc2023MiningAlloys}
 
 \subsection{Stretching the Space} \label{pathplan:ssec:gradientstretch}
 
-\todo
+One can, for instance, linearly stretch the edges between points shown in the Figure~\ref{pathplan:fig:shortestpath} by adding a penalty 
 
 \begin{figure}[H]
     \centering
