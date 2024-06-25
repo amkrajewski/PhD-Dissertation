@@ -967,7 +967,7 @@ validationLabels =
 
 \textbf{\emph{And finally, train the model}}
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small, breaklines]{python}
 model.eval()
 transferLosses = [float(loss(model(transferData, None), transferLabels))]
 validationLosses = [float(loss(model(validationData, None), validationLabels))]
@@ -1040,7 +1040,7 @@ the feature space embedding and assigned to
 
 Start by reloading feature data from pySIPFENN.
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small, breaklines]{python}
 with resources.files('pysipfenn').joinpath('modelsSIPFENN/SIPFENN_Krajewski2020_NN24.onnx') as nn24model:
     model = onnx2torch.convert(onnx.load(nn24model))
     model.eval()
@@ -1074,7 +1074,7 @@ validationLabels =
     torch.index_select(labelTensor, 0, torch.LongTensor(validationIndexes)).float()
 \end{minted}
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small, breaklines]{python}
 model.eval()
 transferLosses = [float(loss(model(transferData, None), transferLabels))]
 validationLosses = [float(loss(model(validationData, None), validationLabels))]

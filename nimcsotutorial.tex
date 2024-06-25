@@ -1,4 +1,4 @@
-\chapter{\texttt{nimCSO} Tutorial} \label{chap:nimplextutorial2}
+\chapter{\texttt{nimCSO} Basic Tutorial on Selecting Elements for High Entropy Alloy Modeling} \label{chap:nimcsotutorial}
 
 The purpose of this guide is to demonstrate some common use cases of
 \texttt{nimCSO} and go in a bit more into the details
@@ -13,7 +13,7 @@ Compilation}\label{nimcsotutorial:dataset-config-and-compilation}}
 To get started, let's first recap what we need to do to get
 \texttt{nimCSO} up and running.
 
-\textbf{1.} Install nim and dependencies, but \textbf{that's already
+\textbf{1.} Install \texttt{nim} and dependencies, but \textbf{that's already
 done for you if you are in the Codespace}. You can see what was run to
 get the environment set up in the
 \href{../.devcontainer/Dockerfile}{\texttt{Dockerfile}}.
@@ -24,7 +24,7 @@ notebook, the dataset is located at
 \texttt{../dataList.txt}. Let's have a look at the
 first few lines of the file to see what it looks like.
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{shell}
 !head -n 8 ../dataList.txt
 \end{minted}
 
@@ -47,9 +47,7 @@ you are more than welcome to play and modify it.
 
 \textbf{4.} Finally, we can run the \texttt{nimCSO}
 package to get the results. To do so, we will use one long command you
-can see below. Let's break it down: - \passthrough{\lstinline"!"} is a
-Jupyter Notebook magic command that allows us to run shell commands from
-within the notebook.
+can see below. Let's break it down:
 
 \begin{itemize}
 \item
@@ -103,8 +101,8 @@ within the notebook.
 Let's run the command and see what happens! Shouldn't take more than a
 few seconds.
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
-!nim c -f -d:release -d:configPath=config.yaml --out:nimcso ../src/nimcso 
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{shell}
+nim c -f -d:release -d:configPath=config.yaml --out:nimcso ../src/nimcso 
 \end{minted}
 
 \begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
@@ -117,18 +115,19 @@ CC: ../../../opt/conda/nim/lib/std/assertions.nim
 CC: nimcso/bitArrayAutoconfigured.nim
 CC: nimcso.nim
 Hint: orc; threads: on; opt: speed; options: -d:release
-87026 lines; 7.635s; 257.383MiB peakmem; proj: /workspaces/nimCSO/src/nimcso; out: /workspaces/nimCSO/examples/nimcso[SuccessX]
+87026 lines; 7.635s; 257.383MiB peakmem; proj: /workspaces/nimCSO/src/nimcso; 
+out: /workspaces/nimCSO/examples/nimcso[SuccessX]
 \end{minted}
 
 Now, let's run \texttt{nimCSO} and see what happens!
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
-!./nimcso
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{shell}
+./nimcso
 \end{minted}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{nimcsotutorial/1.png}
+  \includegraphics[width=0.97\textwidth]{nimcsotutorial/1.png}
 \end{figure}
 
 You should have seen a neat \texttt{help} message that
@@ -137,13 +136,13 @@ a ``coverage'' benchmark to see how fast can we check how many
 datapoints will be removed from the dataset if we remove the first 5
 elements of \texttt{elementOrder}.
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
-!./nimcso -cb
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{shell}
+./nimcso -cb
 \end{minted}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{nimcsotutorial/2.png}
+  \includegraphics[width=0.97\textwidth]{nimcsotutorial/2.png}
 \end{figure}
 
 \hypertarget{key-routines-and-brute-forcing}{
@@ -155,13 +154,13 @@ And if you were able to run that, you are all set to start using
 Let's try the simplest routine \texttt{mostCommon} or
 \emph{What are the most common elements in the dataset?}
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
-!./nimcso --mostCommon
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{shell}
+./nimcso --mostCommon
 \end{minted}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{nimcsotutorial/3.png}
+  \includegraphics[width=0.97\textwidth]{nimcsotutorial/3.png}
 \end{figure}
 
 If you didn't modify anything, you should now see that elements like
@@ -182,13 +181,13 @@ remove first?}
 With a dataset spanning 19 elements, the solution space is around 0.5M,
 so we can actually just brute force it in seconds :)
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
-!./nimcso -bfi
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{shell}
+./nimcso -bfi
 \end{minted}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{nimcsotutorial/4.png}
+  \includegraphics[width=0.97\textwidth]{nimcsotutorial/4.png}
 \end{figure}
 
 Let's look at the result! As expected, \texttt{N},
@@ -207,13 +206,13 @@ We can test exactly how much more data we will have if we remove
 using the \texttt{--singleSolution} /
 \texttt{-ss} routine.
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
-!./nimcso -ss Ta W Hf Si Re Y B C N -ss V W Hf Si Re Y B C N
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{shell}
+./nimcso -ss Ta W Hf Si Re Y B C N -ss V W Hf Si Re Y B C N
 \end{minted}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{nimcsotutorial/5.png}
+  \includegraphics[width=0.97\textwidth]{nimcsotutorial/5.png}
 \end{figure}
 
 Wow! Looking at the \texttt{--mostCommon} output from
@@ -238,13 +237,13 @@ have if we remove \texttt{Nb} instead of
 \texttt{--singleSolution} /
 \texttt{-ss} routine.
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
-!./nimcso -ss Ta V W Zr Hf Nb Si Re Y B C N -ss Ta V W Zr Hf Mo Si Re Y B C N -ss Ta V W Zr Hf Ti Si Re Y B C N
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small, breaklines]{shell}
+./nimcso -ss Ta V W Zr Hf Nb Si Re Y B C N -ss Ta V W Zr Hf Mo Si Re Y B C N -ss Ta V W Zr Hf Ti Si Re Y B C N
 \end{minted}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{nimcsotutorial/6.png}
+  \includegraphics[width=0.97\textwidth]{nimcsotutorial/6.png}
 \end{figure}
 
 We can see that \textbf{\texttt{Nb} is present in 121
@@ -274,13 +273,13 @@ routine, which takes advantage of some assumptions known to be valid or
 likely to be valid (see manuscript), to limit the search space and find
 the solution in a reasonable time. Let's try it now!
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
-!./nimcso -as
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{shell}
+./nimcso -as
 \end{minted}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{nimcsotutorial/7.png}
+  \includegraphics[width=0.97\textwidth]{nimcsotutorial/7.png}
 \end{figure}
 
 As you can see, \textbf{the algorithm reproduced the same results as the
@@ -299,13 +298,13 @@ routine to find the solution in a reasonable time. Let's try it now!
 Please note that the results are stochastic, so you might get different
 results than ones shown below if you run the command again.
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
-!./nimcso -gs
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{shell}
+./nimcso -gs
 \end{minted}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{nimcsotutorial/8.png}
+  \includegraphics[width=0.97\textwidth]{nimcsotutorial/8.png}
 \end{figure}
 
 \hypertarget{summary}{%
