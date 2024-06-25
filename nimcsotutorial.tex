@@ -1,0 +1,514 @@
+\chapter{\texttt{nimCSO} Tutorial} \label{chap:nimplextutorial2}}
+
+The purpose of this guide is to demonstrate some common use cases of
+\texttt{nimCSO} and go in a bit more into the details
+of how it could be used, but it is not by any means extensive. If
+something is not covered but you would like to see it here, please do
+not hesitate to open an issue on GitHub and let use know!
+
+\hypertarget{dataset-config-and-compilation}{%
+\section{Dataset, Config, and
+Compilation}\label{nimcsotutorial:dataset-config-and-compilation}}
+
+To get started, let's first recap what we need to do to get
+\texttt{nimCSO} up and running.
+
+\textbf{1.} Install nim and dependencies, but \textbf{that's already
+done for you if you are in the Codespace}. You can see what was run to
+get the environment set up in the
+\href{../.devcontainer/Dockerfile}{\texttt{Dockerfile}}.
+
+\textbf{2.} Create the dataset. For now, let's just use the default one
+(based on ULTERA Database) that comes with the package. Relative to this
+notebook, the dataset is located at
+\texttt{../dataList.txt}. Let's have a look at the
+first few lines of the file to see what it looks like.
+
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+!head -n 8 ../dataList.txt
+\end{minted}
+
+\begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
+Al,Co,Cr,Cu,Fe,Ni
+Nb,Ta,Ti
+Co,Cr,Ni
+Al,Co,Cr,Fe,Mn,Ni
+Al,Co,Fe,Mo,Ni
+Hf,Nb,Ti,V
+Co,Cr,Fe,Nb,Ni
+Al,Co,Cr,Cu,Fe,Ni
+\end{minted}
+
+\textbf{3.} Now, we need to create task
+\texttt{config.yaml} file that will describe what we
+are doing and point to our data file. That was already done for you in
+the \href{config.yaml}{\texttt{config.yaml}} file, but
+you are more than welcome to play and modify it.
+
+\textbf{4.} Finally, we can run the \texttt{nimCSO}
+package to get the results. To do so, we will use one long command you
+can see below. Let's break it down: - \passthrough{\lstinline"!"} is a
+Jupyter Notebook magic command that allows us to run shell commands from
+within the notebook.
+
+\begin{itemize}
+\item
+  \texttt{nim} is the official Nim language compiler.
+\item
+  \texttt{c} instructs \texttt{nim}
+  compiler to use \texttt{C} compiler to optimize and
+  compile intermediate code. You can also use
+  \texttt{cpp} to use \texttt{C++}
+  compiler or \texttt{objc} to use
+  \texttt{Objective-C} compiler. If you want, you can
+  also compile directly with LLVM using
+  \href{https://github.com/arnetheduck/nlvm}{\texttt{nlvm}},
+  but it isn't pre-installed for you here.
+\item
+  \texttt{-f} is a flag to force the compiler to
+  compile everything, even if the code didn't change. We want this
+  because \texttt{config.yaml}, which tells
+  \texttt{nimCSO} how to write itself, is not tracked
+  by the compiler, but is critical to the compilation process (see two
+  point below).
+\item
+  \texttt{-d:release} is a flag that tells the compiler
+  to optimize the code for release. You can also use
+  \texttt{-d:debug} to compile the code with better
+  debugging support, but it will be slower and it will not prevent bugs
+  from happening. There is also \texttt{-d:danger} that
+  will disable all runtime checks and run a bit faster, but you no
+  longer get memory safety guarantees.
+\item
+  \texttt{-d:configPath=config.yaml} is a flag pointing
+  to \textbf{\texttt{config.yaml} that is read and
+  tells \texttt{nimCSO} (not the compiler!) how to
+  write itself \emph{before} the compilation starts.} That's the magic
+  metaprogramming sauce enabling us to write functions which
+  \texttt{C}/\texttt{C++} compiler can
+  then turn into single deterministically allocated and exectuted
+  machine code through
+  \href{https://en.wikipedia.org/wiki/Inline_expansion}{inlining}.
+\item
+  \texttt{out:nimcso} is just telling the compiler to
+  output the compiled binary right here and name it
+  \texttt{nimcso}. You can name it whatever you want,
+  but it's a good idea to name it something that makes sense.
+\item
+  \texttt{../src/nimcso} is pointing to the source code
+  of \texttt{nimCSO} package to compile, relative to
+  this notebook.
+\end{itemize}
+
+Let's run the command and see what happens! Shouldn't take more than a
+few seconds.
+
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+!nim c -f -d:release -d:configPath=config.yaml --out:nimcso ../src/nimcso 
+\end{minted}
+
+\begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
+[1m[0m[32mHint: [0mused config file '/opt/conda/nim/config/nim.cfg'[36m [Conf][0m[0m
+[1m[0m[32mHint: [0mused config file '/opt/conda/nim/config/config.nims'[36m [Conf][0m[0m
+...........................................................................................................................................................
+[1m/root/.nimble/pkgs2/nimblas-0.3.0-d5033749759fc7a2a316acf623635dcb6d69d32a/nimblas/private/common.nim(52, 7) [0m[32mHint: [0mUsing BLAS library with name: lib(blas|cblas|openblas).so(||.3|.2|.1|.0)[36m [User][0m[0m
+...........................................................................
+config.yaml
+CC: ../../../opt/conda/nim/lib/system/exceptions.nim
+CC: ../../../opt/conda/nim/lib/std/private/digitsutils.nim
+CC: ../../../opt/conda/nim/lib/std/assertions.nim
+CC: ../../../opt/conda/nim/lib/system/dollars.nim
+CC: ../../../opt/conda/nim/lib/std/syncio.nim
+CC: ../../../opt/conda/nim/lib/system.nim
+CC: ../../../opt/conda/nim/lib/pure/parseutils.nim
+CC: ../../../opt/conda/nim/lib/pure/math.nim
+CC: ../../../opt/conda/nim/lib/pure/unicode.nim
+CC: ../../../opt/conda/nim/lib/pure/strutils.nim
+CC: ../../../opt/conda/nim/lib/pure/hashes.nim
+CC: ../../../opt/conda/nim/lib/pure/collections/sets.nim
+CC: ../../../opt/conda/nim/lib/pure/times.nim
+CC: ../../../opt/conda/nim/lib/std/private/ospaths2.nim
+CC: ../../../opt/conda/nim/lib/std/envvars.nim
+CC: ../../../opt/conda/nim/lib/std/cmdline.nim
+CC: ../../../opt/conda/nim/lib/pure/collections/sequtils.nim
+CC: ../../../opt/conda/nim/lib/pure/random.nim
+CC: ../../../opt/conda/nim/lib/pure/collections/heapqueue.nim
+CC: ../../../opt/conda/nim/lib/pure/strformat.nim
+CC: ../../../opt/conda/nim/lib/pure/terminal.nim
+CC: ../../../root/.nimble/pkgs2/yaml-2.1.1-302727fcd74c79d0697a4e909d26455d61a5b979/yaml/presenter.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/laser/dynamic_stack_arrays.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/laser/private/memory.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/laser/tensor/datatypes.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/laser/tensor/initialization.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/tensor/init_cpu.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/tensor/higher_order_applymap.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/tensor/private/p_shapeshifting.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/tensor/init_copy_cpu.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/tensor/private/p_accessors_macros_read.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/tensor/private/p_accessors_macros_write.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/tensor/shapeshifting.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/private/functional.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/tensor/private/p_display.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/tensor/display.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/tensor/ufunc.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/laser/cpuinfo_x86.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/tensor/operators_broadcasted.nim
+CC: ../../../root/.nimble/pkgs2/arraymancer-0.7.28-d4a45ada1c7a6abebe60bcdd5ee2d7c4680799a4/arraymancer/tensor/aggregate.nim
+CC: nimcso/bitArrayAutoconfigured.nim
+CC: nimcso.nim
+[1m[0m[32mHint: [0m[36m [Link][0m[0m
+[1m[0m[32mHint: [0mmm: orc; threads: on; opt: speed; options: -d:release
+87026 lines; 7.635s; 257.383MiB peakmem; proj: /workspaces/nimCSO/src/nimcso; out: /workspaces/nimCSO/examples/nimcso[36m [SuccessX][0m[0m
+\end{minted}
+
+Now, let's run \texttt{nimCSO} and see what happens!
+
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+!./nimcso
+\end{minted}
+
+\begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
+Using [1m[35m1 uint64s[0m to store [1m[35m19[0m elements.[0m
+Configured for task: [1m[35m[3mQuickStart[0m[2m[3m (Just a copy of RCCA Palette from Senkov 2018 Review)[0m[0m
+[32m***** nimCSO (Composition Space Optimization) *****[0m[0m
+To use form command line, provide parameters. Currently supported usage:
+
+--covBenchmark    | -cb   --> Run small coverage benchmarks under two implementations.
+--expBenchmark    | -eb   --> Run small node expansion benchmarks.
+--leastPreventing | -lp   --> Run a search for single-elements preventing the least data, i.e. the least common elements.
+--mostCommon      | -mc   --> Run a search for most common elements.
+--bruteForce      | -bf   --> Run brute force algorithm after getting ETA. Note that it is not feasible for more than 25ish elements.
+--bruteForceInt   | -bfi  --> Run brute force algorithm with faster but not extensible uint64 representation after getting ETA. Up to 64 elements only.
+--geneticSearch   | -gs   --> Run a genetic search algorithm.
+--algorithmSearch | -as   --> Run a custom problem-informed best-first search algorithm.
+--singleSolution  | -ss   --> Evaluate a single solution based on the elements provided as arguments after the flag. It can be stacked on itself like:
+                              ./nimcso -ss Ta W Hf Si  -ss V W Hf Si  --singleSolution Ta V
+\end{minted}
+
+You should have seen a neat \texttt{help} message that
+tells you how to use \texttt{nimCSO}. Let's start with
+a ``coverage'' benchmark to see how fast can we check how many
+datapoints will be removed from the dataset if we remove the first 5
+elements of \texttt{elementOrder}.
+
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+!./nimcso -cb
+\end{minted}
+
+\begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
+Using [1m[35m1 uint64s[0m to store [1m[35m19[0m elements.[0m
+Configured for task: [1m[35m[3mQuickStart[0m[2m[3m (Just a copy of RCCA Palette from Senkov 2018 Review)[0m[0m
+[32m***** nimCSO (Composition Space Optimization) *****[0m[0m
+[34mRunning coverage benchmark with int8 Tensor representation[0m[0m
+Tensor[system.int8] of shape "[1, 19]" on backend "Cpu"
+|1      1     1     1     1     1     0     0     0     0     0     0     0     0     0     0     0     0     0|
+CPU Time [arraymancer+randomizing] [1m[32m133.6μs[0m[0m
+Prevented count:995
+[34m
+Running coverage benchmark with BitArray representation[0m
+CPU Time [bitty+randomizing] [1m[32m13.6μs[0m[0m
+[2m    [0m[2m[30m|[34m 1[0m[2m[30m|[34m 2[0m[2m[30m|[34m 3[0m[2m[30m|[34m 4[0m[2m[30m|[34m 5[0m[2m[30m|[34m 6[0m[2m[30m|[34m 7[0m[2m[30m|[34m 8[0m[2m[30m|[34m 9[0m[2m[30m|[34m10[0m[2m[30m|[34m11[0m[2m[30m|[34m12[0m[2m[30m|[34m13[0m[2m[30m|[34m14[0m[2m[30m|[34m15[0m[2m[30m|[34m16[0m[2m[30m|[34m17[0m[2m[30m|[34m18[0m[2m[30m|[34m19[0m[2m|[0m
+[2m 19 [0m[2m|[1m[32m 1[0m[2m|[1m[32m 1[0m[2m|[1m[32m 1[0m[2m|[1m[32m 1[0m[2m|[1m[32m 1[0m[2m|[1m[32m 1[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[0m
+MoTaVWTiZr->995
+Prevented count:995
+[34m
+Running coverage benchmark with bool arrays representation (BitArray graph retained)[0m[0m
+CPU Time [bit&boolArrays+randomizing] [1m[32m16.1μs[0m[0m
+[2m    [0m[2m[30m|[34m 1[0m[2m[30m|[34m 2[0m[2m[30m|[34m 3[0m[2m[30m|[34m 4[0m[2m[30m|[34m 5[0m[2m[30m|[34m 6[0m[2m[30m|[34m 7[0m[2m[30m|[34m 8[0m[2m[30m|[34m 9[0m[2m[30m|[34m10[0m[2m[30m|[34m11[0m[2m[30m|[34m12[0m[2m[30m|[34m13[0m[2m[30m|[34m14[0m[2m[30m|[34m15[0m[2m[30m|[34m16[0m[2m[30m|[34m17[0m[2m[30m|[34m18[0m[2m[30m|[34m19[0m[2m|[0m
+[2m 19 [0m[2m|[1m[32m 1[0m[2m|[1m[32m 1[0m[2m|[1m[32m 1[0m[2m|[1m[32m 1[0m[2m|[1m[32m 1[0m[2m|[1m[32m 1[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[31m 0[0m[2m|[0m
+MoTaVWTiZr->995
+Prevented count:995
+[32m[1m
+nimCSO Done![0m[0m
+\end{minted}
+
+\hypertarget{key-routines-and-brute-forcing}{%
+\section{Key Routines and Brute
+Forcing}\label{nimcsotutorial:key-routines-and-brute-forcing}}
+
+And if you were able to run that, you are all set to start using
+\texttt{nimCSO}!
+
+Let's try the simplest routine \texttt{mostCommon} or
+\emph{What are the most common elements in the dataset?}
+
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+!./nimcso --mostCommon
+\end{minted}
+
+\begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
+Using [1m[35m1 uint64s[0m to store [1m[35m19[0m elements.[0m
+Configured for task: [1m[35m[3mQuickStart[0m[2m[3m (Just a copy of RCCA Palette from Senkov 2018 Review)[0m[0m
+[32m***** nimCSO (Composition Space Optimization) *****[0m[0m
+
+Running search for single-elements preventing the most data.
+[1m[34m 0: [0m[32mCr->667[0m[0m
+[1m[34m 1: [0m[32mTi->649[0m[0m
+[1m[34m 2: [0m[32mFe->622[0m[0m
+[1m[34m 3: [0m[32mNi->620[0m[0m
+[1m[34m 4: [0m[32mNb->587[0m[0m
+[1m[34m 5: [0m[32mCo->573[0m[0m
+[1m[34m 6: [0m[32mAl->569[0m[0m
+[1m[34m 7: [0m[32mMo->466[0m[0m
+[1m[34m 8: [0m[32mZr->346[0m[0m
+[1m[34m 9: [0m[32mTa->330[0m[0m
+[1m[34m10: [0m[32mV->256[0m[0m
+[1m[34m11: [0m[32mHf->219[0m[0m
+[1m[34m12: [0m[32mW->207[0m[0m
+[1m[34m13: [0m[32mSi->92[0m[0m
+[1m[34m14: [0m[32mB->69[0m[0m
+[1m[34m15: [0m[32mRe->55[0m[0m
+[1m[34m16: [0m[32mC->36[0m[0m
+[1m[34m17: [0m[32mY->3[0m[0m
+[1m[34m18: [0m[32mN->1[0m[0m
+[32m[1m
+nimCSO Done![0m[0m
+\end{minted}
+
+If you didn't modify anything, you should now see that elements like
+\texttt{N}, \texttt{Y},
+\texttt{C}, and \texttt{Re}, are not
+very common in the dataset, while \texttt{Cr},
+\texttt{Ti}, \texttt{Fe}, and
+\texttt{Ni} are very common. When it comes to them, its
+pretty obvious that removing the first group will be the first choice,
+while the latter will be the last, if we want to keep the dataset as
+extensive as possible.
+
+The critical question here is, \emph{which of the intermediate elements
+like \texttt{Hf}, \texttt{V},
+\texttt{Ta}, or \texttt{Zr} should we
+remove first?}
+
+With a dataset spanning 19 elements, the solution space is around 0.5M,
+so we can actually just brute force it in seconds :)
+
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+!./nimcso -bfi
+\end{minted}
+
+\begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
+Using [1m[35m1 uint64s[0m to store [1m[35m19[0m elements.[0m
+Configured for task: [1m[35m[3mQuickStart[0m[2m[3m (Just a copy of RCCA Palette from Senkov 2018 Review)[0m[0m
+[32m***** nimCSO (Composition Space Optimization) *****[0m[0m
+
+Running brute force algorithm for [1m[35m19[0m elements and [1m[35m1349 data points.[0m
+Solution space size: [1m[35m524287[0m[0m
+Task ETA Estimate: [1m[35m7 seconds and 30 milliseconds[0m[0m
+[1m[34m 0: [0m[32m->0[0m[0m
+[1m[34m 1: [0m[32mN->1[0m[0m
+[1m[34m 2: [0m[32mYN->4[0m[0m
+[1m[34m 3: [0m[32mYCN->39[0m[0m
+[1m[34m 4: [0m[32mReYCN->89[0m[0m
+[1m[34m 5: [0m[32mReYBCN->142[0m[0m
+[1m[34m 6: [0m[32mSiReYBCN->203[0m[0m
+[1m[34m 7: [0m[32mWSiReYBCN->340[0m[0m
+[1m[34m 8: [0m[32mWHfSiReYBCN->511[0m[0m
+[1m[34m 9: [0m[32mTaWHfSiReYBCN->630[0m[0m
+[1m[34m10: [0m[32mTaWZrHfSiReYBCN->735[0m[0m
+[1m[34m11: [0m[32mTaVWZrHfSiReYBCN->816[0m[0m
+[1m[34m12: [0m[32mTaVWZrHfNbSiReYBCN->859[0m[0m
+[1m[34m13: [0m[32mTaVWTiZrHfNbSiReYBCN->952[0m[0m
+[1m[34m14: [0m[32mMoTaVWTiZrHfNbSiReYBCN->1038[0m[0m
+[1m[34m15: [0m[32mMoTaVWTiZrHfNbAlSiReYBCN->1304[0m[0m
+[1m[34m16: [0m[32mTaVWTiZrHfNbCrAlCoNiReFeYCN->1327[0m[0m
+[1m[34m17: [0m[32mMoTaVWTiZrHfNbCrAlSiCoNiReFeYB->1349[0m[0m
+[1m[34m18: [0m[32mMoTaVWTiZrHfNbCrAlSiCoNiReFeYBC->1349[0m[0m
+[1m[34m19: [0m[32mMoTaVWTiZrHfNbCrAlSiCoNiReFeYBCN->1349[0m[0m
+CPU Time [Brute Force] [1m[32m7308.5ms[0m[0m
+[32m[1m
+nimCSO Done![0m[0m
+\end{minted}
+
+Let's look at the result! As expected, \texttt{N},
+\texttt{Y}, \texttt{C}, and
+\texttt{Re} are removed first (0-4) and then the trend
+follows for a bit to \texttt{Hf} \textbf{The first
+break is \texttt{V}, you can notice that it's better to
+remove either or both \texttt{Ta} or
+\texttt{Zr} first, despite the fact that they are
+nearly 50\% more common than \texttt{V}} That's
+because they often coocur with \texttt{Re} and
+\texttt{Hf}, which are not common.
+
+We can test exactly how much more data we will have if we remove
+\texttt{Ta} insead of \texttt{V} by
+using the \texttt{--singleSolution} /
+\texttt{-ss} routine.
+
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+!./nimcso -ss Ta W Hf Si Re Y B C N -ss V W Hf Si Re Y B C N
+\end{minted}
+
+\begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
+Using [1m[35m1 uint64s[0m to store [1m[35m19[0m elements.[0m
+Configured for task: [1m[35m[3mQuickStart[0m[2m[3m (Just a copy of RCCA Palette from Senkov 2018 Review)[0m[0m
+[32m***** nimCSO (Composition Space Optimization) *****[0m[0m
+Testing solution with [1m[35m@[@["Ta", "W", "Hf", "Si", "Re", "Y", "B", "C", "N"], @["V", "W", "Hf", "Si", "Re", "Y", "B", "C", "N"]][0m[0m
+[1m[34m 9: [0m[32mTaWHfSiReYBCN->630[0m[0m
+[1m[34m 9: [0m[32mVWHfSiReYBCN->697[0m[0m
+[32m[1m
+nimCSO Done![0m[0m
+\end{minted}
+
+Wow! Looking at the \texttt{--mostCommon} output from
+earlier, we can see that \textbf{\texttt{Ta} is present
+in 74 more datapoints than \texttt{V}, but after
+removing \texttt{WHfSiReYBCN}, picking
+\texttt{V} as one of 10 elements to model will result
+in 67 \emph{more} datapoints.} Relative to a dataset without
+interdependencies, that's a 141 datapoint difference!
+
+And another case that breaks from the ordering is
+\texttt{Mo}, which is better to keep than much more
+common \texttt{Nb}, and after
+\texttt{Nb} is removed, even better thank keeping the
+\texttt{Ti}, which is the second most common element in
+the dataset!
+
+Similarly to what we did with \texttt{V}
+vs.~\texttt{Ta}, we can test how much more data we will
+have if we remove \texttt{Nb} instead of
+\texttt{Mo} by using the
+\texttt{--singleSolution} /
+\texttt{-ss} routine.
+
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+!./nimcso -ss Ta V W Zr Hf Nb Si Re Y B C N -ss Ta V W Zr Hf Mo Si Re Y B C N -ss Ta V W Zr Hf Ti Si Re Y B C N
+\end{minted}
+
+\begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
+Using [1m[35m1 uint64s[0m to store [1m[35m19[0m elements.[0m
+Configured for task: [1m[35m[3mQuickStart[0m[2m[3m (Just a copy of RCCA Palette from Senkov 2018 Review)[0m[0m
+[32m***** nimCSO (Composition Space Optimization) *****[0m[0m
+Testing solution with [1m[35m@[@["Ta", "V", "W", "Zr", "Hf", "Nb", "Si", "Re", "Y", "B", "C", "N"], @["Ta", "V", "W", "Zr", "Hf", "Mo", "Si", "Re", "Y", "B", "C", "N"], @["Ta", "V", "W", "Zr", "Hf", "Ti", "Si", "Re", "Y", "B", "C", "N"]][0m[0m
+[1m[34m12: [0m[32mTaVWZrHfNbSiReYBCN->859[0m[0m
+[1m[34m12: [0m[32mMoTaVWZrHfSiReYBCN->935[0m[0m
+[1m[34m12: [0m[32mTaVWTiZrHfSiReYBCN->938[0m[0m
+[32m[1m
+nimCSO Done![0m[0m
+\end{minted}
+
+We can see that \textbf{\texttt{Nb} is present in 121
+more datapoints than \texttt{Mo}, but after removing
+\texttt{TaVWZrHfSiReYBCN}, picking
+\texttt{Mo} as one of 7 elements to model will result
+in 76 \emph{more} datapoints.} Relative to a dataset without
+interdependencies, that's a 197 datapoint difference, which is even more
+than the \texttt{Ta} vs.~\texttt{V}
+case! Additionally, we can see that \texttt{Ti} is only
+3 datapoints better than \texttt{Mo}, despite being
+present in 183 more datapoints than \texttt{Mo}.
+
+\hypertarget{algorithm-search}{%
+\section{Algorithm Search}\label{nimcsotutorial:algorithm-search}}
+
+The
+\texttt{--bruteForceInt}/\texttt{-bfi}
+routine we used to find the solutions worked great for our 19-element
+dataset and took only a few seconds on the low-performance Codespace
+machine, but in many cases dimensionality of the problem will be too
+high to brute force it.
+
+Let's now try to use the
+\texttt{--algorithmSearch}/\texttt{-as}
+routine, which takes advantage of some assumptions known to be valid or
+likely to be valid (see manuscript), to limit the search space and find
+the solution in a reasonable time. Let's try it now!
+
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+!./nimcso -as
+\end{minted}
+
+\begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
+Using [1m[35m1 uint64s[0m to store [1m[35m19[0m elements.[0m
+Configured for task: [1m[35m[3mQuickStart[0m[2m[3m (Just a copy of RCCA Palette from Senkov 2018 Review)[0m[0m
+[32m***** nimCSO (Composition Space Optimization) *****[0m[0m
+
+Running Algorithm Search for [1m[35m19[0m elements.[0m
+[1m[34m 1: [0m[32mN->1[2m[30m  (tree size: 19)[0m[0m
+[1m[34m 2: [0m[32mYN->4[2m[30m  (tree size: 52)[0m[0m
+[1m[34m 3: [0m[32mYCN->39[2m[30m  (tree size: 113)[0m[0m
+[1m[34m 4: [0m[32mReYCN->89[2m[30m  (tree size: 275)[0m[0m
+[1m[34m 5: [0m[32mReYBCN->142[2m[30m  (tree size: 581)[0m[0m
+[1m[34m 6: [0m[32mSiReYBCN->203[2m[30m  (tree size: 690)[0m[0m
+[1m[34m 7: [0m[32mWSiReYBCN->340[2m[30m  (tree size: 1818)[0m[0m
+[1m[34m 8: [0m[32mWHfSiReYBCN->511[2m[30m  (tree size: 3873)[0m[0m
+[1m[34m 9: [0m[32mTaWHfSiReYBCN->630[2m[30m  (tree size: 5213)[0m[0m
+[1m[34m10: [0m[32mTaWZrHfSiReYBCN->735[2m[30m  (tree size: 4833)[0m[0m
+[1m[34m11: [0m[32mTaVWZrHfSiReYBCN->816[2m[30m  (tree size: 4192)[0m[0m
+[1m[34m12: [0m[32mTaVWZrHfNbSiReYBCN->859[2m[30m  (tree size: 3784)[0m[0m
+[1m[34m13: [0m[32mTaVWTiZrHfNbSiReYBCN->952[2m[30m  (tree size: 2955)[0m[0m
+[1m[34m14: [0m[32mMoTaVWTiZrHfNbSiReYBCN->1038[2m[30m  (tree size: 1765)[0m[0m
+[1m[34m15: [0m[32mMoTaVWTiZrHfNbAlSiReYBCN->1304[2m[30m  (tree size: 45)[0m[0m
+[1m[34m16: [0m[32mMoTaVWTiZrHfNbAlSiReFeYBCN->1338[2m[30m  (tree size: 8)[0m[0m
+[1m[34m17: [0m[32mMoTaVWTiZrHfNbCrAlSiReFeYBCN->1349[2m[30m  (tree size: 4)[0m[0m
+[1m[34m18: [0m[32mMoTaVWTiZrHfNbCrAlSiNiReFeYBCN->1349[2m[30m  (tree size: 4)[0m[0m
+CPU Time [exploring] [1m[32m109.7ms[0m[0m
+[32m[1m
+nimCSO Done![0m[0m
+\end{minted}
+
+As you can see, \textbf{the algorithm reproduced the same results as the
+brute force search around 100 times faster}, except for third-to-last
+step because dataset had points with at least 3 elements breaking its
+backtracking assumptions.
+
+\hypertarget{genetic-search}{%
+\section{Genetic Search}\label{nimcsotutorial:genetic-search}}
+
+For cases where the dimensionality of the problem is too high to either
+brute-force or use the algorithm search, we can still use the
+\texttt{--geneticSearch}/\texttt{-gs}
+routine to find the solution in a reasonable time. Let's try it now!
+
+Please note that the results are stochastic, so you might get different
+results than ones shown below if you run the command again.
+
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+!./nimcso -gs
+\end{minted}
+
+\begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
+Using [1m[35m1 uint64s[0m to store [1m[35m19[0m elements.[0m
+Configured for task: [1m[35m[3mQuickStart[0m[2m[3m (Just a copy of RCCA Palette from Senkov 2018 Review)[0m[0m
+[32m***** nimCSO (Composition Space Optimization) *****[0m[0m
+
+Running Genetic Search algorithm for [1m[35m19[0m elements and [1m[35m1349 data points.[0m
+Initiating each level with [1m[35m100[0m random solutions and expanding [1m[35m100[0m solutions at each level for up to [1m[35m1000[0m iterations.[0m
+[1m[34m 1: [0m[32mN->1[0m[0m
+[1m[34m 2: [0m[32mYN->4[2m[30m  (queue size: 256)[0m[0m
+[1m[34m 3: [0m[32mYCN->39[2m[30m  (queue size: 615)[0m[0m
+[1m[34m 4: [0m[32mReYCN->89[2m[30m  (queue size: 869)[0m[0m
+[1m[34m 5: [0m[32mReYBCN->142[2m[30m  (queue size: 929)[0m[0m
+[1m[34m 6: [0m[32mSiReYBCN->203[2m[30m  (queue size: 1379)[0m[0m
+[1m[34m 7: [0m[32mWSiReYBCN->340[2m[30m  (queue size: 1267)[0m[0m
+[1m[34m 8: [0m[32mWHfSiReYBCN->511[2m[30m  (queue size: 1631)[0m[0m
+[1m[34m 9: [0m[32mTaWHfSiReYBCN->630[2m[30m  (queue size: 1578)[0m[0m
+[1m[34m10: [0m[32mTaWZrHfSiReYBCN->735[2m[30m  (queue size: 1835)[0m[0m
+[1m[34m11: [0m[32mTaVWZrHfSiReYBCN->816[2m[30m  (queue size: 1621)[0m[0m
+[1m[34m12: [0m[32mTaVWZrHfNbSiReYBCN->859[2m[30m  (queue size: 1746)[0m[0m
+[1m[34m13: [0m[32mVWCrAlSiCoNiReFeYBCN->1176[2m[30m  (queue size: 1713)[0m[0m
+[1m[34m14: [0m[32mMoTaVWTiZrHfNbSiReYBCN->1038[2m[30m  (queue size: 1565)[0m[0m
+[1m[34m15: [0m[32mMoTaVWCrAlSiCoNiReFeYBCN->1320[2m[30m  (queue size: 1028)[0m[0m
+[1m[34m16: [0m[32mTaVWTiZrHfNbCrAlCoNiReFeYCN->1327[2m[30m  (queue size: 1575)[0m[0m
+[1m[34m17: [0m[32mMoTaVWTiZrHfNbCrAlSiCoFeYBCN->1349[2m[30m  (queue size: 268)[0m[0m
+[1m[34m18: [0m[32mMoTaVWTiZrHfNbCrAlSiCoNiReFeBCN->1349[2m[30m  (queue size: 18)[0m[0m
+CPU Time [Genetic Search] [1m[32m766.9ms[0m[0m
+[32m[1m
+nimCSO Done![0m[0m
+\end{minted}
+
+\hypertarget{summary}{%
+\subsection{Summary}\label{nimcsotutorial:summary}}
+
+Now, you should be able to apply \texttt{nimCSO} to
+your own dataset and get some valuable insights on how to model it!
+
+If you are working in a Codespace, you can just do everything right in
+this notebook by simply modifying the
+\texttt{config.yaml} file and running the commands you
+just learned about. The Codespace will be persisted until you explicitly
+delete it, so you can come back to it later and continue your work by
+clicking on the link in the ``Open in Codespaces'' badge in the README
+of the repository and resuming your work.
