@@ -28,14 +28,13 @@ in Lecture 1} and that you:
         (e.g.~\texttt{sk39mIM2f35Iwc})
       \item Whitelisted your IP address or \texttt{0.0.0.0/0}
         (entire internet)
-      \item Know the connection string (URI) to the database
-        (e.g.~\texttt{mongodb+srv://student:sk39mIM2f35Iwc@cluster0.3wlhaan.mongodb.net/?retryWrites=true\&w=majority})
+      \item Know the connection string (URI) to the database)
     \end{itemize}
 
     \item You populated the database with all Sigma phase end members (see Lecture 1 Section \ref{pysipfenntutorial:inserting-data} on Inserting Data)
 
     \item After you installed \texttt{pysipfenn}, you have downloaded all the \href{https://zenodo.org/records/7373089}{pre-trained models} by calling \texttt{downloadModels()} and it finished successfully. If not, run this one liner:
-    \begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray]{output}
+    \begin{minted}[xleftmargin=3\parindent, fontsize=\small, bgcolor=subtlegray, breaklines]{output}
     python -c "import pysipfenn; c = pysipfenn.Calculator(); c.downloadModels(); c.loadModels();"
     \end{minted}
 \end{enumerate}
@@ -62,9 +61,9 @@ with MongoDB databases in a very intuitive way. Let's start by importing
 its \texttt{MongoClient} class and creating a
 connection to our database we have set up.
 
-\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{python}
+\begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small, breaklines]{python}
 from pymongo import MongoClient
-uri = 'mongodb+srv://amk7137:kASMuF5au1069Go8@cluster0.3wlhaan.mongodb.net/?retryWrites=true&w=majority'
+uri = 'mongodb+srv://amk7137:kASMuF5au1069Go8@cluster0.3wlhaan.mongodb.net'
 client = MongoClient(uri)
 \end{minted}
 

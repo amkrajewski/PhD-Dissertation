@@ -15,10 +15,14 @@
 \usepackage{longtable}
 \usepackage{xcolor}
 \usepackage{listings}
-\usepackage{minted}
+
 \usepackage{adjustbox}
 \usepackage{array, booktabs}
 \usepackage{nameref}
+
+%Listings
+\usepackage{minted}
+%\usepackage[finalizecache,cachedir=.]{minted}
 
 %Font
 \renewcommand{\thelinenumber}{\raisebox{1pt}{\textcolor[RGB]{200,200,200}{\arabic{linenumber}}}}
@@ -26,7 +30,7 @@
 \renewcommand{\familydefault}{\sfdefault} 
 \definecolor{darkgreen}{rgb}{0.05, 0.3, 0.1}
 
-%\usepackage[htt]{hyphenat} %texttt hyphenation breaks
+\usepackage[htt]{hyphenat} %texttt hyphenation breaks
 
 \let\oldtexttt\texttt
 \renewcommand{\texttt}[1]{\oldtexttt{\textcolor{darkgreen}{#1}}}
@@ -253,7 +257,7 @@ I would like to thank my Lawrence Livermore National Lab colleagues \textbf{Aure
 
 On the software side, I would like to thank (1) \textbf{Jinchao Xu} from PSU/KAUST for his contribution to the development of SIPFENN; (2) \textbf{Richard Otis} and \textbf{Brandon Bocklund} from \textbf{Materials Genome Foundation} for supporting my work since 2019 in many ways, including invaluable guidance in organizing community workshops.
 
-In the Fall of 2023, I had an opportunity to be a Visiting PhD Student at the University of Cambridge, for which I am very grateful to \textbf{Gonville \& Caius College}, invited me and \textbf{Gareth Conduit} for generously sponsoring said invitation, as well as \textbf{Peter and Carol Thrower} for sponsoring the fellowship enabling this travel.
+In the Fall of 2023, I had an opportunity to be a Visiting PhD Student at the University of Cambridge, for which I am very grateful to \textbf{Gonville \& Caius College} which invited me, Caius Fellow \textbf{Gareth Conduit} for generously sponsoring said invitation, and \textbf{Peter and Carol Thrower} for sponsoring the fellowship enabling this travel.
 
 This work was made possible by the financial support and training provided by US Department of Energy (DOE) via Awards DE-FE0031553 and DE-EE0008456, DOE Advanced Research Projects Agency-Energy (ARPA-E) via DE-AR0001435, the DOE BES (Theoretical Condensed Matter Physics) via DE-SC0023185, US Office of Naval Research (ONR) via N00014-17-1-2567 and N00014-23-2721, The Pennsylvania State University via ICDS Seed Grant, US National Science Foundation (NSF) via CMMI-1825538, and Pathways to Enable Open-Source Ecosystems (POSE) via FAIN-2229690. Any opinions, findings, conclusions, or recommendations expressed in this publication are those of the author and do not necessarily reflect the views of the funding agencies.
 
@@ -314,14 +318,16 @@ This work was made possible by the financial support and training provided by US
 \newpage
 \chapter*{Vita}
 \thispagestyle{empty}
+\vspace{-6pt}
 
-Adam Krajewski was born in Europe, where he spent his childhood and received pre-college education at a public school nationally recognized for its university-level chemistry curriculum. He first came to the United States in 2013 and moved entirely in 2015, joining the Materials Science and Engineering Department at Case Western Reserve University. Within the first two months of enrollment, he began research in Prof. Welsch's group, and started to take graduate courses in his sophomore year. Around the same time, he joined Prof. Willard's group, progressively moving from experiments towards theory, modeling, and simulations. In late 2016, he enrolled in graduate courses in Artificial Intelligence and specialized in applying Machine Learning to his research problems in Materials Science. 
+{\small
+Adam Krajewski was born in Europe, where he spent his childhood and received pre-college education at a school nationally recognized for its university-level chemistry curriculum. He first came to the United States in 2013 and moved completely in 2015 to join the Materials Science Department at Case Western Reserve University. Within the first two months, Adam began research in Prof. Welsch's group. After just one year, he enrolled in graduate courses and also joined Prof. Willard's group, progressively moving from experiments towards theory, modeling, and simulations. In the Fall of 2017, he enrolled in graduate courses in Artificial Intelligence, starting to specialize in applying AI techniques, including Machine Learning, to his research which became focused hidden process modeling, materials data processing, and data-driven design of magnetocaloric metallic glasses.
 
-After earning his B.S.E. degree in 2019, he moved directly to pursue PhD at Penn State under world-renowned thermodynamics expert Prof. Zi-Kui Liu and had the pleasure of working on implementing a variety of computational techniques, including machine learning, while having the support of colleagues who are specialists in ab-initio modeling, thermodynamic calculations, and materials discovery. Since 2022, he also extensively collaborated with LLNL and have spent two summers on-site at the lab.
+After earning his B.S.E. degree in 2019, Adam moved directly to pursue PhD under world-renowned thermodynamics expert Prof. Zi-Kui Liu at Penn State. He had the pleasure of working on implementing various computational techniques, ranging from atomistic machine learning through materials data curation, to purely theoretical considerations, while having the support of colleagues who are specialists in applied ab-initio modeling, thermodynamic calculations, and materials discovery. Since 2022, he has also extensively collaborated with Lawrence Livermore National Lab, where he spent two summers on-site.
 
-He has published a number of publications listed under his ORCID record (\href{https://orcid.org/0000-0002-2266-0099}{0000-0002-2266-0099}) and Google Scholar (id:\href{https://scholar.google.com/citations?user=3tvHo8kAAAAJ}{3tvHo8kAAAAJ}) including 9 co-author publications and 4 first-author publications listed below:
+Adam has published several computational tools and scientific publications listed under his ORCID record (\href{https://orcid.org/0000-0002-2266-0099}{0000-0002-2266-0099}) and Google Scholar (id:\href{https://scholar.google.com/citations?user=3tvHo8kAAAAJ}{3tvHo8kAAAAJ}) including 4 first-author publications listed below and 9 co-author publications. Furthermore, eight first-author papers are under preparation.
+
 \begin{itemize}
-
 
     \item \textit{Extensible Structure-Informed Prediction of Formation Energy with improved accuracy and usability employing neural networks}, Comp. Mat. Sci., Jun. 2022, \href{https://doi.org/10.1016/j.commatsci.2022.111254}{10.1016/j.commatsci.2022.111254}
 
@@ -334,5 +340,6 @@ He has published a number of publications listed under his ORCID record (\href{h
     \item \textit{nimCSO: A Nim package for Compositional Space Optimization}, arXiv, Mar. 2024.,\\ \href{https://doi.org/10.48550/arXiv.2403.02340}{10.48550/arXiv.2403.02340}
     
 \end{itemize}
+}
 
 \end{document}

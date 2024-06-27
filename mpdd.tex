@@ -7,11 +7,11 @@ This chapter adapts parts of a manuscript draft planned for publication before d
 
 \section{Introduction} \label{mpdd:sec:background}
 
-Traditionally, the field of materials science deals with highly complex data, in terms of both input and output descriptions, acquired through laborious experiments in the laboratories, such as mechanical or electrochemical tests performed according to professional standards, or expensive computations on supercomputer clusters, including ones based on the density functional theory (DFT)~\cite{Kohn1996DensityStructure} or finite element method (FEM)~\cite{Liu2022EightyFuture}. Because of this high-cost aspect, the number of datapoints being generated is usually very limited, especially after raw data is fitted into models, and disseminated through reports and scientific publications as typeset tables, text, or figures, which are then carefully interpreted by other researchers.
+Traditionally, the field of materials science deals with highly complex data, in terms of both input and output descriptions, acquired through laborious experiments in the laboratories, such as mechanical or electrochemical tests performed according to professional standards or expensive computations on supercomputer clusters, including ones based on the density functional theory (DFT)~\cite{Kohn1996DensityStructure} or finite element method (FEM)~\cite{Liu2022EightyFuture}. Because of this high-cost aspect, the number of data points being generated is usually very limited, especially after raw data is fitted into models and disseminated through reports and scientific publications as typeset tables, text, or figures, which are then carefully interpreted by other researchers.
 
-In the last few decades, however, the community is becoming increasingly engages in large-scale efforts to construct large collections of data points, especially after endorsement and special funding was provided by the Materials Genome Initiative in 2011 \cite{SubcommitteeontheMaterialsGenomeInitiative2021MaterialsPlan, Agren2023CALPHADAnniversary, Olson2023GenomicDynamics}. It significantly accelerated many efforts to combine materials-specific scientific literature sources into a homogeneous structure were attempted, with perhaps the most successful being the \texttt{Pauling File} developed since 1995 with as of 2024, was built with 1000 years of full-time academic effort \cite{Blokhin2018TheGenome} and underlies several databases, including ASM Phase Diagram Database \cite{ASMInternational} and Materials Platform for Data Science (MPDS) \cite{Blokhin2018TheGenome}. Furthermore, a number of computational databases listed later in Section~\ref{mpdd:ssec:dataset}, were also created and in some cases grew beyond one million entries.
+In the last few decades, however, the community has become increasingly engaged in large-scale efforts to construct extensive collections of data points, especially after endorsement and special funding was provided by the Materials Genome Initiative in 2011 \cite{SubcommitteeontheMaterialsGenomeInitiative2021MaterialsPlan, Agren2023CALPHADAnniversary, Olson2023GenomicDynamics}. It significantly accelerated many efforts to combine materials-specific scientific literature sources into a homogeneous structure were attempted, with perhaps the most successful being the \texttt{Pauling File} developed since 1995 with as of 2024, was built with 1000 years of full-time academic effort \cite{Blokhin2018TheGenome} and underlies several databases, including ASM Phase Diagram Database \cite{ASMInternational} and Materials Platform for Data Science (MPDS) \cite{Blokhin2018TheGenome}. Furthermore, several computational databases listed later in Section~\ref{mpdd:ssec:dataset} were also created and, in some cases, grew beyond one million entries.
 
-With the rise of such large-scale databases, it becomes critical to be able to efficiently operate on them and utilize them, as even seemingly fast calculations of $1s$ grow to over 8 weeks when performed 5 million times. Furthermore, this scale is likely to sharply increase in the near future due to a large volume of data coming from machine learning (ML) studies with, even if filtered out, will likely accelerate search efforts using more traditional computation by constantly providing guidance.
+With the rise of such large-scale databases, it becomes critical to be able to efficiently operate on them and utilize them, as even seemingly fast calculations of $1s$ grow to over 8 weeks when performed 5 million times. Furthermore, this scale is likely to sharply increase in the near future due to a large volume of data coming from machine learning (ML) studies, which, even if filtered out, will likely accelerate search efforts using more traditional computation by constantly providing guidance.
 
 
 \section{The Material-Property-Descriptor Database} \label{mpdd:sec:mpdd}
@@ -27,30 +27,29 @@ Furthermore, MPDD's access to stored atomic structures and associated metadata h
 
 \subsection{Dataset} \label{mpdd:ssec:dataset}
 
-To act as both the starting point for both (a) generative design of new datapoints and (b) deployment target for forward methods, a large collection of atomic structures has been collected and homogenized into the \texttt{MPDD}. It contained \textit{DFT-based datasets} including OQMD \cite{Saal2013MaterialsOQMD, Kirklin2015TheEnergies, Shen2022ReflectionsOQMD}, AFLOW \cite{Curtarolo2013AFLOW:Discovery, Toher2018TheDiscovery}, Materials Project \cite{Jain2013Commentary:Innovation}, NIST-JARVIS \cite{Choudhary2020TheDesign}, Alexandria \cite{Schmidt2022AFunctionals}, CAMD \cite{Ye2022NovelAgents}, GNoME \cite{Merchant2023ScalingDiscovery}, \textit{in-house DFT-based datasets} including phonon calculations created with DFTTK \cite{Wang2021DFTTK:Calculations}, as well as hundreds of thousands of experimentally observed entries from Crystallography Open Database (COD) \cite{Grazulis2009CrystallographyStructures, Grazulis2012CrystallographyCollaboration, Grazulis2019CrystallographyPerspectives}. As shown in Figure~\ref{mpdd:fig:dataset}, the collected dataset does not exhibit a bias towards any particular chemical element, but rather it covers tens of different elements almost uniformly.
+To act as the starting point for both (a) the generative design of new data points and (b) the deployment target for forward methods, an extensive collection of atomic structures has been collected and homogenized into the \texttt{MPDD}. It contained \textit{DFT-based datasets} including OQMD \cite{Saal2013MaterialsOQMD, Kirklin2015TheEnergies, Shen2022ReflectionsOQMD}, AFLOW \cite{Curtarolo2013AFLOW:Discovery, Toher2018TheDiscovery}, Materials Project \cite{Jain2013Commentary:Innovation}, NIST-JARVIS \cite{Choudhary2020TheDesign}, Alexandria \cite{Schmidt2022AFunctionals}, CAMD \cite{Ye2022NovelAgents}, GNoME \cite{Merchant2023ScalingDiscovery}, \textit{in-house DFT-based datasets} including phonon calculations created with DFTTK \cite{Wang2021DFTTK:Calculations}, as well as hundreds of thousands of experimentally observed entries from Crystallography Open Database (COD) \cite{Grazulis2009CrystallographyStructures, Grazulis2012CrystallographyCollaboration, Grazulis2019CrystallographyPerspectives}. As shown in Figure~\ref{mpdd:fig:dataset}, the collected dataset does not exhibit a bias towards any particular chemical element, but rather, it covers tens of different elements almost uniformly.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{mpdd/Screenshot 2024-05-05 at 11.54.32.png}
     \includegraphics[width=0.4\textwidth]{mpdd/Screenshot 2024-05-05 at 11.54.47.png}
-    \caption{Key statistics over MPDD dataset as of April 2024 demonstrating (1) extent of the dataset and (2) high diversity of chemical space coverage over all elements.}
+    \caption{Key statistics over MPDD dataset as of April 2024 demonstrating (1) extent of the dataset and (2) high diversity of chemical space coverage over all elements. Figure~\ref{sup:mpdd:dashboard} presents a snapshot of the full dashboard.}
     \label{mpdd:fig:dataset}
 \end{figure}
 
- Figure~\ref{mpdd:fig:dataset} is a small subset of the larger dashboard available at \href{https://phaseslab.org/mpdd}{phaseslab.org/mpdd} web page, which is presented in Figure~\ref{sup:mpdd:dashboard} in Appendix Section~\ref{mpdd:app1}, which can be consulted for analysis of the dataset in terms of different levels of "corese-graining" of the uniqueness criteria, as well as coverage of chemical systems of different order.
+Figure~\ref{mpdd:fig:dataset} is a small subset of the larger dashboard available at \href{https://phaseslab.org/mpdd}{phaseslab.org/mpdd} web page, which is presented in Figure~\ref{sup:mpdd:dashboard} in Appendix Section~\ref{mpdd:app1}, which can be consulted for analysis of the dataset in terms of different levels of "coarse-graining" of the uniqueness criteria, as well as coverage of chemical systems of different order.
 
-Notably, for the sake of completeness, a substantial effort was made to cover \emph{all 118 elements} by specifically collecting recent experimental observations and DFT-based lattice stability calculations of uncommon elements from several sources. These included
-Es, Cf, Cm, Bk based on \citet{2006TheElements}, Lr, Rf, Db, Sg, Bh, Hs, Mt, Ds, Rg based on \citet{Gyanchandani2011PhysicalMetals}, Cn based on \citet{Atta-Fynn2015DensityElements}, Fl based on \citet{MaizHadjAhmed2017RevisitingFlerovium}, Nh based on \citet{Atarah2020FirstNihonium}, Cn, Fl, Lv, Mc, Nh, Og, Ts based on \citet{Trombach2019ExploringTheory}, Fr based on \citet{Koufos2013ElectronicFrancium}, and At based on \citet{Hermann2013CondensedMetallic}, to cover 115 elements. The last 3 (Fm, Md, No), best to author's knowledge, were not yet experimentally measured nor calculated with DFT-based methods, but were approximated based on rationale in \citet{2006TheElements}.
+Notably, motivated by striving for completeness, a substantial effort was made to cover \emph{all 118 elements} by specifically collecting a unique collection of recent experimental observations and DFT-based lattice stability calculations of many uncommon elements from several sources. These included Einsteinium (Es), Californium (Cf), Curium (Cm), Berkelium (Bk) based on \citet{2006TheElements}, Lawrencium (Lr), Rutherfordium (Rf), Dubnium (Db), Seaborgium (Sg), Bohrium (Bh), Hassium (Hs), Meitnerium (Mt), Darmstadtium (Ds), Roentgenium (Rg) based on \citet{Gyanchandani2011PhysicalMetals}, Copernicium (Cn) based on \citet{Atta-Fynn2015DensityElements}, Flerovium (Fl) based on \citet{MaizHadjAhmed2017RevisitingFlerovium}, Nihonium (Nh) based on \citet{Atarah2020FirstNihonium}, Copernicium (Cn), Flerovium (Fl), Livermorium (Lv), Moscovium (Mc), Nihonium (Nh), Oganesson (Og), Tennessine (Ts) based on \citet{Trombach2019ExploringTheory}, Francium (Fr) based on \citet{Koufos2013ElectronicFrancium}, and Astatine (At) based on \citet{Hermann2013CondensedMetallic}, to cover 115 elements. The last 3 missing elements -  Fermium (Fm), Mendelevium (Md), and Nobelium (No) were not yet experimentally measured nor calculated with DFT-based methods, best to the author's knowledge; however, they were approximated based on the rationale in \cite{2006TheElements} combining assumption of crystal structure based on electronic structure with predicted atomic radius.
 
 
 \subsection{Infrastructure} \label{mpdd:ssec:infrastructure}
 
-The designed infrastructure of \texttt{MPDD}, built on top of a \texttt{MongoDB} database framework, is focused on independent methods operating on each datapoint with has (1) a definition of material, (2) descriptor set, and (3) property set, in a way such that one part of the data is augmented by another, as depicted in Figure~\ref{mpdd:fig:core}. This is typically accomplished by using special \texttt{MongoDB} indexes which enable to effectively present the data to a given method as a collection of either of the three, e.g., to select all materials fulfilling requirements) or lack thereof, e.g., to operate on a small subset of incomplete newly inserted data for which a task needs to be run.
+The designed infrastructure of \texttt{MPDD}, built on top of a \texttt{MongoDB} database framework, is focused on independent methods operating on each datapoint composed of (1) a definition of material, (2) a descriptor set, and (3) a property set, in a way such that one part of the data is augmented by another, as depicted in Figure~\ref{mpdd:fig:core}. This is typically accomplished by using special \texttt{MongoDB} indexes, which enable to effectively present the data to a given method as a collection of either of the three, e.g., to select all materials fulfilling requirements) or lack thereof, e.g., to operate on a small subset of incomplete newly inserted data for which a task needs to be run.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{mpdd/MPDD_CoreTriplet.png}
-    \caption{Three entities at the core of MPDD treated as "first class citizens" interacting with each other. Going counter-clockwise \emph{Materials} cover our past sampling of the problem domain, \emph{Descriptors} cover our understanding of it, and \emph{Properties} determine utility. Going clockwise desired \emph{Properties} guide analysis leading to understanding encoded in \emph{Descriptors}, which inform us of unexplored regions of problem domain in their individual contexts.}
+    \caption{Three entities at the core of MPDD are treated as "first-class citizens" interacting with each other. Going counter-clockwise \emph{Materials} cover our past sampling of the problem domain, \emph{Descriptors} cover our understanding of it, and \emph{Properties} determine utility. Going clockwise desired \emph{Properties} guide analysis leading to understanding encoded in \emph{Descriptors}, which inform us of unexplored regions of problem domain in their individual contexts.}
     \label{mpdd:fig:core}
 \end{figure}
 
@@ -66,11 +65,9 @@ When filled with a large dataset described in Section~\ref{mpdd:ssec:dataset} an
 
 
 
-
-
 \section{Open Databases Integration for Materials Design (OPTIMADE) API of MPDD} \label{mpdd:sec:optimade}
 
-\texttt{OPTIMADE} or the Open Databases Integration for Materials Design consortium has been established to make materials databases interoperable by developing a specification for a common REST API \cite{Evans2024DevelopmentsExchange}. That way, databases can remain independently maintained and tuned to specific needs, like ab initio data or ML data, while at the same time reporting on the contained knowledge so that redundant calculations are not performed and the efficiency of the materials informatics community at large is dramatically improved.
+\texttt{OPTIMADE} or the Open Databases Integration for Materials Design consortium has been established to make materials databases interoperable by developing a specification for a ubiquitous REST API \cite{Evans2024DevelopmentsExchange}. That way, databases can remain independently maintained and tuned to specific needs, like ab initio data or ML data, while at the same time reporting on the contained knowledge so that redundant calculations are not performed, and the efficiency of the materials informatics community at large is dramatically improved.
 
 MPDD has a stable \texttt{OPTIMADE} API that serves the entire core MPDD dataset, fully implementing \texttt{v1.1.0} of the OPTIMADE standard, as of April 2024, through a cloud server based on \texttt{optimade-python-tools} \cite{Evans2021}.
 Making the MPDD available via OPTIMADE was initially challenging, as MPDD stores and exchanges data in a way that prioritises high throughput and low storage requirements, including binary data, making it difficult or slow to make MPDD queryable as an OPTIMADE API on-the-fly.
@@ -88,36 +85,36 @@ Further discussion on MPDD's \texttt{OPTIMADE} API is given in Appendix Section~
 
 \section{MPDD-eXchange} \label{mpdd:sec:mpddx}
 
-In addition to the \texttt{OPTIMADE} API serving as the main endpoint for the end-users, \texttt{MPDD} has recently been extended through an experimental platform availale at \href{https://contrib.mpdd.org}{contrib.mpdd.org} based on GitHub automations to facilitate data exchange; thus, called \texttt{MPDD-eXchange} or \texttt{MPDD-X}. The main exchange, where the user uploads their data, which gets validated and ingested into the data ecosystem enriching the \texttt{MPDD}; while the user gets presented with machine learning predictions associated with it and gets persistent credit associated with their account. 
+In addition to the \texttt{OPTIMADE} API serving as the primary endpoint for the end-users, \texttt{MPDD} has recently been extended through an experimental platform available at \href{https://contrib.mpdd.org}{contrib.mpdd.org} based on GitHub cloud-based automations to facilitate data exchange; thus, called \texttt{MPDD-eXchange} or \texttt{MPDD-X}. The central exchange happens when the user uploads their data, which gets validated and ingested into the data ecosystem, enriching the \texttt{MPDD}, while the user gets presented with machine learning predictions associated with it and gets persistent credit associated with their account. 
 
-From the user-perspective all work is being performed entirely within GitHub Issues of the \texttt{MPDD-X} repository, enabling anyone with a free account to start it, as shown in Figure~\ref{mpdd:fig:mpddx1}. 
+From the user perspective, all work is being performed entirely within GitHub Issues of the \texttt{MPDD-X} repository, enabling anyone with a free account to start it, as shown in Figure~\ref{mpdd:fig:mpddx1}. 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{mpdd/mpddx1.png}
+    \includegraphics[width=0.85\textwidth]{mpdd/mpddx1.png}
     \caption{Printout of the greeting message on issues opened with auto-assigned \texttt{contrib} label instructing user how to send a contribution and what models will be run.}
     \label{mpdd:fig:mpddx1}
 \end{figure}
 
-Once the user opens an Issue, they only need to provide a ZIP file containing either \texttt{CIF} \cite{Hall1991TheCrystallography} or \texttt{POSCAR} \cite{VASPPOSCAR} files, commonly used in the community, what can be done by simply dragging a file into the comment. Momentarily after the ZIP file is posted, an automated action will process it, informing user of the progress, as shown in the example in Figure~\ref{mpdd:fig:mpddx2}.
+Once the user opens a GitHub \texttt{Issue}, they only need to provide a \texttt{ZIP} file containing either \texttt{CIF} \cite{Hall1991TheCrystallography} or \texttt{POSCAR} \cite{VASPPOSCAR} files, commonly used in the community, what can be done by simply dragging a file into the comment. Momentarily after that, (1) the ZIP file is posted, and (2) an automated action processes it, informing the user of the progress, as shown in the example in Figure~\ref{mpdd:fig:mpddx2}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{mpdd/mpddx2.png}
+    \includegraphics[width=0.85\textwidth]{mpdd/mpddx2.png}
     \caption{Printout of the intermediate messages informing that validation checks are passing, if the user sent a properly formatted CIF or POSCAR files in a ZIP file. Otherwise (not depicted) messages would provide feedback on errors.}
     \label{mpdd:fig:mpddx2}
 \end{figure}
 
-Then, typically after 5 to 20 minutes, depending on the task complexity and server load, user gets presented with, as shown in Figure~\ref{mpdd:fig:mpddx3}, (1) a result table with outputs of several literature models, as well as, (2) a persistent identifier which can be used to reference both the results and details of how they were obtained.
+Next, typically after 5 to 20 minutes, depending on the task complexity and server load, the user gets presented with, as shown in Figure~\ref{mpdd:fig:mpddx3}, (1) a result table with outputs of several literature models, as well as, (2) a persistent identifier which can be used to reference both the results and details of how they were obtained.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{mpdd/mpddx3.png}
+    \includegraphics[width=0.85\textwidth]{mpdd/mpddx3.png}
     \caption{Printout of final message after all computation is successfully completed. User is presented with (1) outputs of the ML models deployed on the data and (2) a unique contribution ID based on the commit hash, which can be cited as \texttt{contrib.mpdd.org/3760a0c7} or \texttt{mat-x.org/mpdd-3760a0c7} and points to persisted data record appended with ML results and calculation metadata.}
     \label{mpdd:fig:mpddx3}
 \end{figure}
 
-Internally, the contribution is persisted as a commit credited to the submitting user, rather than the computation bot, as shown in Figure~\ref{mpdd:fig:mpddx4}, which consists of a highly-compressed record of the task and its results.
+Internally, the contribution is persisted as a commit credited to the submitting user rather than the computation bot, as shown in Figure~\ref{mpdd:fig:mpddx4}, which consists of a highly-compressed record of the task and its results.
 
 \begin{figure}[H]
     \centering
@@ -126,8 +123,12 @@ Internally, the contribution is persisted as a commit credited to the submitting
     \label{mpdd:fig:mpddx4}
 \end{figure}
 
-Lastly, at the end of a successful run, the bot comments on the contribution commit with some additional metadata, shown in Figure~\ref{mpdd:fig:mpddx4}, which makes it easier to recognize a particular contribution without its identifier.
+Finally, at the end of a successful run, the bot comments on the contribution commit with some additional metadata, shown in Figure~\ref{mpdd:fig:mpddx4}, which makes it easier to recognize a particular contribution without its identifier.
 
+
+\section{Software Availability} \label{mpdd:sec:softwareavaialbility}
+
+\texttt{MPDD} is built as a free community platform which gets progressively open-sourced under MIT and LGPL-3.0 licenses, as new components are being finalized and published. As described in Section~\ref{mpdd:sec:optimade}, all data is available to fetch though the state-of-the-art domain-specific API (\texttt{OPTIMADE} \cite{Evans2024DevelopmentsExchange}) at \href{https://optimade.mpdd.org}{optimade.mpdd.org}, and an experimental input pipeline can be used by anyone with a GitHub account through \href{https://contrib.mpdd.org}{contrib.mpdd.org}.
 
 
 

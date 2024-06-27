@@ -16,7 +16,7 @@ This has been largely accomplished for HEAs within the ULTERA, or ULtrahigh TEmp
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.2\textwidth]{ultera/ULTERA Data Detail_material.png}
-    \caption{Underlying core data overview.}
+    \caption{Schematic overview of the underlying core data structure in \texttt{ULTERA}. See Figure~\ref{ultera:fig:datapipeline} for details.}
     \label{ultera:fig:material}
 \end{figure}
 
@@ -393,18 +393,18 @@ Furthermore, the provided template repository also includes several automations 
 
 
 
-Calculating a linear combination (LC) of "elemental" (or otherwise component) properties is most straightforward approach to estimating property values, especially in cases where phase stability differences play a secondary role, as it presents near-zero computational expense while requiring only readily-available data that has been likely tabulated in some computer-readable format. In most studies, these elemental values are assumed to have one-to-one correspondence with the chemical element. However, while this may hold true for, e.g., price or atomic weight, many elements will behave very differently when in different crystal structures (e.g., Fe in BCC vs FCC).
+Calculating a linear combination (LC) of "elemental" (or otherwise component) properties is the most straightforward approach to estimating property values, especially in cases where phase stability differences play a secondary role, as it presents near-zero computational expense while requiring only readily available data that has been likely tabulated in some computer-readable format. In most studies, these elemental values are assumed to have one-to-one correspondence with the chemical element. However, while this may hold true for, e.g., price or atomic weight, many elements will behave very differently when in different crystal structures (e.g., Fe in BCC vs FCC).
 
-Thus, in ULTERA, whenever possible, LCs for each alloy are calculated on structure-specific data coming from experiments or multi-lattice ab-initio calculations \cite{Chong2021CorrelationAlloys} stored in a dedicated \texttt{ELEMENTAL} database of ULTERA, to establish different LC values under BCC, FCC, and HCP assumptions, as shown in Figure~\ref{ultera:fig:autolc}. During LC calcualtions, some element-structure pairs are unavoidably missing (e.g. BCC Cu \cite{Chong2021CorrelationAlloys}) but in such cases the missing data with most similar one while tracking the level of it under \texttt{replacementLevel} field. 
+Thus, in ULTERA, whenever possible, LCs for each alloy are calculated on structure-specific data coming from experiments or multi-lattice ab initio calculations \cite{Chong2021CorrelationAlloys} stored in a dedicated \texttt{ELEMENTAL} database of ULTERA, to establish different LC values under BCC, FCC, and HCP assumptions, as shown in Figure~\ref{ultera:fig:autolc}. During LC calculations, some element-structure pairs are unavoidably missing (e.g., BCC Cu \cite{Chong2021CorrelationAlloys}), but in such cases, the missing data with most similar one while tracking the level of it under \texttt{replacementLevel} field. 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{ultera/ULTERA_ElementalDatabase_LC_V1.png}
-    \caption{Simplified schematic of automatic linear combination modeling of properties. For every chemical composition, a linear combination of elemental properties is calculated for BCC, FCC, and HCP structures, based on best-matched elemental polymorph data coming from experiments and DFT-based pure element calculations. If applicable structure set (e.g., FCC+FCC+HCP) has been reported for a given input datapoint, an average of the respective linear combinations is reported as structure-informed LC.}
+    \caption{Simplified schematic of automatic linear combination modeling of properties. For every chemical composition, a linear combination of elemental properties is calculated for BCC, FCC, and HCP structures based on best-matched elemental polymorph data coming from experiments and DFT-based pure element calculations. If an applicable structure set (e.g., FCC+FCC+HCP) has been reported for a given input datapoint, an average of the respective linear combinations is reported as structure-informed LC.}
     \label{ultera:fig:autolc}
 \end{figure}
 
-If a datapoint has a structure (either single- or multi-phase) reported for it, then an additional LC is calculated to reflect an average of the structure-specific LCs weighted by the number of given phases being reported, or when possible, by the exact phase fractions coming from CALPHAD equilibrium or solidification (e.g., Scheil \cite{Bocklund2020ExperimentalMaterials}) calculations run through \texttt{pycalphad} \cite{Otis2017Pycalphad:Python}. All LCs are then collectively reported under the \texttt{structuralProperties}, arriving at a schema exemplified with the code below.
+If a datapoint has a structure (either single- or multi-phase) reported for it, then an additional LC is calculated to reflect an average of the structure-specific LCs weighted by the number of given phases being reported or when possible, by the exact phase fractions coming from CALPHAD equilibrium or solidification (e.g., Scheil \cite{Bocklund2020ExperimentalMaterials}) calculations run through \texttt{pycalphad} \cite{Otis2017Pycalphad:Python}. All LCs are then collectively reported under the \texttt{structuralProperties}, arriving at a schema exemplified with the code below.
 
 \begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{json}
 {
@@ -457,7 +457,7 @@ If a datapoint has a structure (either single- or multi-phase) reported for it, 
 
 \subsection{Community Model Deployment} \label{ultera:ssec:communitymodels}
 
-As mentioned in Section \ref{ultera:sec:intro}, the ULTERA Infrastructure automatically deploys several literature models onto all applicable datapoints. These include melting temperature ($T_0$) predictions by \citet{Hong2022MeltingMaterials}, intrinsic ductility prediction by \citet{Hu2021ScreeningAlloys}, root mean square atomic displacement in BCC HEA by \citet{Tandoc2023MiningAlloys}, or formation energy by \citet{Krajewski2022ExtensibleNetworks}. The utilized pipeline has been designed to be relatively straightforward and can be defined to deploy a model on both full description of a material and partial one (e.g., in \texttt{COMPOSITIONAL} collection) to optimize number of model evaluations.
+As mentioned in Section \ref{ultera:sec:intro}, the ULTERA Infrastructure automatically deploys several literature models onto all applicable data points. These include melting temperature ($T_0$) predictions by \citet{Hong2022MeltingMaterials}, intrinsic ductility prediction by \citet{Hu2021ScreeningAlloys}, root mean square atomic displacement in BCC HEA by \citet{Tandoc2023MiningAlloys}, or formation energy by \citet{Krajewski2022ExtensibleNetworks}. The utilized pipeline has been designed to be relatively straightforward and can be defined to deploy a model on both a complete description of a material and a partial one (e.g., in \texttt{COMPOSITIONAL} collection) to optimize many modes of model evaluations.
 
 \begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{json}
 {
@@ -491,7 +491,7 @@ As mentioned in Section \ref{ultera:sec:intro}, the ULTERA Infrastructure automa
 
 \subsection{Automated CALPHAD Modeling} \label{ultera:ssec:autocalphad}
 
-A more robust pipeline has been created to automatically deploy results of CALPHAD \cite{Olson2023GenomicDynamics} based calculations, into the \emph{modeled} \texttt{compositionalProperties} fields of end-user collections, whenever such calculation can be performed given chemical compositions scope of a given thermodynamic database (TDB), such as one created by Shuang Lin and shared through a GitHub repository \cite{LinShuangLin212/refractory-elements-database:ZR}. Lin's TDB was used to generate the example of data structure below, where one can see, that the reported data contains several phase equilibrium calculation results, including metadata, phase fractions under \texttt{phaseDict} (assuming no miscibility gaps, i.e., two BCC phases are counted as one) and \texttt{phaseFullDict}, presented in two formats, as well as \texttt{zpfPositions} which give zero-phase-fraction (ZPF) points critical to interpretation of experimental results \cite{Li2024DesignExperiments} and modeling phase stability with AI approaches \cite{Wu2023EstimatingApproach}.
+A more robust pipeline has been created to automatically deploy results of CALPHAD \cite{Olson2023GenomicDynamics} based calculations into the \emph{modeled} \texttt{compositionalProperties} fields of end-user collections, whenever such calculation can be performed given chemical compositions scope of a given thermodynamic database (TDB), such as one created by Shuang Lin and shared through a GitHub repository \cite{LinShuangLin212/refractory-elements-database:ZR}. Lin's TDB was used to generate the example of data structure below, where one can see that the reported data contains several phase equilibrium calculation results, including metadata, phase fractions under \texttt{phaseDict} (assuming no miscibility gaps, i.e., two BCC phases are counted as one) and \texttt{phaseFullDict}, presented in two formats, as well as \texttt{zpfPositions} which give zero-phase-fraction (ZPF) points critical to interpretation of experimental results \cite{Li2024DesignExperiments} and modeling phase stability with AI approaches \cite{Wu2023EstimatingApproach}.
 
 \begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{json}
 {
@@ -539,21 +539,21 @@ A more robust pipeline has been created to automatically deploy results of CALPH
 }
 \end{minted}
 
-In the example shown, the persisted output is not semantically versioned, but rather marked with unique name \texttt{calphad\_Feb2023} corresponding to a well-defined effort of the team. This design choice has been selected based on character of CALPHAD modelling, where iterations of the TDBs are not numerous, while end-users traditionally favor descriptive names, such as \texttt{Shuang\_May2024\_RefractoryBCO}, which are then fixed and backed by a literature publication.
+In the example shown, the persisted output is not semantically versioned but rather marked with a unique name \texttt{calphad\_Feb2023} corresponding to a well-defined effort of the team. This design choice has been selected based on the character of CALPHAD modeling, where iterations of the TDBs are not numerous, while end-users traditionally favor descriptive names, such as \texttt{Shuang\_May2024\_RefractoryBCO}, which are then fixed and backed by a literature publication.
 
 
 \subsection{MPDD Atomic Configuration Data Fetching} \label{ultera:ssec:mpdd}
 
-Lastly, the ULTERA ecosystem leverages the 4.5 million of atomistic data points discussed in Chapter~\ref{chap:mpdd} to extract some information about the 0K stability of structures in the given alloy's chemical system or its derivatives (including carbides, oxides, and nitrides), as schematically shown in Figure~\ref{ultera:fig:mpdd}. This data be used to augment both (a) generative modeling efforts \cite{Debnath2021GenerativeAlloys}, as convex hull depth will likely be correlated with formation of stable intermetallics, and (b) interpretation of experiments producing compositional maps \cite{Li2024DesignExperiments}, enabling easy identification of observed compounds of alloy's base elements or carbides formed by impurities. 
+Lastly, the ULTERA ecosystem leverages the 4.5 million atomistic data points discussed in Chapter~\ref{chap:mpdd} to extract some information about the 0K stability of structures in the given alloy's chemical system or its derivatives (including carbides, oxides, and nitrides), as schematically shown in Figure~\ref{ultera:fig:mpdd}. This data can be used to augment both (a) generative modeling efforts \cite{Debnath2021GenerativeAlloys}, as convex hull depth will likely be correlated with the formation of stable intermetallics, and (b) interpretation of experiments producing compositional maps \cite{Li2024DesignExperiments}, enabling easy identification of observed compounds of alloy's base elements or carbides formed by impurities. 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{ultera/ULTERA_BasicThermodynamics_V1.png}
-    \caption{Conceptual schematic of how MPDD is directly utilized within ULTERA, going beyond interaction through CALPHAD models, to include basic thermodynamic information. For each composition, a convex hull of compounds present in corresponding chemical system is calculated based on MPDD data and can be used (a) to immediately identify candidates for experimentally observed compounds based on 0K low-energy configurations or (b) convex hull depth can be used as an input to ML model indicating strength of interatomic interactions.}
+    \caption{Conceptual schematic of how MPDD is directly utilized within ULTERA to include basic thermodynamic information in addition to indirect interaction through CALPHAD models created by \texttt{ESPEI}. For each composition, a convex hull of compounds present in the corresponding chemical system is calculated based on MPDD data and can be used (a) to immediately identify candidates for experimentally observed compounds based on 0K low-energy configurations or (b) convex hull depth can be used as an input to ML model indicating strength of interatomic interactions.}
     \label{ultera:fig:mpdd}
 \end{figure}
 
-As shown in an example code below, the acquired data is structured as lists of names constructed from reduced chemical formulas, MPDD unique id, and, if applicable, identifier of the parent source, allowing one to quickly trace back where data came from and fetch additional information. Such schema also allows one to make queries over experimental data based on a specific compound to, for instance, find all literature publication where it may have occured.
+As shown in the example code below, the acquired data is structured as lists of names constructed from reduced chemical formulas, MPDD unique ID, and, if applicable, the identifier of the parent source. This allows one to quickly trace back where data came from and fetch additional information. Such schema also allows one to make queries over experimental data based on a specific compound to, for instance, find all literature publications where it may have occurred.
 
 
 \begin{minted}[xleftmargin=3\parindent, linenos=true, fontsize=\small]{json}

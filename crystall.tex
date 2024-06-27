@@ -27,7 +27,7 @@ At its core, \texttt{crystALL} leverages large local and remote collections of a
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{crystall/NdBi2_GraphicalAbstract_V4.png}
+    \includegraphics[width=0.75\textwidth]{crystall/NdBi2_GraphicalAbstract_V4.png}
     \caption{Simplified \texttt{crystALL} core schematic of operation based around performing all permutations of elemental substitutions and energy predictions, exemplified in the case of $NdBi_2$ intermetallic.}
     \label{crystall:fig:crystallcompound}
 \end{figure}
@@ -37,9 +37,9 @@ During the filtering step, selection of candidates is primarily based on the clu
 
 \section{Successfully Identifying \ch{NdBi_2} Structure} \label{crystall:ndbi2}
 
-The first deployment of the \texttt{crystALL} method happened within \citet{Im2022ThermodynamicModeling} work which re-assessed thermodynamic models of Nd-Bi chemical system, which was an important step towards rational design of rare-earth alloys for clean energy technologies through, e.g., electrochemical recovery of rare-earth elements and prospects of novel energy storage devices like liquid metal batteries. As noted in the publication, the \ch{NdBi_2} compound has long been known to be thermodynamically stable \cite{Yoshihara1975Rare-earthBismuthides}; however its crystal structure has remained unknown presenting a significant obstacle in using ab initio methods to study it. Using \texttt{crystALL}'s data-mining approach deployed on \texttt{MPDD}, the possible configurations of \ch{NdBi_2} were determined and later validated by DFT-based methods, as depicted earlier in Figure \ref{crystall:fig:crystallcompound}.
+The first deployment of the \texttt{crystALL} method happened within \citet{Im2022ThermodynamicModeling} work, which re-assessed thermodynamic models of Nd-Bi chemical system, which was an essential step towards the rational design of rare-earth alloys for clean energy technologies through, e.g., electrochemical recovery of rare-earth elements and prospects of novel energy storage devices like liquid metal batteries. As noted in the publication, the \ch{NdBi_2} compound has long been known to be thermodynamically stable \cite{Yoshihara1975Rare-earthBismuthides}; however, its crystal structure has remained unknown, presenting a significant obstacle in using ab initio methods to study it. Using \texttt{crystALL}'s data-mining approach deployed on \texttt{MPDD}, the possible configurations of \ch{NdBi_2} were determined and later validated by DFT-based methods, as depicted earlier in Figure \ref{crystall:fig:crystallcompound}.
 
-First, all of the 26,055 \ch{AB_2}-type configurations were extracted from the contemporary mid-2020 snapshot of \texttt{MPDD}, which at the time had approximately 1.3 million total configurations dataset of DFT-relaxed or experimental structures covering all materials contained in the Open Quantum Materials Database (OQMD), the Materials Project (MP), the Joint Automated Repository for Various Integrated Simulations (JARVIS), and the Crystallography Open Database (COD), described in Chapter \ref{chap:mpdd}. Following the extraction and substitution, all generated candidates have been featurized using \texttt{Ward2017} \cite{Ward2017IncludingTessellations} and their energies were predicted through \texttt{SIPFENN} Novel Materials Model (NN20) described in Chapter \ref{chap:sipfenn}. The 1,000 lowest energy candidates were selected and their feature-space representations were embedded into lower dimensional space (3D) using popular t-distributed stochastic neighbor embedding (t-SNE) \cite{HintonStochasticEmbedding}, and clustered using k-means approach, as depicted in Figure \ref{crystall:fig:ndbi2clusters}.
+First, all of the 26,055 \ch{AB_2}-type configurations were extracted from the contemporary mid-2020 snapshot of \texttt{MPDD}, which at the time had approximately 1.3 million total configurations dataset of DFT-relaxed or experimental structures covering all materials contained in the Open Quantum Materials Database (OQMD), the Materials Project (MP), the Joint Automated Repository for Various Integrated Simulations (JARVIS), and the Crystallography Open Database (COD), described in Chapter \ref{chap:mpdd}. Following the extraction and substitution, all generated candidates have been featurized using \texttt{Ward2017} \cite{Ward2017IncludingTessellations}, and their energies were predicted through \texttt{SIPFENN} Novel Materials Model (NN20) described in Chapter \ref{chap:sipfenn}. The 1,000 lowest energy candidates were selected, and their feature-space representations were embedded into lower dimensional space (3D) using popular t-distributed stochastic neighbor embedding (t-SNE) \cite{HintonStochasticEmbedding} and clustered using k-means approach, as depicted in Figure \ref{crystall:fig:ndbi2clusters}.
 
 \begin{figure}[H]
     \centering
@@ -78,12 +78,16 @@ Thus, to address this need, \texttt{MPDD} has been extended with a new \texttt{s
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.9\textwidth]{crystall/crystALL_composition_diagram_V3.png}
+    \includegraphics[width=0.95\textwidth]{crystall/crystALL_composition_diagram_V3.png}
     \caption{\texttt{crystALL} schematic of operation in cases of "compositional" searches where measured composition can be given alongside uncertainty bounds. Efficient handling of such queries is a unique feature of MPDD.}
     \label{fig:crystallcomposition}
 \end{figure}
 
-Such approach generates output with additional characteristic of the compositional distance to the reported composition value, enabling researchers to make a better-informed decision on what to pass into the validation steps
+Such approach generates output with additional information of the compositional distance to the \textit{reported} composition value, enabling researchers to make a better-informed decision on what to pass into the validation steps based on belief whether the hypothetical compound is the one being observed.
+
+\section{Software Availability} \label{crystall:sec:softwareavaialbility}
+
+The \texttt{crystALL} source code is currently developed closed-sourced; however, it is planned to be released as a free open-source software (FOSS) in the Fall of 2024 through outlets including GitHub repository at \href{https://github.com/PhasesResearchLab/crystALL}{github.com/PhasesResearchLab/crystALL}, alongside a scientific publication describing it, high-quality documentation, and a workshop-style tutorial.
 
 % \section{Connection to Zentropy} \label{sec:crystallzentropy}
 % 

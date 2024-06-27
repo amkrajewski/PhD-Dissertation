@@ -6,18 +6,18 @@ This chapter is part of work described in Chapter \ref{chap:infeasibilitygliding
 
 \section{Introduction} \label{pathplan:sec:intro}
 
-Once (1) models developed in Chapters \ref{chap:sipfenn} through \ref{chap:nimcso} are available, and (2) the approach to traversing the compositional space established in Chapters \ref{chap:nimplex} and \ref{chap:infeasibilitygliding} is deployed, one can begin to design multi-composition entities, such as coexisting compositional regions on paths joining multiple compositions in Functionally Graded Alloys (FGMs) discussed in Section~\ref{nimplex:ssec:functionallygraded}. In general, this will entail constructing continuous composition sub-graphs based on certain value rules allowing one to optimize the design.
+Once (1) models developed in Chapters \ref{chap:sipfenn} through \ref{chap:nimcso} are available, and (2) the approach to traversing the compositional space established in Chapters \ref{chap:nimplex} and \ref{chap:infeasibilitygliding} is deployed, one can begin to design multi-composition entities, such as coexisting compositional regions on paths joining multiple compositions in Functionally Graded Alloys (FGMs) discussed in Section~\ref{nimplex:ssec:functionallygraded}. This task will generally entail constructing continuous composition sub-graphs based on certain value rules, allowing one to optimize the design.
 
-All results and figures presented throughout this Chapter have been obtained and can be reproduces based on the second \texttt{nimplex} workshop, which has been adapted as Appendix~\ref{chap:nimplextutorial2} and can be consulted for step-by-step details, including an example implementation, which can be easily modified to work in a variety of problems with minimal changes.
+All results and figures presented throughout this Chapter have been obtained and can be reproduced based on the second \texttt{nimplex} workshop, which has been adapted as Appendix~\ref{chap:nimplextutorial2} and can be consulted for step-by-step details, including an example implementation, which can be easily modified to work in a variety of problems with minimal changes.
 
 \section{Shortest Path Planning} \label{pathplan:sec:shortest}
 
-The most common and most simply defined task in the FGM path planning is to identify a short \cite{Bobbio2022DesignCompositions} or the shortest path. Figure~\ref{pathplan:sec:shortest} presents an example of such path, constructed using Dijkstra's algorithm \cite{Dijkstra1959AGraphs} between two points of choice, over the feasable space graph extracted from results underlying Figure~\ref{infeasibilitygliding:fig:glide} discussed in the last chapter. 
+The most common and most simply defined task in the FGM path planning is to identify a short \cite{Bobbio2022DesignCompositions} or the shortest path. Figure~\ref{pathplan:sec:shortest} presents an example of such a path, constructed using Dijkstra's algorithm \cite{Dijkstra1959AGraphs} between two points of choice, over the feasible space graph extracted from results underlying Figure~\ref{infeasibilitygliding:fig:glide} discussed in the last chapter. 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{pathplanning/InfeasibilityGliding_Feasible.png}
-    \caption{The subgraph of feasible space extracted from full 3-simplex (tetrahedral) graph in Figure \ref{infeasibilitygliding:fig:glide} constructed by gliding around infeasible region of compositional space. The red path overlaid over directional edges indicates the optimal (least number of transitions) path was identified by the common Dijkstra's algorithm \cite{Dijkstra1959AGraphs}.}
+    \caption{The subgraph of feasible space extracted from the full 3-simplex (tetrahedral) graph in Figure \ref{infeasibilitygliding:fig:glide} constructed by gliding around an infeasible region of compositional space. The red path overlaid over directional edges indicates the optimal (least number of transitions) path was identified by the common Dijkstra's algorithm \cite{Dijkstra1959AGraphs}.}
     \label{pathplan:fig:shortestpath}
 \end{figure}
 
@@ -31,12 +31,12 @@ As demonstrated in detail in Appendix~\ref{chap:nimplextutorial2}, \texttt{nimpl
 
 \subsection{Stretching the Space} \label{pathplan:ssec:gradientstretch}
 
-One can, for instance, stretch the edges between points shown earlier in the Figure~\ref{pathplan:fig:shortestpath} by adding a penalty linearly proportional to the magnitude of the gradient of a property value. In the Appendix~\ref{chap:nimplextutorial2}, an example property of choice has been the Root Mean Square Average Deviation (RMSAD) model for BCC solid solutions by \citet{Tandoc2023MiningAlloys}, modified to fit ULTERA model pattern. The result of such stretching is shown in Figure~\ref{pathplan:fig:lowgradient}, where the path has been biased towards low-gradient regions achieving the singular shortest design path under such conditions. 
+One can, for instance, stretch the edges between points shown earlier in Figure~\ref{pathplan:fig:shortestpath} by adding a penalty linearly proportional to the magnitude of the gradient of a property value. In the Appendix~\ref{chap:nimplextutorial2}, an example property of choice has been the Root Mean Square Average Deviation (RMSAD) model for BCC solid solutions by \citet{Tandoc2023MiningAlloys}, modified to fit ULTERA model pattern. The result of such stretching is shown in Figure~\ref{pathplan:fig:lowgradient}, where the path has been biased towards low-gradient regions, achieving the singular shortest design path under such conditions. 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{pathplanning/InfeasibilityGliding_LowGradient.png}
-    \caption{The graph from Figure \ref{pathplan:fig:shortestpath} stretched through distance increases from penalizing high magnitude of gradient in a property value. The graph is approximately relaxed through spring-type energy minimization performed in Wolfram Language. The shortest path is still equally optimal in terms of number of steps but the selection has been biased towards low-gradient region.}
+    \caption{The graph from Figure \ref{pathplan:fig:shortestpath} stretched through distance increases from penalizing high magnitude of gradient in a property value. The graph is approximately relaxed through spring-type energy minimization performed in \texttt{Wolfram} Language. The shortest path is still equally optimal in terms of the number of steps, but the selection has been biased towards the low-gradient region.}
     \label{pathplan:fig:lowgradient}
 \end{figure}
 
@@ -44,19 +44,19 @@ Notably, while the resulting path is different compared to one in Figure~\ref{pa
 
 \subsection{Non-Linear Penalties Escaping Embedding} \label{pathplan:ssec:gradientsquare}
 
-Introduction of a non-linear gradient results in distances cannot be easily visualized as stretching of the space, as depicted in Figure~\ref{pathplan:fig:lowgradientsquared}, but can encode avoidance of singular gradient changes, which can be much more critical in the design of FGMs deposited layer-by-layer where resistance to cracking may be primarily dependent on a few most venerable transitions.
+The introduction of a non-linear gradient results in distances that cannot be easily visualized as stretching of the space, as depicted in Figure~\ref{pathplan:fig:lowgradientsquared}, but can encode avoidance of singular gradient changes, which can be much more critical in the design of FGMs deposited layer-by-layer where resistance to cracking may be primarily dependent on a few most venerable transitions.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{pathplanning/InfeasibilityGliding_LowGradientSquared.png}
     \includegraphics[width=0.9\textwidth]{pathplanning/InfeasibilityGliding_LowGradientSquaredColored.png}
-    \caption{Application of a highly non-linear (squared) property gradient magnitude penalty to the inter-node distances causing (top) unrelaxable (local minimum) spatial arrangement of graph nodes, which can be visualized (bottom) through color encoding of property field with path forming "switchbacks" akin to mountain roads that minimize sharp gradients at a cost of 3 additional steps.}
+    \caption{Application of a highly non-linear (squared) property gradient magnitude penalty to the inter-node distances causing (top) unrelaxable (figure shows a local minimum) spatial arrangement of graph nodes, which can be visualized (bottom) through the color encoding of property field with path forming "switchbacks" akin to mountain roads that minimize sharp gradients at the cost of 3 additional steps.}
     \label{pathplan:fig:lowgradientsquared}
 \end{figure}
 
 \section{Property Value Min/Maximization} \label{pathplan:sec:minmax}
 
-Lastly, since the transitions between neighboring compositions generated by \texttt{nimplex} are described through two unidirectional edges, the distance bias can be also used to encode directional properties, such as the property gradient itself. With such approach one can bias the path into crossing through high property value regions and, similar to those previously described, can be tuned to a desired trade-off with path length. Figure~\ref{pathplan:fig:highrmsad} presents an example result of such bias into the high strength region (green). A similar approach could be used to, e.g., minimize the cost along a path, or other cost function encoding many different aspects of the problem.
+Lastly, since the transitions between neighboring compositions generated by \texttt{nimplex} are described through two unidirectional edges, the distance bias can also be used to encode directional properties, such as the property gradient itself. With such an approach, one can bias the path into crossing through regions of high property value, and similar to those previously described, can be tuned to a desired trade-off with path length. Figure~\ref{pathplan:fig:highrmsad} presents an example result of such bias in the high-strength region (green). A similar approach could be used to, e.g., minimize the cost along a path or other cost function encoding many different aspects of the problem.
 
 \begin{figure}[H]
     \centering
@@ -64,6 +64,11 @@ Lastly, since the transitions between neighboring compositions generated by \tex
     \caption{A selection of an optimal path, similar to one in Figure \ref{pathplan:fig:shortestpath} but biased towards high property value regions (green) by penalizing going to lower property regions.}
     \label{pathplan:fig:highrmsad}
 \end{figure}
+
+\section{Software Availability} \label{pathplan:sec:softwareavaialbility}
+
+As mentioned in Section~\ref{pathplan:sec:intro}, all results presented in this Chapter are based on the \texttt{nimplex} tutorial, which has been adapted as Appendix~\ref{chap:nimplextutorial2}. It can be obtained and run on the cloud (GitHub Codespaces) with a single click by following \texttt{nimplex} distribution channels (see Section~\ref{nimplex:sec:code}).
+
 
 %\section{Key Consequences of This Work} \label{pathplan:sec:keyconsequences}
 %\todo
