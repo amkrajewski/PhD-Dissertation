@@ -21,8 +21,9 @@
 \usepackage{nameref}
 
 %Listings
-%\usepackage{minted}
-\usepackage[finalizecache,cachedir=.]{minted}
+\usepackage{minted}
+%\usepackage[finalizecache,cachedir=.]{minted}
+%\usepackage[frozencache,cachedir=.]{minted}
 
 %Font
 \renewcommand{\thelinenumber}{\raisebox{1pt}{\textcolor[RGB]{200,200,200}{\arabic{linenumber}}}}
@@ -97,7 +98,7 @@
 
 % Appendix
 \usepackage[toc]{appendix}
-\newcommand{\mypart}[1]{\thispagestyle{empty}\part*{#1}\addtocounter{page}{-1}}
+\newcommand{\mypart}[1]{\thispagestyle{empty}\part*{#1}}%\addtocounter{page}{-1}}
 
 
 % MISC
@@ -321,7 +322,7 @@ This work was made possible by the financial support and training provided by US
 \vspace{-6pt}
 
 {\small
-Adam Krajewski was born in Europe, where he spent his childhood and received pre-college education at a school nationally recognized for its university-level chemistry curriculum. He first came to the United States in 2013 and moved completely in 2015 to join the Materials Science Department at Case Western Reserve University. Within the first two months, Adam began research in Prof. Welsch's group. After just one year, he enrolled in graduate courses and also joined Prof. Willard's group, progressively moving from experiments towards theory, modeling, and simulations. In the Fall of 2017, he enrolled in graduate courses in Artificial Intelligence, starting to specialize in applying AI techniques, including Machine Learning, to his research which became focused hidden process modeling, materials data processing, and data-driven design of magnetocaloric metallic glasses.
+Adam Krajewski was born in Europe, where he spent his childhood and received pre-college education at a school nationally recognized for its university-level chemistry curriculum. He first came to the United States in 2013 and moved completely in 2015 to join the Materials Science Department at Case Western Reserve University. Within the first two months, Adam began research in Prof. Welsch's group. After just one year, he enrolled in graduate courses and also joined Prof. Willard's group, progressively moving from experiments towards theory, modeling, and simulations. In the Fall of 2017, he enrolled in graduate courses in Artificial Intelligence, starting to specialize in applying AI techniques, including Machine Learning, to his research which became focused on hidden process modeling, materials data processing, and data-driven design of magnetocaloric metallic glasses.
 
 After earning his B.S.E. degree in 2019, Adam moved directly to pursue PhD under world-renowned thermodynamics expert Prof. Zi-Kui Liu at Penn State. He had the pleasure of working on implementing various computational techniques, ranging from atomistic machine learning through materials data curation, to purely theoretical considerations, while having the support of colleagues who are specialists in applied ab-initio modeling, thermodynamic calculations, and materials discovery. Since 2022, he has also extensively collaborated with Lawrence Livermore National Lab, where he spent two summers on-site.
 
