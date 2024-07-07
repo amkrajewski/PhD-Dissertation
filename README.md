@@ -4,6 +4,7 @@
 - Submitted in Partial Fulfillment of the Requirements for the Degree of Doctor of Philosophy in August 2024
 - 352 total pages or 326 body pages
 - 109 figures
+- [Final Version PDF](https://github.com/amkrajewski/PhD-Dissertation/releases/download/Final/PhD_Dissertation_Submitted.pdf)
 
 ## Abstract
 
@@ -32,6 +33,10 @@ The resulting multi-level discovery infrastructure is highly generalizable as it
 - Appendix Chapter E - **MatSE580 Guest Lecture 1 - Quick Guide to Manipulating Materials With pymatgen, Setting up MongoDB, and Getting Started with pySIPFENN**
 - Appendix Chapter F - **MatSE580 Guest Lecture 2 - Running ML Models in pySIPFENN and Guiding Limited DFT Calculations Based on KS2022 Embedding Cluster Exploration**
 - Appendix Chapter G - **nimCSO Basic Tutorial on Selecting Elements for High Entropy Alloy Modeling**
+
+## Graphical Abstract
+
+![graphicalabstract](https://github.com/amkrajewski/PhD-Dissertation/blob/e009b6c4cb6be0ecaef12207f1a690908ddd5f01/intro/DissertationBigPicture.png)
 
 ## Vita 
 
