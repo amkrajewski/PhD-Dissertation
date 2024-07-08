@@ -1,0 +1,82 @@
+cff-version: 1.2.0
+title: >-
+  Efficient Materials Informatics between Rockets and
+  Electrons
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Adam M
+    family-names: Krajewski
+    email: adam@phaseslab.org
+    affiliation: The Pennsylvania State University
+    orcid: 'https://orcid.org/0000-0002-2266-0099'
+identifiers:
+  - type: url
+    value: 'https://arxiv.org/abs/2407.04648'
+    description: arXiv
+repository-code: 'https://github.com/amkrajewski/PhD-Dissertation'
+abstract: >-
+  The true power of computational research typically can lay
+  in either what it accomplishes or what it enables others
+  to accomplish. In this work, both avenues are
+  simultaneously embraced across several distinct efforts
+  existing at three general scales of abstractions of what a
+  material is - atomistic, physical, and design. At each, an
+  efficient materials informatics infrastructure is being
+  built from the ground up based on (1) the fundamental
+  understanding of the underlying prior knowledge, including
+  the data, (2) deployment routes that take advantage of it,
+  and (3) pathways to extend it in an autonomous or
+  semi-autonomous fashion, while heavily relying on
+  artificial intelligence (AI) to guide well-established
+  DFT-based ab initio and CALPHAD-based thermodynamic
+  methods. The resulting multi-level discovery infrastructure is
+  highly generalizable as it focuses on encoding problems to
+  solve them easily rather than looking for an existing
+  solution. To showcase it, this dissertation discusses the
+  design of multi-alloy functionally graded materials (FGMs)
+  incorporating ultra-high temperature refractory high
+  entropy alloys (RHEAs) towards gas turbine and jet engine
+  efficiency increase reducing CO2 emissions, as well as
+  hypersonic vehicles. It leverages a new graph
+  representation of underlying mathematical space using a
+  newly developed algorithm based on combinatorics, not
+  subject to many problems troubling the community.
+  Underneath, property models and phase relations are
+  learned from optimized samplings of the largest and
+  highest quality dataset of HEA in the world, called
+  ULTERA. At the atomistic level, a data ecosystem optimized
+  for machine learning (ML) from over 4.5 million relaxed
+  structures, called MPDD, is used to inform experimental
+  observations and improve thermodynamic models by providing
+  stability data enabled by a new efficient featurization
+  framework.
+keywords:
+  - materials informatics
+  - materials discovery
+  - scientific computing
+  - machine learning
+  - artificial intelligence
+  - database design
+  - high entropy alloys
+  - compositionally complex materials
+  - functionally graded materials
+  - extreme environments
+  - hypersonics
+  - data driven
+  - thermodynamics
+  - graphs
+  - compositional spaces
+  - python
+  - nim
+  - CALPHAD
+  - HEA
+  - FGM
+  - ULTERA
+  - pySIPFENN
+  - MPDD
+  - alloy design
+  - inverse design
+license: CC-BY-NC-SA-4.0
